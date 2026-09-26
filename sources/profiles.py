@@ -67,7 +67,7 @@ def _government(iso):
       ?c wdt:P297 "{iso}" .
       OPTIONAL {{ ?c wdt:P122 ?gov }}
       OPTIONAL {{ ?c wdt:P35 ?head }}
-      SERVICE wikibase:label {{ bd:serviceParam wikibase:language "fr,en". }} }}"""
+      SERVICE wikibase:label {{ bd:serviceParam wikibase:language "fr,mul,en". }} }}"""
     r = httpx.get("https://query.wikidata.org/sparql", params={"query": q, "format": "json"},
                   headers={"User-Agent": "geowatch/0.1 (open-source research tool)"}, timeout=60)
     r.raise_for_status()

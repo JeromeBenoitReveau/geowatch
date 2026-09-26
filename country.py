@@ -24,6 +24,11 @@ def show(iso):
         t = p.get("population_trend") or {}
         print(f"\nRégime       {', '.join(g.get('forms', [])) or 'n/d'}")
         print(f"Chef d'État  {', '.join(g.get('head_of_state', [])) or 'n/d'}")
+        if not p["population"]:
+            print("\nAucune donnée Banque mondiale pour ce territoire (Taïwan n'y figure pas).")
+            print(f"\n(profil du {fetched[:10]} — Wikidata)")
+            p = None
+    if p:
         print(f"\nPopulation   {fmt(p['population'])}")
         if t:
             flag = " · fécondité sous le seuil de renouvellement" if t["below_replacement"] else ""
@@ -37,7 +42,7 @@ def show(iso):
         print(f"\nR&D          {fmt(p['rd_pct_gdp'], ' % PIB', 2)}   Export high-tech {fmt(p['hightech_exports_pct'], ' %')}")
         print(f"Internet     {fmt(p['internet_users_pct'], ' %')}   Défense {fmt(p['military_pct_gdp'], ' % PIB')}")
         print(f"\n(profil du {fetched[:10]} — {', '.join(p['sources'])})")
-    else:
+    elif not fetched:
         print("\nPas de profil en base → `python ingest.py --profiles`")
 
     def line(e, other):

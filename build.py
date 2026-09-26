@@ -99,7 +99,7 @@ function spark(daily){ if(!daily || daily.length<2) return "";
   const n=daily.length, pts=daily.map(([_,p],i)=>`${(i/(n-1)*78+1).toFixed(1)},${(21-p*20).toFixed(1)}`).join(" ");
   return `<svg class="spark" viewBox="0 0 80 22" aria-hidden="true"><polyline points="${pts}"/></svg>`; }
 function mkt(m){ const d=m.delta_pts, cls = d==null?"":d>0?"up":d<0?"down":"";
-  return `<div class="mkt"><span class="p">${(m.prob*100).toFixed(0)} %</span>
+  return `<div class="mkt"><span class="p">${m.prob<0.01?"&lt;1":(m.prob*100).toFixed(0)} %</span>
     <span><a href="${safeUrl(m.url)}" target="_blank" rel="noopener">${esc(m.question)}</a>
     <span class="mute"><br>${esc(m.source)} · ${d==null?"variation 7 j n/d":`<span class="${cls}">${d>0?"+":""}${d} pts</span> sur 7 j`}${m.stale?" · absent du dernier relevé":""}</span></span>
     ${spark(m.daily)}</div>`; }
@@ -114,11 +114,12 @@ function show(id){
   for(const [pair, v] of marketsFor(id)){
     h += `<h2>Marchés · ${esc(pair)}</h2>` + (v.markets.length ? v.markets.map(mkt).join("")
       : `<p class="mute">Aucun marché ouvert trouvé.</p>`); }
-  if(p){ const g=p.government||{}, t=p.population_trend;
+  if(p){ const g=p.government||{}, t=p.population_trend, wb=!!p.population;
     if(a.kind!=="state") h += `<h2>Pays hôte : ${nm(iso)}</h2>`;
     h += `<h2>Régime</h2><div class="kv"><span>Forme</span><span>${esc((g.forms||[]).join(", "))||"n/d"}</span>
       <span>Chef d'État</span><span>${esc((g.head_of_state||[]).join(", "))||"n/d"}</span></div>
-    <h2>Démographie</h2><div class="kv"><span>Population</span><span>${f(p.population)}</span>
+    ${wb ? "" : `<p class="mute">Aucune donnée Banque mondiale pour ce territoire (Taïwan n'y figure pas).</p>`}
+    ${!wb ? "" : `<h2>Démographie</h2><div class="kv"><span>Population</span><span>${f(p.population)}</span>
       <span>Tendance</span><span>${t?`${esc(t.label)} (${t.annual_rate_pct>0?"+":""}${t.annual_rate_pct} %/an, ${t.period})${t.below_replacement?"<br>fécondité sous le renouvellement":""}`:"n/d"}</span>
       <span>Fécondité</span><span>${f(p.fertility,"",2)}</span><span>65 ans et +</span><span>${f(p.age65_pct," %")}</span></div>
     <h2>Économie & ressources</h2><div class="kv"><span>PIB</span><span>${f(p.gdp_usd," $")}</span>
@@ -131,8 +132,8 @@ function show(id){
     <h2>Technologie & défense</h2><div class="kv"><span>R&D</span><span>${f(p.rd_pct_gdp," % PIB",2)}</span>
       <span>Export high-tech</span><span>${f(p.hightech_exports_pct," %")}</span>
       <span>Internet</span><span>${f(p.internet_users_pct," %")}</span>
-      <span>Défense</span><span>${f(p.military_pct_gdp," % PIB")}</span></div>
-    <p class="mute">Profil du ${esc(p.fetched_at.slice(0,10))} — ${esc(p.sources.join(", "))}</p>`;
+      <span>Défense</span><span>${f(p.military_pct_gdp," % PIB")}</span></div>`}
+    <p class="mute">Profil du ${esc(p.fetched_at.slice(0,10))} — ${esc(wb ? p.sources.join(", ") : "Wikidata")}</p>`;
   } else if(iso) h += `<p class="mute">Pas de profil pour ${esc(iso)}.</p>`;
   $("#panel").innerHTML = h;
 }
