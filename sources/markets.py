@@ -1,5 +1,5 @@
 """Marchés de prédiction = seules vraies probabilités qu'on affiche."""
-import json, httpx
+import json, time, httpx
 
 def _match(text, keywords):
     t = (text or "").lower()
@@ -35,14 +35,27 @@ def kalshi_events(max_pages=150):
         params = {"status": "open", "limit": 200, "with_nested_markets": "true"}
         if cursor:
             params["cursor"] = cursor
-        r = httpx.get(f"{KALSHI}/events", params=params, timeout=30)
-        r.raise_for_status()
-        data = r.json()
+        try:
+            data = _kalshi_page(params)
+        except httpx.HTTPError as e:
+            print(f"[kalshi] scan interrompu après {len(out)} événements → {e}")
+            break  # on garde ce qui a déjà été lu
         out += [e for e in data.get("events", []) if e.get("category") in KALSHI_CATEGORIES]
         cursor = data.get("cursor")
         if not cursor:
             break
     return out
+
+def _kalshi_page(params):
+    for wait in (2, 5, 15, None):
+        time.sleep(0.25)  # ~70 pages d'affilée déclenchent sinon des 429 depuis les runners GitHub
+        r = httpx.get(f"{KALSHI}/events", params=params, timeout=30)
+        if r.status_code == 429 and wait:
+            ra = r.headers.get("Retry-After", "")
+            time.sleep(float(ra) if ra.replace(".", "", 1).isdigit() else wait)
+            continue
+        r.raise_for_status()
+        return r.json()
 
 def kalshi(keywords, events):
     out = []

@@ -9,11 +9,7 @@ from config import DYADS
 from sources import markets, profiles
 
 def run_markets():
-    try:
-        kalshi_evs = markets.kalshi_events()
-    except markets.httpx.HTTPError as e:
-        print(f"[kalshi] → {e}")
-        kalshi_evs = []
+    kalshi_evs = markets.kalshi_events()  # gère ses erreurs, garde un scan partiel
     fetched_at, batch = db.now(), []
     for name, d in DYADS.items():
         found = markets.fetch(d["keywords"], kalshi_evs)
