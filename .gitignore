@@ -1,0 +1,8 @@
+.env
+*.db
+.venv/
+__pycache__/
+geowatch.html
+network.pending.yaml
+ingest.log
+.DS_Store

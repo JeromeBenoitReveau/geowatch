@@ -1,0 +1,69 @@
+# Graphe "qui soutient qui" — curé à la main, chaque arête sourcée.
+# Mise à jour : `python update_network.py IR` propose des changements dans
+# network.pending.yaml → tu relis → tu reportes ici. Rien n'est ajouté sans relecture.
+#
+# kind   : state | non_state | bloc
+# types  : arms | financial | training | troops | intelligence | political | economic | dual_use
+# status : active | reduced | ended | alleged
+# confidence : high (documenté officiellement) | medium (sources concordantes) | low (allégations)
+# verified : date de ta dernière vérification — à revoir si > 6 mois
+
+actors:
+  IR: {name: Iran, kind: state}
+  IL: {name: Israël, kind: state}
+  US: {name: États-Unis, kind: state}
+  RU: {name: Russie, kind: state}
+  UA: {name: Ukraine, kind: state}
+  CN: {name: Chine, kind: state}
+  TW: {name: Taïwan, kind: state}
+  KP: {name: Corée du Nord, kind: state}
+  IN: {name: Inde, kind: state}
+  PK: {name: Pakistan, kind: state}
+  FR: {name: France, kind: state}
+  EU: {name: Union européenne, kind: bloc}
+  houthis:  {name: Houthis (Ansar Allah), kind: non_state, base: YE}
+  hezbollah: {name: Hezbollah, kind: non_state, base: LB}
+  hamas: {name: Hamas, kind: non_state, base: PS}
+  pij: {name: Jihad islamique palestinien, kind: non_state, base: PS}
+  kataib_hezbollah: {name: Kataeb Hezbollah, kind: non_state, base: IQ}
+
+edges:
+  # --- "Axe de la résistance" ---
+  - {from: IR, to: houthis, types: [arms, financial, training], status: active, confidence: high,
+     sources: ["Rapports du Panel d'experts ONU sur le Yémen"], verified: 2026-06}
+  - {from: IR, to: hezbollah, types: [arms, financial, training], status: active, confidence: high,
+     sources: ["US State Dept, Country Reports on Terrorism"], verified: 2026-06,
+     note: "Capacités fortement réduites depuis 2024 ; route syrienne coupée après la chute d'Assad"}
+  - {from: IR, to: hamas, types: [financial, arms], status: active, confidence: high,
+     sources: ["US Treasury, désignations OFAC"], verified: 2026-06}
+  - {from: IR, to: pij, types: [financial, arms], status: active, confidence: high,
+     sources: ["US State Dept"], verified: 2026-06}
+  - {from: IR, to: kataib_hezbollah, types: [arms, financial, training], status: active, confidence: high,
+     sources: ["US DoD / désignations US"], verified: 2026-06}
+
+  # --- Guerre en Ukraine ---
+  - {from: IR, to: RU, types: [arms], status: active, confidence: high,
+     sources: ["Gouvernements UE/US/UK — drones Shahed"], verified: 2026-06}
+  - {from: KP, to: RU, types: [arms, troops], status: active, confidence: high,
+     sources: ["Renseignement sud-coréen ; confirmation nord-coréenne avril 2025"], verified: 2026-06}
+  - {from: CN, to: RU, types: [economic, dual_use], status: active, confidence: high,
+     sources: ["Paquets de sanctions UE / désignations US"], verified: 2026-06}
+  - {from: RU, to: IR, types: [political], status: active, confidence: high,
+     sources: ["Traité de partenariat stratégique global, janvier 2025"], verified: 2026-06}
+  - {from: US, to: UA, types: [arms, intelligence], status: reduced, confidence: high,
+     sources: ["Annonces DoD / Maison-Blanche"], verified: 2026-06,
+     note: "Volumes et modalités variables depuis 2025 — à revérifier souvent"}
+  - {from: EU, to: UA, types: [financial, arms], status: active, confidence: high,
+     sources: ["Conseil de l'UE — Facilité pour l'Ukraine, Facilité européenne pour la paix"], verified: 2026-06}
+
+  # --- Autres ---
+  - {from: US, to: IL, types: [arms, financial], status: active, confidence: high,
+     sources: ["MoU 2016, 3,8 Md$/an 2019-2028"], verified: 2026-06}
+  - {from: US, to: TW, types: [arms], status: active, confidence: high,
+     sources: ["Taiwan Relations Act ; notifications DSCA"], verified: 2026-06}
+  - {from: CN, to: PK, types: [arms, economic], status: active, confidence: high,
+     sources: ["SIPRI Arms Transfers Database ; CPEC"], verified: 2026-06}
+  - {from: RU, to: IN, types: [arms], status: active, confidence: high,
+     sources: ["SIPRI Arms Transfers Database"], verified: 2026-06}
+  - {from: FR, to: IN, types: [arms], status: active, confidence: high,
+     sources: ["SIPRI — Rafale, sous-marins Scorpène"], verified: 2026-06}
