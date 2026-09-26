@@ -20,6 +20,8 @@ actors:
   IN: {name: Inde, kind: state}
   PK: {name: Pakistan, kind: state}
   FR: {name: France, kind: state}
+  DE: {name: Allemagne, kind: state}
+  TR: {name: Turquie, kind: state}
   VE: {name: Venezuela, kind: state}
   GY: {name: Guyana, kind: state}
   EU: {name: Union européenne, kind: bloc}
@@ -59,6 +61,9 @@ edges:
   - {from: CN, to: RU, types: [economic, dual_use], status: active, confidence: high,
      sources: ["Paquets de sanctions UE / désignations US",
                "US Treasury, entités de la RPC fournissant la base militaro-industrielle russe (mai 2024) — https://home.treasury.gov/news/press-releases/jy2318"], verified: 2026-06}
+  - {from: CN, to: IR, types: [economic], status: active, confidence: high,
+     sources: ["US Treasury, alerte sur les raffineries « teapot » : la Chine achète ~90 % des exportations de pétrole iranien (avr. 2026) — https://home.treasury.gov/news/press-releases/sb0476"],
+     verified: 2026-09}
   - {from: RU, to: IR, types: [political], status: active, confidence: high,
      sources: ["Traité de partenariat stratégique global, janvier 2025",
                "Kremlin, signature du traité le 17 janv. 2025 — http://en.kremlin.ru/events/president/news/76125"], verified: 2026-06}
@@ -74,6 +79,11 @@ edges:
   - {from: US, to: IL, types: [arms, financial], status: active, confidence: high,
      sources: ["MoU 2016, 3,8 Md$/an 2019-2028",
                "Maison-Blanche (archives), fiche sur le MoU de 2016 — https://obamawhitehouse.archives.gov/the-press-office/2016/09/14/fact-sheet-memorandum-understanding-reached-israel"], verified: 2026-06}
+  - {from: DE, to: IL, types: [arms], status: active, confidence: high,
+     sources: ["SIPRI, réponses des exportateurs à la guerre à Gaza : Allemagne = 33 % des importations d'armes d'Israël (2020-24) — https://www.sipri.org/commentary/topical-backgrounder/2025/how-top-arms-exporters-have-responded-war-gaza-2025-update",
+               "Al Jazeera, levée des restrictions allemandes (nov. 2025) — https://www.aljazeera.com/news/2025/11/17/germany-lifts-curbs-on-arms-exports-to-israel-citing-gaza-ceasefire"],
+     verified: 2026-09,
+     note: "Exportations utilisables à Gaza suspendues d'août à novembre 2025, reprises au cas par cas après le cessez-le-feu"}
   - {from: US, to: TW, types: [arms], status: active, confidence: high,
      sources: ["Taiwan Relations Act ; notifications DSCA",
                "Taiwan Relations Act, 22 U.S.C. § 3302 — https://www.law.cornell.edu/uscode/text/22/3302"], verified: 2026-06}
@@ -86,3 +96,20 @@ edges:
   - {from: FR, to: IN, types: [arms], status: active, confidence: high,
      sources: ["SIPRI — Rafale, sous-marins Scorpène",
                "SIPRI, Trends in International Arms Transfers 2024 : France = 33 % des importations d'armes de l'Inde (2020-24) — https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-international-arms-transfers-2024"], verified: 2026-06}
+  - {from: TR, to: PK, types: [arms], status: active, confidence: high,
+     sources: ["SIPRI, Trends in International Arms Transfers 2024 : le Pakistan reçoit 10 % des exportations d'armes turques (2020-24) — https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-international-arms-transfers-2024"],
+     verified: 2026-09}
+
+  # --- Venezuela / Guyana ---
+  - {from: US, to: GY, types: [training], status: active, confidence: high,
+     sources: ["Ambassade des États-Unis au Guyana, exercices conjoints US Army / Guyana Defence Force depuis 2022 (nov. 2023) — https://gy.usembassy.gov/u-s-army-guyana-defence-forces-strengthen-military-partnership/"],
+     verified: 2026-09}
+  - {from: IR, to: VE, types: [economic], status: reduced, confidence: medium,
+     sources: ["Atlantic Council, la relation Iran-Venezuela et la capture de Maduro (janv. 2026) — https://www.atlanticcouncil.org/blogs/menasource/the-venezuela-iran-connection-and-what-maduros-capture-means-for-tehran-explained/",
+               "Caracas Chronicles, la politique étrangère de Delcy Rodríguez (août 2026) — https://www.caracaschronicles.com/2026/08/12/how-delcy-rodriguez-is-rewriting-venezuelas-foreign-policy/"],
+     verified: 2026-09,
+     note: "Pétrole, prêts et présence de la Force Al-Qods sous Chávez/Maduro ; Caracas prend ses distances depuis la capture de Maduro (janv. 2026)"}
+  - {from: CN, to: VE, types: [economic], status: reduced, confidence: medium,
+     sources: ["Caracas Chronicles, la politique étrangère de Delcy Rodríguez (août 2026) — https://www.caracaschronicles.com/2026/08/12/how-delcy-rodriguez-is-rewriting-venezuelas-foreign-policy/"],
+     verified: 2026-09,
+     note: "La Chine ne prend plus 80 % du pétrole vénézuélien, mais ses entreprises d'État gardent des coentreprises"}
