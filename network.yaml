@@ -32,40 +32,57 @@ actors:
 edges:
   # --- "Axe de la résistance" ---
   - {from: IR, to: houthis, types: [arms, financial, training], status: active, confidence: high,
-     sources: ["Rapports du Panel d'experts ONU sur le Yémen"], verified: 2026-06}
+     sources: ["Rapports du Panel d'experts ONU sur le Yémen",
+               "ONU, Panel d'experts sur le Yémen, rapport final S/2024/731 (oct. 2024) — https://documents.un.org/doc/undoc/gen/n24/259/53/pdf/n2425953.pdf"], verified: 2026-06}
   - {from: IR, to: hezbollah, types: [arms, financial, training], status: active, confidence: high,
-     sources: ["US State Dept, Country Reports on Terrorism"], verified: 2026-06,
+     sources: ["US State Dept, Country Reports on Terrorism",
+               "US Treasury, sanctions réseau financier IRGC-QF / Hezbollah (janv. 2024) — https://home.treasury.gov/news/press-releases/jy2065"], verified: 2026-06,
      note: "Capacités fortement réduites depuis 2024 ; route syrienne coupée après la chute d'Assad"}
   - {from: IR, to: hamas, types: [financial, arms], status: active, confidence: high,
-     sources: ["US Treasury, désignations OFAC"], verified: 2026-06}
+     sources: ["US Treasury, désignations OFAC",
+               "US Treasury, sanctions Hamas et soutien iranien (oct. 2023) — https://home.treasury.gov/news/press-releases/jy1845"], verified: 2026-06}
   - {from: IR, to: pij, types: [financial, arms], status: active, confidence: high,
-     sources: ["US State Dept"], verified: 2026-06}
+     sources: ["US State Dept",
+               "US Treasury, financement iranien de Hamas et du JIP via la Fondation des martyrs (oct. 2023) — https://home.treasury.gov/news/press-releases/jy1845"], verified: 2026-06}
   - {from: IR, to: kataib_hezbollah, types: [arms, financial, training], status: active, confidence: high,
-     sources: ["US DoD / désignations US"], verified: 2026-06}
+     sources: ["US DoD / désignations US",
+               "US Treasury, Kataeb Hezbollah « formé, financé et soutenu » par l'IRGC-QF (nov. 2023) — https://home.treasury.gov/news/press-releases/jy1921"], verified: 2026-06}
 
   # --- Guerre en Ukraine ---
   - {from: IR, to: RU, types: [arms], status: active, confidence: high,
-     sources: ["Gouvernements UE/US/UK — drones Shahed"], verified: 2026-06}
+     sources: ["Gouvernements UE/US/UK — drones Shahed",
+               "Conseil de l'UE, sanctions pour transferts iraniens de drones et missiles à la Russie (oct. 2024) — https://www.consilium.europa.eu/en/press/press-releases/2024/10/14/iran-seven-individuals-and-seven-entities-sanctioned-in-response-to-iran-s-missile-transfer-to-russia/"], verified: 2026-06}
   - {from: KP, to: RU, types: [arms, troops], status: active, confidence: high,
-     sources: ["Renseignement sud-coréen ; confirmation nord-coréenne avril 2025"], verified: 2026-06}
+     sources: ["Renseignement sud-coréen ; confirmation nord-coréenne avril 2025",
+               "MSMT (11 États), 1er rapport sur la coopération militaire RPDC-Russie (mai 2025) — https://www.mfat.govt.nz/en/media-and-resources/joint-statement-of-the-multilateral-sanctions-monitoring-team-msmt-on-the-first-report-covering-dprk-russia-military-cooperation",
+               "RFA, la Corée du Nord confirme ses troupes à Koursk (avr. 2025) — https://www.rfa.org/english/korea/2025/04/28/north-korea-confirm-troop-russia/"], verified: 2026-06}
   - {from: CN, to: RU, types: [economic, dual_use], status: active, confidence: high,
-     sources: ["Paquets de sanctions UE / désignations US"], verified: 2026-06}
+     sources: ["Paquets de sanctions UE / désignations US",
+               "US Treasury, entités de la RPC fournissant la base militaro-industrielle russe (mai 2024) — https://home.treasury.gov/news/press-releases/jy2318"], verified: 2026-06}
   - {from: RU, to: IR, types: [political], status: active, confidence: high,
-     sources: ["Traité de partenariat stratégique global, janvier 2025"], verified: 2026-06}
+     sources: ["Traité de partenariat stratégique global, janvier 2025",
+               "Kremlin, signature du traité le 17 janv. 2025 — http://en.kremlin.ru/events/president/news/76125"], verified: 2026-06}
   - {from: US, to: UA, types: [arms, intelligence], status: reduced, confidence: high,
-     sources: ["Annonces DoD / Maison-Blanche"], verified: 2026-06,
+     sources: ["Annonces DoD / Maison-Blanche",
+               "Kiel Institute, Ukraine Support Tracker — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/"], verified: 2026-06,
      note: "Volumes et modalités variables depuis 2025 — à revérifier souvent"}
   - {from: EU, to: UA, types: [financial, arms], status: active, confidence: high,
-     sources: ["Conseil de l'UE — Facilité pour l'Ukraine, Facilité européenne pour la paix"], verified: 2026-06}
+     sources: ["Conseil de l'UE — Facilité pour l'Ukraine, Facilité européenne pour la paix",
+               "Conseil de l'UE, soutien militaire à l'Ukraine — https://www.consilium.europa.eu/en/policies/military-support-ukraine/"], verified: 2026-06}
 
   # --- Autres ---
   - {from: US, to: IL, types: [arms, financial], status: active, confidence: high,
-     sources: ["MoU 2016, 3,8 Md$/an 2019-2028"], verified: 2026-06}
+     sources: ["MoU 2016, 3,8 Md$/an 2019-2028",
+               "Maison-Blanche (archives), fiche sur le MoU de 2016 — https://obamawhitehouse.archives.gov/the-press-office/2016/09/14/fact-sheet-memorandum-understanding-reached-israel"], verified: 2026-06}
   - {from: US, to: TW, types: [arms], status: active, confidence: high,
-     sources: ["Taiwan Relations Act ; notifications DSCA"], verified: 2026-06}
+     sources: ["Taiwan Relations Act ; notifications DSCA",
+               "Taiwan Relations Act, 22 U.S.C. § 3302 — https://www.law.cornell.edu/uscode/text/22/3302"], verified: 2026-06}
   - {from: CN, to: PK, types: [arms, economic], status: active, confidence: high,
-     sources: ["SIPRI Arms Transfers Database ; CPEC"], verified: 2026-06}
+     sources: ["SIPRI Arms Transfers Database ; CPEC",
+               "SIPRI, Trends in International Arms Transfers 2024 : 81 % des importations d'armes du Pakistan viennent de Chine (2020-24) — https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-international-arms-transfers-2024"], verified: 2026-06}
   - {from: RU, to: IN, types: [arms], status: active, confidence: high,
-     sources: ["SIPRI Arms Transfers Database"], verified: 2026-06}
+     sources: ["SIPRI Arms Transfers Database",
+               "SIPRI, Trends in International Arms Transfers 2024 : Russie = 36 % des importations d'armes de l'Inde (2020-24) — https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-international-arms-transfers-2024"], verified: 2026-06}
   - {from: FR, to: IN, types: [arms], status: active, confidence: high,
-     sources: ["SIPRI — Rafale, sous-marins Scorpène"], verified: 2026-06}
+     sources: ["SIPRI — Rafale, sous-marins Scorpène",
+               "SIPRI, Trends in International Arms Transfers 2024 : France = 33 % des importations d'armes de l'Inde (2020-24) — https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-international-arms-transfers-2024"], verified: 2026-06}
