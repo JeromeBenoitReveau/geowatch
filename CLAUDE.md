@@ -22,7 +22,7 @@ Ne jamais contourner cette règle (elle est dans le SYSTEM de ask.py).
 - `country.py` — fiche pays en terminal ; `export_html.py` — graphe interactif (vis-network) ; `update_network.py` — Claude + web search propose des MAJ du graphe dans network.pending.yaml (relecture humaine obligatoire)
 
 ## Décisions prises
-- On consomme World Monitor via son API, on ne forke pas → pas d'obligation AGPL. Licence du repo : à choisir (MIT par défaut).
+- On consomme World Monitor via son API, on ne forke pas → pas d'obligation AGPL. Licence du repo : MIT.
 - network.yaml reste la source de vérité ; rien n'y entre sans relecture humaine.
 - MVP limité à 5 dyades avant généralisation.
 
