@@ -9,12 +9,18 @@ from config import DYADS
 from sources import markets, profiles
 
 def run_markets(c):
+    try:
+        kalshi_evs = markets.kalshi_events()
+    except markets.httpx.HTTPError as e:
+        print(f"[kalshi] → {e}")
+        kalshi_evs = []
     for name, d in DYADS.items():
-        found = markets.fetch(d["keywords"])
+        found = markets.fetch(d["keywords"], kalshi_evs)
         for m in found:
             db.save_market(c, name, m)
         c.commit()
-        print(f"→ {name} : {len(found)} marché(s)")
+        n_k = sum(m["source"] == "kalshi" for m in found)
+        print(f"→ {name} : {len(found) - n_k} Polymarket, {n_k} Kalshi")
 
 def run_profiles(c):
     actors, _ = network.load()

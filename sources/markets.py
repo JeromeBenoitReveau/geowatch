@@ -24,31 +24,46 @@ def polymarket(keywords):
                         "url": f"https://polymarket.com/event/{ev.get('slug', '')}"})
     return out
 
-def kalshi(keywords, max_pages=5):
-    base = "https://api.elections.kalshi.com/trade-api/v2/markets"
+KALSHI = "https://api.elections.kalshi.com/trade-api/v2"
+KALSHI_CATEGORIES = {"World", "Politics"}
+
+def kalshi_events(max_pages=150):
+    """Événements Kalshi ouverts des catégories géopolitiques, marchés inclus.
+    Un seul scan par run (~70 pages, ~30 s) : /markets seul est noyé sous les paris sportifs."""
     out, cursor = [], None
     for _ in range(max_pages):
-        params = {"status": "open", "limit": 1000}
+        params = {"status": "open", "limit": 200, "with_nested_markets": "true"}
         if cursor:
             params["cursor"] = cursor
-        r = httpx.get(base, params=params, timeout=30)
+        r = httpx.get(f"{KALSHI}/events", params=params, timeout=30)
         r.raise_for_status()
         data = r.json()
-        for m in data.get("markets", []):
-            if _match(m.get("title"), keywords) and m.get("last_price") is not None:
-                out.append({"source": "kalshi", "id": m["ticker"], "question": m["title"],
-                            "prob": m["last_price"] / 100, "volume": m.get("volume", 0),
-                            "url": f"https://kalshi.com/markets/{m['event_ticker']}"})
+        out += [e for e in data.get("events", []) if e.get("category") in KALSHI_CATEGORIES]
         cursor = data.get("cursor")
         if not cursor:
             break
     return out
 
-def fetch(keywords):
+def kalshi(keywords, events):
     out = []
-    for fn in (polymarket, kalshi):
-        try:
-            out += fn(keywords)
-        except httpx.HTTPError as e:
-            print(f"  [{fn.__name__}] → {e}")
+    for ev in events:
+        for m in ev.get("markets") or []:
+            # titre du marché seulement : celui de l'événement donne des faux positifs
+            question = m.get("title") or ""
+            if m.get("yes_sub_title"):
+                question += f" — {m['yes_sub_title']}"
+            volume = float(m.get("volume_fp") or 0)
+            if not _match(question, keywords) or not m.get("last_price_dollars") or not volume:
+                continue
+            out.append({"source": "kalshi", "id": m["ticker"], "question": question,
+                        "prob": float(m["last_price_dollars"]), "volume": volume,
+                        "url": f"https://kalshi.com/markets/{ev.get('series_ticker', '').lower()}"})
     return out
+
+def fetch(keywords, kalshi_evs):
+    out = []
+    try:
+        out += polymarket(keywords)
+    except httpx.HTTPError as e:
+        print(f"  [polymarket] → {e}")
+    return out + kalshi(keywords, kalshi_evs)
