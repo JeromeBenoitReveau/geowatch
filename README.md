@@ -20,7 +20,7 @@ Aucune clé n'est nécessaire pour les marchés, les profils pays ou le site.
 
 ## Usage
 ```bash
-python ingest.py              # relève les cotes (cron toutes les 6 h : c'est l'historique qui compte)
+python ingest.py              # relève les cotes → data/ (tourne déjà toutes les 6 h via GitHub Actions)
 python ingest.py --profiles   # profils pays Banque mondiale + Wikidata (cron hebdo)
 python track.py               # cotes actuelles + variation 7 j, ⚡ si ≥ 10 pts
 python track.py israel-iran
@@ -29,7 +29,10 @@ python build.py               # → site/ : graphe interactif, fiches, marchés 
 python validate.py            # contrôle network.yaml (tourne aussi en CI)
 python update_network.py IR   # Claude + web propose des MAJ → network.pending.yaml, à relire
 ```
-Cron : `0 */6 * * * cd /chemin/geowatch && .venv/bin/python ingest.py >> ingest.log 2>&1`
+L'historique des cotes est relevé par GitHub Actions (`.github/workflows/ingest.yml`, toutes les 6 h,
+déclenchable à la main depuis l'onglet Actions) et commité dans `data/` : `markets.csv` (un marché par
+ligne) et `odds.csv` (un relevé par ligne). En local, faire `git pull` avant `track.py` / `build.py`,
+et éviter de commiter des relevés locaux (conflits avec ceux de la CI).
 
 `site/` est statique : il se publie tel quel (GitHub Pages, Netlify…).
 
@@ -47,7 +50,7 @@ Contribuer : modifier `network.yaml`, lancer `python validate.py`, ouvrir une PR
 - `config.py` — paires suivies sur les marchés (acteurs + mots-clés)
 - `sources/markets.py` — Polymarket (gamma-api) + Kalshi (trade-api v2), sans clé
 - `sources/profiles.py` — Banque mondiale WDI + Wikidata (régime, chef d'État)
-- `db.py` — SQLite : historique des cotes + profils
+- `history.py` — historique des cotes en CSV (`data/`) ; `db.py` — SQLite local : profils pays
 - `track.py` — lecture de l'historique des cotes ; `build.py` — site statique + exports
 
 Limites des profils : données Banque mondiale annuelles avec 1-2 ans de retard ; « forme de

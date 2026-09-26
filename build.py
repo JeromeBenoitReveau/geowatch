@@ -34,7 +34,7 @@ def build():
             p, fetched = db.get_profile(c, iso)
             if p:
                 profiles[iso] = {**p, "fetched_at": fetched}
-    markets = {name: {"countries": d["countries"], "markets": track.summary(c, name)}
+    markets = {name: {"countries": d["countries"], "markets": track.summary(name)}
                for name, d in DYADS.items()}
     OUT.mkdir(exist_ok=True)
     data = {"actors": actors, "edges": edges, "profiles": profiles, "colors": TYPE_COLORS,

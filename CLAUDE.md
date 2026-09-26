@@ -14,13 +14,16 @@ geowatch ne calcule ni n'estime de probabilité.
 - `config.py` — paires suivies (`countries` = ids du graphe, `keywords` pour matcher les titres de marchés)
 - `sources/markets.py` — Polymarket (gamma-api public-search) + Kalshi (trade-api v2)
 - `sources/profiles.py` — Banque mondiale WDI + Wikidata SPARQL (régime, chef d'État)
-- `db.py` — SQLite : markets (historique des cotes), profiles
-- `ingest.py` (cron 6 h) / `ingest.py --profiles` (cron hebdo)
+- `history.py` — historique des cotes en CSV versionné : `data/markets.csv` + `data/odds.csv`
+- `db.py` — SQLite local (gitignoré) : profils pays
+- `ingest.py` : GitHub Actions toutes les 6 h (`.github/workflows/ingest.yml`), commite `data/` / `ingest.py --profiles` (à la main, hebdo)
 - `track.py` — cotes actuelles, variation 7 j, marchés disparus du relevé
 - `build.py` — site statique `site/` (vis-network) + exports `network.json` / `network.csv`
 - `country.py` — fiche pays en terminal ; `update_network.py` — Claude + web search propose des MAJ dans network.pending.yaml (relecture humaine obligatoire)
 
 ## Décisions prises
+- 2026-09-26 : historique des cotes en CSV dans le dépôt (et non SQLite) pour que GitHub Actions l'alimente ; c'est aussi une donnée ouverte.
+- Kalshi : scan unique des événements World/Politics par run ; très peu de marchés sur nos paires (surtout US-centrés), Polymarket fournit l'essentiel.
 - 2026-09-26 : recentrage. Le Q&A (ask.py) faisait doublon avec WM Analyst de World Monitor → retiré,
   avec GDELT, UCDP et l'indice de tension (visibles dans l'historique git si besoin).
 - World Monitor : API payante (Pro 39,99 $/mois = MCP/SDK 50 appels/j ; REST = API Starter 99,99 $/mois).
@@ -31,8 +34,7 @@ geowatch ne calcule ni n'estime de probabilité.
 
 ## À faire en priorité
 1. Ajouter des URL aux sources de network.yaml (validate.py les signale toutes)
-2. Vérifier la forme de réponse Polymarket `public-search` et Kalshi `/markets` sur un vrai run
-3. Lancer `python ingest.py --profiles`, `python ingest.py`, puis `python build.py`
+2. Lancer `python ingest.py --profiles` puis `python build.py`
 
 ## Backlog
 - Bilan de calibration : récupérer l'issue des marchés résolus et la comparer aux cotes passées

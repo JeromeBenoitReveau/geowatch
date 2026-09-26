@@ -3,17 +3,17 @@ Les cotes sont les seules probabilités affichées par geowatch : elles viennent
 from dotenv import load_dotenv; load_dotenv()
 import sys
 from datetime import datetime, timedelta, timezone
-import db
+import history
 from config import DYADS, MOVE_ALERT_PTS
 
 def _ago(days):
     return (datetime.now(timezone.utc) - timedelta(days=days)).isoformat(timespec="seconds")
 
-def summary(c, dyad, days=7, history_days=90):
+def summary(dyad, days=7, history_days=90):
     """Un marché par entrée, du plus liquide au moins liquide. delta_pts = None si pas encore
     de relevé vieux de `days` jours. stale = absent du dernier relevé (clos ou plus trouvé)."""
     by = {}
-    for r in db.market_rows(c, dyad):
+    for r in history.rows(dyad):
         m = by.setdefault(r["market_id"], {"id": r["market_id"], "source": r["source"], "history": []})
         m.update(question=r["question"], url=r["url"], volume=r["volume"])
         m["history"].append((r["fetched_at"], r["prob"]))
@@ -32,11 +32,11 @@ def summary(c, dyad, days=7, history_days=90):
                     "daily": sorted(daily.items())})
     return sorted(out, key=lambda m: (m["stale"], -(m["volume"] or 0)))
 
-def show(c, dyad):
-    ms = summary(c, dyad)
+def show(dyad):
+    ms = summary(dyad)
     print(f"\n══ {dyad} ══")
     if not ms:
-        print("  aucun marché en base → `python ingest.py`")
+        print("  aucun marché relevé → `python ingest.py`")
     for m in ms:
         d = m["delta_pts"]
         delta = "   n/d" if d is None else f"{d:+6.1f}"
@@ -45,8 +45,7 @@ def show(c, dyad):
         print(f"  {m['prob']*100:5.1f} % {delta} pts/7 j {flag} {m['question']} [{m['source']}]{stale}")
 
 if __name__ == "__main__":
-    c = db.conn()
     for name in sys.argv[1:] or DYADS:
         if name not in DYADS:
             sys.exit(f"paire inconnue : {name} — parmi {', '.join(DYADS)}")
-        show(c, name)
+        show(name)
