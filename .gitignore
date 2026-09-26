@@ -2,7 +2,7 @@
 *.db
 .venv/
 __pycache__/
-geowatch.html
+site/
 network.pending.yaml
 ingest.log
 .DS_Store

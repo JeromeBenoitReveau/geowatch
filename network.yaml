@@ -20,6 +20,8 @@ actors:
   IN: {name: Inde, kind: state}
   PK: {name: Pakistan, kind: state}
   FR: {name: France, kind: state}
+  VE: {name: Venezuela, kind: state}
+  GY: {name: Guyana, kind: state}
   EU: {name: Union européenne, kind: bloc}
   houthis:  {name: Houthis (Ansar Allah), kind: non_state, base: YE}
   hezbollah: {name: Hezbollah, kind: non_state, base: LB}
