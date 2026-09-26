@@ -2,7 +2,7 @@
 from dotenv import load_dotenv; load_dotenv()
 import argparse, json, os, sys
 import anthropic
-import db, network
+import db, network, tension
 from config import DYADS, LOOKBACK_DAYS
 
 MAX_PAYLOAD_CHARS = 6000  # par signal, pour tenir dans le contexte
@@ -11,7 +11,7 @@ SYSTEM = """Tu es un analyste géopolitique. Tu réponds en français, de façon
 
 Règles non négociables :
 1. Un pourcentage n'apparaît QUE s'il provient d'un marché de prédiction fourni (cite source, question exacte, date). Jamais de % inventé ou "estimé".
-2. Si aucun marché ne couvre la question, dis-le, et donne un niveau de tension qualitatif (faible / modéré / élevé / critique) justifié par les signaux mesurables fournis (tonalité média, volume, événements de conflit, indices d'instabilité).
+2. Si aucun marché ne couvre la question, dis-le, et donne le niveau de tension fourni dans `tension` (calculé par règles fixes : tonalité et volume médiatiques GDELT, morts directs UCDP). Cite ses composantes et leurs valeurs. Tu peux le nuancer si d'autres données le justifient, en expliquant pourquoi, mais ne le convertis jamais en pourcentage. Signale les composantes manquantes (`tension.missing`) et le retard d'UCDP (~1 mois).
 3. Explique les moteurs sur 4 axes, uniquement s'ils sont étayés par les données ou par un contexte historique solide que tu signales comme tel : politique/sécuritaire, commercial, territoire & ressources, climat.
 4. Utilise country_profiles (ressources, démographie, techno, régime) et support_network (alliés, proxies) pour expliquer les rapports de force ; cite l'année des données.
 5. Distingue clairement : ce que disent les données / ce qui relève du contexte général / ce qui est incertain.
@@ -37,7 +37,7 @@ def build_context(c, dyad):
     actors, edges = network.load()
     isos = DYADS[dyad]["countries"]
     profiles = {iso: db.get_profile(c, iso)[0] for iso in isos}
-    return {"dyad": dyad, "markets": mkts, "signals": sigs,
+    return {"dyad": dyad, "markets": mkts, "tension": tension.compute(c, dyad), "signals": sigs,
             "country_profiles": profiles,
             "support_network": {"actors": actors, "edges": network.subgraph(isos, edges, hops=2)}}
 

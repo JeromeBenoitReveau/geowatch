@@ -3,27 +3,32 @@ python ingest.py             # signaux + marchés (cron toutes les 6 h)
 python ingest.py --profiles  # profils pays (cron hebdo — données annuelles)
 """
 from dotenv import load_dotenv; load_dotenv()
-import argparse
-import db, network
-from config import DYADS, WM_ENDPOINTS, LOOKBACK_DAYS
-from sources import worldmonitor, gdelt, markets, profiles
+import argparse, os
+import db, network, tension
+from config import DYADS, LOOKBACK_DAYS, UCDP_LOOKBACK_DAYS
+from sources import ucdp, gdelt, markets, profiles
 
 def run_signals(c):
+    if not os.getenv("UCDP_TOKEN"):
+        print("[ucdp] UCDP_TOKEN absent → violence non collectée (voir README)")
     for name, d in DYADS.items():
         print(f"→ {name}")
-        for iso in d["countries"]:
-            for kind, payload in worldmonitor.fetch_country(WM_ENDPOINTS, iso):
-                db.save_signal(c, name, "worldmonitor", kind, payload)
+        if os.getenv("UCDP_TOKEN"):
+            try:
+                for kind, payload in ucdp.fetch(d["ucdp_gw"], d["keywords"], UCDP_LOOKBACK_DAYS):
+                    db.save_signal(c, name, "ucdp", kind, payload)
+            except Exception as e:
+                print(f"  [ucdp] → {e}")
         try:
             for kind, payload in gdelt.fetch(d["gdelt_query"], LOOKBACK_DAYS):
                 db.save_signal(c, name, "gdelt", kind, payload)
         except Exception as e:
             print(f"  [gdelt] → {e}")
-        found = markets.fetch(d["market_keywords"])
+        found = markets.fetch(d["keywords"])
         for m in found:
             db.save_market(c, name, m)
-        print(f"  {len(found)} marché(s)")
         c.commit()
+        print(f"  {len(found)} marché(s) · tension : {tension.compute(c, name)['level'] or 'n/d'}")
 
 def run_profiles(c):
     actors, _ = network.load()
