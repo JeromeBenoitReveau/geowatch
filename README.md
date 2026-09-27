@@ -21,7 +21,7 @@ Aucune clé n'est nécessaire pour les marchés, les profils pays ou le site.
 ## Usage
 ```bash
 python ingest.py              # relève les cotes → data/ (tourne déjà toutes les 6 h via GitHub Actions)
-python ingest.py --profiles   # profils pays Banque mondiale + Wikidata (cron hebdo)
+python ingest.py --profiles   # profils pays → data/profiles.json (GitHub Actions, le 1er du mois)
 python track.py               # cotes actuelles + variation 7 j, ⚡ si ≥ 10 pts
 python track.py israel-iran
 python country.py IR          # fiche pays + soutiens en terminal (marche aussi : houthis)
@@ -34,7 +34,8 @@ déclenchable à la main depuis l'onglet Actions) et commité dans `data/` : `ma
 ligne) et `odds.csv` (un relevé par ligne). En local, faire `git pull` avant `track.py` / `build.py`,
 et éviter de commiter des relevés locaux (conflits avec ceux de la CI).
 
-`site/` est statique : il se publie tel quel (GitHub Pages, Netlify…).
+`site/` est statique. Une fois le dépôt public, `.github/workflows/pages.yml` le reconstruit et le publie
+sur GitHub Pages à chaque changement du graphe et après chaque relevé.
 
 ## Le graphe (`network.yaml`)
 Source de vérité, curé à la main. Chaque arête a des types (armes, financement, troupes…), un statut,
@@ -55,7 +56,7 @@ Contribuer : modifier `network.yaml`, lancer `python validate.py`, ouvrir une PR
 - `config.py` — paires suivies sur les marchés (acteurs + mots-clés)
 - `sources/markets.py` — Polymarket (gamma-api) + Kalshi (trade-api v2), sans clé
 - `sources/profiles.py` — Banque mondiale WDI + Wikidata (régime, chef d'État)
-- `history.py` — historique des cotes en CSV (`data/`) ; `db.py` — SQLite local : profils pays
+- `history.py` — historique des cotes en CSV (`data/`) ; `db.py` — profils pays en JSON (`data/profiles.json`)
 - `track.py` — lecture de l'historique des cotes ; `build.py` — site statique + exports
 
 Limites des profils : données Banque mondiale annuelles avec 1-2 ans de retard ; « forme de

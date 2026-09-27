@@ -16,8 +16,9 @@ geowatch ne calcule ni n'estime de probabilité.
 - `sources/markets.py` — Polymarket (gamma-api public-search) + Kalshi (trade-api v2)
 - `sources/profiles.py` — Banque mondiale WDI + Wikidata SPARQL (régime, chef d'État)
 - `history.py` — historique des cotes en CSV versionné : `data/markets.csv` + `data/odds.csv`
-- `db.py` — SQLite local (gitignoré) : profils pays
-- `ingest.py` : GitHub Actions toutes les 6 h (`.github/workflows/ingest.yml`), commite `data/` / `ingest.py --profiles` (à la main, hebdo)
+- `db.py` — profils pays en JSON versionné : `data/profiles.json` (rafraîchi le 1er du mois par ingest.yml)
+- `ingest.py` : GitHub Actions toutes les 6 h (`.github/workflows/ingest.yml`), commite `data/` / `ingest.py --profiles` (GitHub Actions, mensuel)
+- `.github/workflows/pages.yml` — construit et publie site/ sur GitHub Pages (inactif tant que le dépôt est privé)
 - `track.py` — cotes actuelles, variation 7 j, marchés disparus du relevé
 - `build.py` — site statique `site/` (vis-network) + exports `network.json` / `network.csv`
 - `country.py` — fiche pays en terminal ; `update_network.py` — Claude + web search propose des MAJ dans network.pending.yaml (relecture humaine obligatoire)
