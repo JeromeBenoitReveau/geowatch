@@ -10,6 +10,7 @@ geowatch ne calcule ni n'estime de probabilité.
 
 ## Architecture
 - `network.yaml` — graphe (États, non étatiques, blocs), curé à la main, chaque arête sourcée et datée. Source de vérité.
+- Kinds du graphe : state, bloc (membres via `member_of`), non_state, party, person (calque « détail », `base` obligatoire)
 - `network.py` — requêtes sur le graphe ; `validate.py` — contrôle du schéma (CI : `.github/workflows/validate.yml`)
 - `config.py` — paires suivies (`countries` = ids du graphe, `keywords` pour matcher les titres de marchés)
 - `sources/markets.py` — Polymarket (gamma-api public-search) + Kalshi (trade-api v2)
@@ -30,6 +31,7 @@ geowatch ne calcule ni n'estime de probabilité.
   Non utilisé ; son tableau de bord gratuit sert au suivi temps réel. ACLED : pas d'API au niveau gratuit.
 - Licences : code MIT, données du graphe CC BY 4.0.
 - network.yaml reste la source de vérité ; rien n'y entre sans relecture humaine.
+- Taille des nœuds = valeur mesurée (Banque mondiale : MS.MIL.XPND.CD, PIB ; UE via l'agrégat EUU) ou nb de soutiens — jamais un poids choisi à la main.
 - Les sites/pages générés échappent tout texte venant du graphe ou des marchés (contributions externes).
 
 ## À faire en priorité

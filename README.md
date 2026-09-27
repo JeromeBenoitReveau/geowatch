@@ -42,6 +42,11 @@ un niveau de confiance, des sources et une date de vérification. `validate.py` 
 source, avec un acteur inconnu ou une valeur hors liste, et signale celles vérifiées il y a plus de
 6 mois ou dont aucune source n'a d'URL.
 
+Acteurs : États, blocs (`member_of` pour les membres, ex. `[EU]`), groupes armés non étatiques, et
+en calque « détail » les partis et personnalités (`base` = pays d'ancrage obligatoire). Sur le site, la
+taille des acteurs suit une valeur mesurée (dépenses militaires ou PIB en dollars, Banque mondiale) ou le
+nombre de soutiens accordés ; cliquer un bloc surligne ses membres et liste leurs soutiens.
+
 Contribuer : modifier `network.yaml`, lancer `python validate.py`, ouvrir une PR avec les sources.
 `update_network.py` aide à repérer les changements, mais rien n'entre sans relecture humaine.
 

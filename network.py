@@ -19,7 +19,14 @@ def supported_by(aid, edges):
 
 def proxies_in(country_iso, actors):
     """Acteurs non étatiques basés dans un pays (ex. YE → houthis)."""
-    return [a for a, v in actors.items() if v.get("base") == country_iso]
+    return [a for a, v in actors.items() if v.get("base") == country_iso and v["kind"] == "non_state"]
+
+def based_in(country_iso, actors, kinds=("party", "person")):
+    """Partis et personnalités rattachés à un pays (ex. DE → afd)."""
+    return [a for a, v in actors.items() if v.get("base") == country_iso and v["kind"] in kinds]
+
+def members_of(bloc, actors):
+    return [a for a, v in actors.items() if bloc in (v.get("member_of") or [])]
 
 def subgraph(ids, edges, hops=1):
     """Arêtes autour d'un ensemble d'acteurs, sur n sauts."""

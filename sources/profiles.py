@@ -2,6 +2,7 @@
 import httpx
 
 WB = "https://api.worldbank.org/v2/country/{isos}/indicator/{code}"
+WB_CODES = {"EU": "EUU"}  # agrégats Banque mondiale pour les blocs (renvoyés sous l'id « EU »)
 
 INDICATORS = {
     # démographie
@@ -25,10 +26,11 @@ INDICATORS = {
     "internet_users_pct": "IT.NET.USER.ZS",
     # défense
     "military_pct_gdp": "MS.MIL.XPND.GD.ZS",
+    "military_usd": "MS.MIL.XPND.CD",
 }
 
 def _wb_series(isos, code):
-    r = httpx.get(WB.format(isos=";".join(isos), code=code), timeout=60,
+    r = httpx.get(WB.format(isos=";".join(WB_CODES.get(i, i) for i in isos), code=code), timeout=60,
                   params={"format": "json", "date": "2005:2026", "per_page": 5000})
     r.raise_for_status()
     body = r.json()
@@ -93,7 +95,7 @@ def fetch(isos):
         p["population_trend"] = _pop_trend(series["population"].get(iso),
                                            series["fertility"].get(iso))
         try:
-            p["government"] = _government(iso)
+            p["government"] = None if iso in WB_CODES else _government(iso)
         except httpx.HTTPError as e:
             print(f"  [wikidata] {iso} → {e}")
             p["government"] = None

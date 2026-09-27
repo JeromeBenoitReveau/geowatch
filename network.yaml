@@ -2,7 +2,9 @@
 # Mise à jour : `python update_network.py IR` propose des changements dans
 # network.pending.yaml → tu relis → tu reportes ici. Rien n'est ajouté sans relecture.
 #
-# kind   : state | non_state | bloc
+# kind   : state | non_state | bloc | party | person
+# base   : pays d'ancrage (ISO2) — obligatoire pour non_state, party, person
+# member_of : blocs dont l'État est membre (ex. [EU]) — sert au « zoom » sur un bloc
 # types  : arms | financial | training | troops | intelligence | political | economic | dual_use
 # status : active | reduced | ended | alleged
 # confidence : high (documenté officiellement) | medium (sources concordantes) | low (allégations)
@@ -19,12 +21,26 @@ actors:
   KP: {name: Corée du Nord, kind: state}
   IN: {name: Inde, kind: state}
   PK: {name: Pakistan, kind: state}
-  FR: {name: France, kind: state}
-  DE: {name: Allemagne, kind: state}
+  FR: {name: France, kind: state, member_of: [EU]}
+  DE: {name: Allemagne, kind: state, member_of: [EU]}
+  DK: {name: Danemark, kind: state, member_of: [EU]}
+  NL: {name: Pays-Bas, kind: state, member_of: [EU]}
+  SE: {name: Suède, kind: state, member_of: [EU]}
+  GB: {name: Royaume-Uni, kind: state}
   TR: {name: Turquie, kind: state}
   VE: {name: Venezuela, kind: state}
   GY: {name: Guyana, kind: state}
   EU: {name: Union européenne, kind: bloc}
+  # partis et personnalités (calque « détail »)
+  afd: {name: AfD (Alternative für Deutschland), kind: party, base: DE,
+        note: "Classée « extrémiste de droite » par l'Office fédéral de protection de la Constitution (mai 2025), classement contesté en justice",
+        sources: ["NPR (mai 2025) — https://www.npr.org/2025/05/02/g-s1-64037/afd-germany-extremist-alternative"]}
+  rn: {name: Rassemblement national, kind: party, base: FR,
+       note: "Parti de Marine Le Pen, condamnée en mars 2025 pour détournement de fonds européens (appel en cours)",
+       sources: ["France 24 (avr. 2025) — https://www.france24.com/en/americas/20250404-marine-le-pen-jd-vance-not-democracy-minor-charge-usa-france-donald-trump"]}
+  trump: {name: Donald Trump, kind: person, base: US, note: "Président des États-Unis"}
+  vance: {name: JD Vance, kind: person, base: US, note: "Vice-président des États-Unis"}
+  musk: {name: Elon Musk, kind: person, base: US, note: "Propriétaire de X, SpaceX, Tesla"}
   houthis:  {name: Houthis (Ansar Allah), kind: non_state, base: YE}
   hezbollah: {name: Hezbollah, kind: non_state, base: LB}
   hamas: {name: Hamas, kind: non_state, base: PS}
@@ -113,3 +129,49 @@ edges:
      sources: ["Caracas Chronicles, la politique étrangère de Delcy Rodríguez (août 2026) — https://www.caracaschronicles.com/2026/08/12/how-delcy-rodriguez-is-rewriting-venezuelas-foreign-policy/"],
      verified: 2026-09,
      note: "La Chine ne prend plus 80 % du pétrole vénézuélien, mais ses entreprises d'État gardent des coentreprises"}
+
+  # --- Soutiens à l'Ukraine au sein de l'Europe (zoom UE) ---
+  - {from: DE, to: UA, types: [arms, financial], status: active, confidence: high,
+     sources: ["Kiel Institute, 700 M€ d'aide militaire allouée en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
+               "Kiel Institute, avec le Royaume-Uni, ~2/3 de l'aide militaire d'Europe de l'Ouest 2022-2025 — https://www.kielinstitut.de/publications/news/ukraine-support-after-4-years-of-war-europe-steps-up/"],
+     verified: 2026-09}
+  - {from: DK, to: UA, types: [arms], status: active, confidence: high,
+     sources: ["Kiel Institute, 600 M€ d'aide militaire allouée en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/"],
+     verified: 2026-09}
+  - {from: NL, to: UA, types: [arms], status: active, confidence: high,
+     sources: ["Kiel Institute, 500 M€ d'aide militaire allouée en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/"],
+     verified: 2026-09}
+  - {from: SE, to: UA, types: [financial], status: active, confidence: high,
+     sources: ["Kiel Institute, 360 M€ d'aide financière et humanitaire en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/"],
+     verified: 2026-09}
+  - {from: FR, to: UA, types: [arms], status: active, confidence: high,
+     sources: ["Kiel Institute, hausse nette des allocations militaires françaises en 2025 (déc. 2025) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-fails-to-offset-us-aid-drop/"],
+     verified: 2026-09}
+  - {from: GB, to: UA, types: [arms, financial], status: active, confidence: high,
+     sources: ["Kiel Institute, ~1,5 Md€ d'aide financière et humanitaire en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
+               "Kiel Institute, avec l'Allemagne, ~2/3 de l'aide militaire d'Europe de l'Ouest 2022-2025 — https://www.kielinstitut.de/publications/news/ukraine-support-after-4-years-of-war-europe-steps-up/"],
+     verified: 2026-09}
+
+  # --- Soutiens politiques américains à des partis européens (calque « détail ») ---
+  - {from: musk, to: afd, types: [political], status: active, confidence: high,
+     sources: ["France 24, tribune dans Welt am Sonntag et entretien en direct avec Alice Weidel sur X (janv. 2025) — https://www.france24.com/en/europe/20250110-musk-praises-afd-leader-reiterates-support-german-far-right-party"],
+     verified: 2026-09,
+     note: "« Strongly recommending that people vote for AfD » (janv. 2025)"}
+  - {from: vance, to: afd, types: [political], status: active, confidence: high,
+     sources: ["Euronews, réaction au classement de l'AfD (mai 2025) — https://www.euronews.com/my-europe/2025/05/03/us-secretary-of-state-rubio-says-germany-is-a-tyranny-in-disguise-after-afd-verdict"],
+     verified: 2026-09,
+     note: "Rencontre avec Alice Weidel à Munich (févr. 2025) ; dénonce le classement de l'AfD (mai 2025)"}
+  - {from: US, to: afd, types: [political], status: active, confidence: medium,
+     sources: ["Euronews, Marco Rubio : « tyranny in disguise » (mai 2025) — https://www.euronews.com/my-europe/2025/05/03/us-secretary-of-state-rubio-says-germany-is-a-tyranny-in-disguise-after-afd-verdict"],
+     verified: 2026-09,
+     note: "Position officielle du secrétaire d'État contre le classement de l'AfD comme extrémiste"}
+  - {from: trump, to: rn, types: [political], status: active, confidence: high,
+     sources: ["France 24, Trump sur Truth Social après la condamnation de Marine Le Pen (avr. 2025) — https://www.france24.com/en/americas/20250404-marine-le-pen-jd-vance-not-democracy-minor-charge-usa-france-donald-trump"],
+     verified: 2026-09,
+     note: "« Witch Hunt against Marine Le Pen » (avr. 2025)"}
+  - {from: vance, to: rn, types: [political], status: active, confidence: medium,
+     sources: ["France 24 (avr. 2025) — https://www.france24.com/en/americas/20250404-marine-le-pen-jd-vance-not-democracy-minor-charge-usa-france-donald-trump"],
+     verified: 2026-09}
+  - {from: musk, to: rn, types: [political], status: active, confidence: medium,
+     sources: ["France 24, « Free Le Pen! » sur X (avr. 2025) — https://www.france24.com/en/americas/20250404-marine-le-pen-jd-vance-not-democracy-minor-charge-usa-france-donald-trump"],
+     verified: 2026-09}

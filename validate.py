@@ -5,7 +5,7 @@ from datetime import date
 import network
 from config import DYADS
 
-KINDS = {"state", "non_state", "bloc"}
+KINDS = {"state", "non_state", "bloc", "party", "person"}
 TYPES = {"arms", "financial", "training", "troops", "intelligence", "political", "economic", "dual_use"}
 STATUSES = {"active", "reduced", "ended", "alleged"}
 CONFIDENCES = {"high", "medium", "low"}
@@ -27,6 +27,14 @@ def check(actors, edges, today=None):
             errors.append(f"acteur {aid} : un État doit avoir un id ISO2 en majuscules")
         if a.get("kind") == "non_state" and not re.fullmatch(r"[A-Z]{2}", str(a.get("base", ""))):
             warnings.append(f"acteur {aid} : non étatique sans base ISO2 (pas de fiche pays hôte)")
+        if a.get("kind") in ("party", "person") and not re.fullmatch(r"[A-Z]{2}", str(a.get("base", ""))):
+            errors.append(f"acteur {aid} : un parti ou une personne doit avoir une base ISO2 (pays d'ancrage)")
+        for bloc in a.get("member_of") or []:
+            if actors.get(bloc, {}).get("kind") != "bloc":
+                errors.append(f"acteur {aid} : member_of « {bloc} » n'est pas un bloc de actors")
+        if a.get("note") and a.get("kind") in ("party", "person") and a["note"] and "sources" in a \
+                and not all(isinstance(x, str) and "http" in x for x in a["sources"]):
+            warnings.append(f"acteur {aid} : source de la note sans URL")
 
     seen = set()
     for i, e in enumerate(edges, 1):
