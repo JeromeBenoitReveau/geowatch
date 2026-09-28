@@ -1,0 +1,398 @@
+{
+ "AL": {
+  "iso_numeric": "008",
+  "lat": 41.0,
+  "lon": 20.0,
+  "name": "Albanie"
+ },
+ "AM": {
+  "iso_numeric": "051",
+  "lat": 40.383,
+  "lon": 44.95,
+  "name": "Arménie"
+ },
+ "AT": {
+  "iso_numeric": "040",
+  "lat": 48.0,
+  "lon": 14.0,
+  "name": "Autriche"
+ },
+ "AU": {
+  "iso_numeric": "036",
+  "lat": -25.0,
+  "lon": 133.0,
+  "name": "Australie"
+ },
+ "BA": {
+  "iso_numeric": "070",
+  "lat": 44.0,
+  "lon": 18.0,
+  "name": "Bosnie-Herzégovine"
+ },
+ "BE": {
+  "iso_numeric": "056",
+  "lat": 50.641,
+  "lon": 4.668,
+  "name": "Belgique"
+ },
+ "BG": {
+  "iso_numeric": "100",
+  "lat": 42.75,
+  "lon": 25.5,
+  "name": "Bulgarie"
+ },
+ "BY": {
+  "iso_numeric": "112",
+  "lat": 53.528,
+  "lon": 28.047,
+  "name": "Biélorussie"
+ },
+ "CA": {
+  "iso_numeric": "124",
+  "lat": 56.0,
+  "lon": -109.0,
+  "name": "Canada"
+ },
+ "CH": {
+  "iso_numeric": "756",
+  "lat": 46.799,
+  "lon": 8.232,
+  "name": "Suisse"
+ },
+ "CN": {
+  "iso_numeric": "156",
+  "lat": 35.845,
+  "lon": 103.452,
+  "name": "république populaire de Chine"
+ },
+ "CY": {
+  "iso_numeric": "196",
+  "lat": 35.0,
+  "lon": 33.0,
+  "name": "Chypre"
+ },
+ "CZ": {
+  "iso_numeric": "203",
+  "lat": 50.0,
+  "lon": 15.0,
+  "name": "Tchéquie"
+ },
+ "DE": {
+  "iso_numeric": "276",
+  "lat": 51.0,
+  "lon": 10.0,
+  "name": "Allemagne"
+ },
+ "DK": {
+  "iso_numeric": "208",
+  "lat": 56.0,
+  "lon": 10.0,
+  "name": "Danemark"
+ },
+ "EE": {
+  "iso_numeric": "233",
+  "lat": 59.0,
+  "lon": 26.0,
+  "name": "Estonie"
+ },
+ "ES": {
+  "iso_numeric": "724",
+  "lat": 40.2,
+  "lon": -3.5,
+  "name": "Espagne"
+ },
+ "FI": {
+  "iso_numeric": "246",
+  "lat": 65.0,
+  "lon": 27.0,
+  "name": "Finlande"
+ },
+ "FR": {
+  "iso_numeric": "250",
+  "lat": 47.0,
+  "lon": 2.0,
+  "name": "France"
+ },
+ "GB": {
+  "iso_numeric": "826",
+  "lat": 54.6,
+  "lon": -2.0,
+  "name": "Royaume-Uni"
+ },
+ "GE": {
+  "iso_numeric": "268",
+  "lat": 42.0,
+  "lon": 44.0,
+  "name": "Géorgie"
+ },
+ "GR": {
+  "iso_numeric": "300",
+  "lat": 38.5,
+  "lon": 23.0,
+  "name": "Grèce"
+ },
+ "GY": {
+  "iso_numeric": "328",
+  "lat": 5.733,
+  "lon": -59.317,
+  "name": "Guyana"
+ },
+ "HR": {
+  "iso_numeric": "191",
+  "lat": 45.25,
+  "lon": 15.467,
+  "name": "Croatie"
+ },
+ "HU": {
+  "iso_numeric": "348",
+  "lat": 47.0,
+  "lon": 19.0,
+  "name": "Hongrie"
+ },
+ "IE": {
+  "iso_numeric": "372",
+  "lat": 53.0,
+  "lon": -8.0,
+  "name": "Irlande"
+ },
+ "IL": {
+  "iso_numeric": "376",
+  "lat": 31.0,
+  "lon": 35.0,
+  "name": "Israël"
+ },
+ "IN": {
+  "iso_numeric": "356",
+  "lat": 22.8,
+  "lon": 83.0,
+  "name": "Inde"
+ },
+ "IQ": {
+  "iso_numeric": "368",
+  "lat": 33.0,
+  "lon": 43.0,
+  "name": "Irak"
+ },
+ "IR": {
+  "iso_numeric": "364",
+  "lat": 32.0,
+  "lon": 53.0,
+  "name": "Iran"
+ },
+ "IS": {
+  "iso_numeric": "352",
+  "lat": 65.0,
+  "lon": -19.0,
+  "name": "Islande"
+ },
+ "IT": {
+  "iso_numeric": "380",
+  "lat": 42.5,
+  "lon": 12.5,
+  "name": "Italie"
+ },
+ "JP": {
+  "iso_numeric": "392",
+  "lat": 35.0,
+  "lon": 136.0,
+  "name": "Japon"
+ },
+ "KG": {
+  "iso_numeric": "417",
+  "lat": 41.0,
+  "lon": 75.0,
+  "name": "Kirghizistan"
+ },
+ "KP": {
+  "iso_numeric": "408",
+  "lat": 40.0,
+  "lon": 127.0,
+  "name": "Corée du Nord"
+ },
+ "KR": {
+  "iso_numeric": "410",
+  "lat": 36.0,
+  "lon": 128.0,
+  "name": "Corée du Sud"
+ },
+ "KZ": {
+  "iso_numeric": "398",
+  "lat": 48.0,
+  "lon": 68.0,
+  "name": "Kazakhstan"
+ },
+ "LB": {
+  "iso_numeric": "422",
+  "lat": 33.833,
+  "lon": 35.767,
+  "name": "Liban"
+ },
+ "LI": {
+  "iso_numeric": "438",
+  "lat": 47.145,
+  "lon": 9.554,
+  "name": "Liechtenstein"
+ },
+ "LT": {
+  "iso_numeric": "440",
+  "lat": 55.2,
+  "lon": 24.0,
+  "name": "Lituanie"
+ },
+ "LU": {
+  "iso_numeric": "442",
+  "lat": 49.77,
+  "lon": 6.13,
+  "name": "Luxembourg"
+ },
+ "LV": {
+  "iso_numeric": "428",
+  "lat": 57.0,
+  "lon": 25.0,
+  "name": "Lettonie"
+ },
+ "MD": {
+  "iso_numeric": "498",
+  "lat": 47.25,
+  "lon": 28.517,
+  "name": "Moldavie"
+ },
+ "ME": {
+  "iso_numeric": "499",
+  "lat": 42.767,
+  "lon": 19.217,
+  "name": "Monténégro"
+ },
+ "MK": {
+  "iso_numeric": "807",
+  "lat": 41.65,
+  "lon": 21.717,
+  "name": "Macédoine du Nord"
+ },
+ "MT": {
+  "iso_numeric": "470",
+  "lat": 35.9,
+  "lon": 14.4,
+  "name": "Malte"
+ },
+ "NL": {
+  "iso_numeric": "528",
+  "lat": 52.367,
+  "lon": 4.883,
+  "name": "Royaume des Pays-Bas"
+ },
+ "NO": {
+  "iso_numeric": "578",
+  "lat": 59.933,
+  "lon": 10.683,
+  "name": "Norvège"
+ },
+ "PH": {
+  "iso_numeric": "608",
+  "lat": 12.0,
+  "lon": 123.0,
+  "name": "Philippines"
+ },
+ "PK": {
+  "iso_numeric": "586",
+  "lat": 30.0,
+  "lon": 71.0,
+  "name": "Pakistan"
+ },
+ "PL": {
+  "iso_numeric": "616",
+  "lat": 52.0,
+  "lon": 19.0,
+  "name": "Pologne"
+ },
+ "PS": {
+  "iso_numeric": "275",
+  "lat": 32.0,
+  "lon": 35.25,
+  "name": "État de Palestine"
+ },
+ "PT": {
+  "iso_numeric": "620",
+  "lat": 38.7,
+  "lon": -9.183,
+  "name": "Portugal"
+ },
+ "RO": {
+  "iso_numeric": "642",
+  "lat": 46.0,
+  "lon": 25.0,
+  "name": "Roumanie"
+ },
+ "RS": {
+  "iso_numeric": "688",
+  "lat": 43.95,
+  "lon": 20.933,
+  "name": "Serbie"
+ },
+ "RU": {
+  "iso_numeric": "643",
+  "lat": 66.417,
+  "lon": 94.25,
+  "name": "Russie"
+ },
+ "SE": {
+  "iso_numeric": "752",
+  "lat": 61.0,
+  "lon": 15.0,
+  "name": "Suède"
+ },
+ "SI": {
+  "iso_numeric": "705",
+  "lat": 46.0,
+  "lon": 15.0,
+  "name": "Slovénie"
+ },
+ "SK": {
+  "iso_numeric": "703",
+  "lat": 48.7,
+  "lon": 19.7,
+  "name": "Slovaquie"
+ },
+ "TJ": {
+  "iso_numeric": "762",
+  "lat": 38.583,
+  "lon": 71.367,
+  "name": "Tadjikistan"
+ },
+ "TR": {
+  "iso_numeric": "792",
+  "lat": 39.0,
+  "lon": 36.0,
+  "name": "Turquie"
+ },
+ "TW": {
+  "iso_numeric": "158",
+  "lat": 24.0,
+  "lon": 121.0,
+  "name": "Taïwan"
+ },
+ "UA": {
+  "iso_numeric": "804",
+  "lat": 49.0,
+  "lon": 32.0,
+  "name": "Ukraine"
+ },
+ "US": {
+  "iso_numeric": "840",
+  "lat": 39.828,
+  "lon": -98.579,
+  "name": "États-Unis"
+ },
+ "VE": {
+  "iso_numeric": "862",
+  "lat": 8.0,
+  "lon": -67.0,
+  "name": "Venezuela"
+ },
+ "YE": {
+  "iso_numeric": "887",
+  "lat": 15.5,
+  "lon": 48.0,
+  "name": "Yémen"
+ }
+}

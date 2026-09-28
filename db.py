@@ -18,6 +18,22 @@ class Store:
         PROFILES.write_text(json.dumps(self.data, ensure_ascii=False, indent=1, sort_keys=True) + "\n",
                             encoding="utf-8")
 
+GEO = PROFILES.with_name("geo.json")
+
+def save_geo(data):
+    GEO.write_text(json.dumps(data, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+
+PEOPLE = PROFILES.with_name("people.json")
+
+def save_people(data):
+    PEOPLE.write_text(json.dumps(data, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+
+def load_people():
+    return json.loads(PEOPLE.read_text(encoding="utf-8")) if PEOPLE.exists() else {}
+
+def load_geo():
+    return json.loads(GEO.read_text(encoding="utf-8")) if GEO.exists() else {}
+
 def conn():
     return Store()
 

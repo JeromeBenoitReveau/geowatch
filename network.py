@@ -4,9 +4,70 @@ import yaml
 
 PATH = Path(__file__).with_name("network.yaml")
 
+def _data():
+    return yaml.safe_load(PATH.read_text(encoding="utf-8"))
+
 def load():
-    data = yaml.safe_load(PATH.read_text(encoding="utf-8"))
+    data = _data()
     return data["actors"], data["edges"]
+
+ALIGN_PATH = Path(__file__).with_name("alignments.yaml")
+LEVELS = {3: "défense mutuelle", 2: "partenariat stratégique", 1: "candidature ou participation gelée", 0: "intégration"}
+
+def alignments():
+    return yaml.safe_load(ALIGN_PATH.read_text(encoding="utf-8"))
+
+def formal_ties(al):
+    """{iso: [groupe, …]} pour tous les pays cités dans alignments.yaml."""
+    ties = {}
+    for g in al["groups"]:
+        for iso in g["members"]:
+            ties.setdefault(iso, []).append(g)
+    return ties
+
+def influence(actors, edges, al):
+    """Bloc d'influence et niveau de chaque pays ou acteur — déduits, jamais attribués à la main.
+    member    : lien formel (alignments.yaml) ; level = niveau le plus élevé, par bloc
+    satellite : sans lien formel, tous ses soutiens actifs viennent de membres (niveau ≥ 2) d'un même bloc
+    contested : liens formels de même niveau avec deux blocs, ou soutiens venant de plusieurs blocs
+    none      : ni lien formel ni soutien de bloc ; partis et personnalités ne sont jamais classés"""
+    ties = formal_ties(al)
+    def best(iso):
+        per_bloc = {}
+        for g in ties.get(iso, []):
+            if g["level"] > 0:
+                per_bloc[g["bloc"]] = max(per_bloc.get(g["bloc"], 0), g["level"])
+        return per_bloc
+    def bloc_of(aid):  # bloc d'un soutien : le sien s'il est membre (niveau ≥ 2), sinon celui de son pays d'ancrage
+        for x in (aid, actors.get(aid, {}).get("base")):
+            pb = {b: l for b, l in best(x).items() if l >= 2}
+            if len(pb) == 1:
+                return next(iter(pb))
+        return None
+    out = {}
+    for aid in set(actors) | set(ties):
+        a = actors.get(aid, {"kind": "state"})
+        tied = [g["id"] for g in ties.get(aid, [])]
+        pb = best(aid)
+        via_all = sorted({e["from"] for e in edges if e["to"] == aid and e["status"] == "active"})
+        if a["kind"] in ("party", "person"):
+            out[aid] = {"bloc": None, "role": "none", "level": 0, "via": [], "ties": tied}
+        elif pb:
+            top = max(pb.values())
+            leaders = sorted(b for b, l in pb.items() if l == top)
+            out[aid] = ({"bloc": leaders[0], "role": "member", "level": top, "via": via_all, "ties": tied}
+                        if len(leaders) == 1 else
+                        {"bloc": None, "role": "contested", "level": top, "blocs": leaders, "via": via_all, "ties": tied})
+        else:
+            via = via_all
+            blocs = sorted({bloc_of(v) for v in via} - {None})
+            if not blocs:
+                out[aid] = {"bloc": None, "role": "none", "level": 0, "via": via, "ties": tied}
+            elif len(blocs) == 1:
+                out[aid] = {"bloc": blocs[0], "role": "satellite", "level": 1, "via": via, "ties": tied}
+            else:
+                out[aid] = {"bloc": None, "role": "contested", "level": 1, "blocs": blocs, "via": via, "ties": tied}
+    return out
 
 def name(actors, aid):
     return actors.get(aid, {}).get("name", aid)

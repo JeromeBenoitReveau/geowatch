@@ -1,0 +1,104 @@
+# Blocs d'influence — liens FORMELS uniquement (traités, adhésions), par niveau. Curé à la main.
+# Les satellites ne sont pas déclarés ici : network.influence() les déduit des arêtes de network.yaml.
+#
+# level : 3 = défense mutuelle · 2 = partenariat stratégique formalisé, sans défense mutuelle
+#         1 = candidature / participation gelée · 0 = intégration sans effet sur l'alignement (affiché seulement)
+# entity : acteur de network.yaml auquel le groupe est rattaché comme « niveau » (ex. EU)
+# members : codes ISO2 (« NO » entre guillemets, sinon YAML le lit comme « faux »). Le Kosovo (sans code ISO officiel) n'est pas représenté.
+
+blocs:
+  west:
+    name: Bloc occidental
+    color: "#2b6cb0"
+  axis:
+    name: Axe Russie–Chine–Iran–Corée du Nord
+    color: "#c0392b"
+
+groups:
+  # ---------- Bloc occidental ----------
+  - id: nato
+    name: OTAN (article 5)
+    bloc: west
+    level: 3
+    members: [AL, BE, BG, CA, HR, CZ, DK, EE, FI, FR, DE, GR, HU, IS, IT, LV, LT, LU, ME, NL,
+              MK, "NO", PL, PT, RO, SK, SI, ES, SE, TR, GB, US]
+    sources: ["OTAN, liste des 32 pays membres — https://www.nato.int/en/about-us/organization/nato-member-countries"]
+
+  - id: eu
+    name: Union européenne (clause d'assistance mutuelle, art. 42.7 TUE)
+    entity: EU
+    bloc: west
+    level: 3
+    members: [AT, BE, BG, HR, CY, CZ, DK, EE, FI, FR, DE, GR, HU, IE, IT, LV, LT, LU, MT, NL,
+              PL, PT, RO, SK, SI, ES, SE]
+    note: "L'assistance n'est pas nécessairement militaire : les États neutres (Autriche, Irlande, Malte) gardent leur politique"
+    sources: ["Union européenne, les 27 pays membres — https://european-union.europa.eu/principles-countries-history/eu-countries_en",
+              "SEAE, la clause d'assistance mutuelle de l'article 42(7) TUE — https://www.eeas.europa.eu/sites/default/files/documents/Article%2042(7)%20TEU%20-The%20EU's%20mutual%20assistance%20clause.pdf"]
+
+  - id: eu_candidates
+    name: Candidats et candidats potentiels à l'UE
+    entity: EU
+    bloc: west
+    level: 1
+    members: [UA, MD, GE, TR, AL, BA, ME, MK, RS]
+    note: "La Commission juge la candidature de la Géorgie gelée de fait ; la Serbie reste proche de Moscou — le niveau ne reflète que le statut formel"
+    sources: ["Commission européenne, pays candidats et candidats potentiels — https://enlargement.ec.europa.eu/enlargement-policy/candidate-countries-and-potential-candidates_en"]
+
+  - id: euro
+    name: Zone euro
+    entity: EU
+    bloc: west
+    level: 0
+    members: [AT, BE, BG, HR, CY, EE, FI, FR, DE, GR, IE, IT, LV, LT, LU, MT, NL, PT, SK, SI, ES]
+    sources: ["Union européenne, pays utilisant l'euro (21, Bulgarie depuis janv. 2026) — https://european-union.europa.eu/institutions-law-budget/euro/countries-using-euro_en"]
+
+  - id: schengen
+    name: Espace Schengen
+    entity: EU
+    bloc: west
+    level: 0
+    members: [AT, BE, BG, HR, CZ, DK, EE, FI, FR, DE, GR, HU, IT, LV, LT, LU, MT, NL, PL, PT,
+              RO, SK, SI, ES, SE, IS, "NO", CH, LI]
+    sources: ["Commission européenne, l'espace Schengen (29 pays) — https://home-affairs.ec.europa.eu/policies/schengen/schengen-area_en"]
+
+  - id: us_bilateral
+    name: Traités de défense mutuelle bilatéraux des États-Unis
+    bloc: west
+    level: 3
+    members: [JP, KR, AU, PH]
+    note: "ANZUS : les États-Unis ont suspendu leurs obligations envers la Nouvelle-Zélande en 1986, d'où son absence"
+    sources: ["Traité de coopération mutuelle et de sécurité États-Unis–Japon (1960), Recueil des traités de l'ONU n° 5321 — https://treaties.un.org/doc/Publication/UNTS/Volume%20373/volume-373-I-5321-English.pdf",
+              "Traité de défense mutuelle États-Unis–Corée du Sud (1953) — https://avalon.law.yale.edu/20th_century/kor001.asp",
+              "Traité ANZUS (1951) — https://avalon.law.yale.edu/20th_century/usmu002.asp",
+              "Traité de défense mutuelle États-Unis–Philippines (1951) — https://avalon.law.yale.edu/20th_century/phil001.asp"]
+
+  # ---------- Axe ----------
+  - id: csto
+    name: OTSC (article 4, défense mutuelle)
+    bloc: axis
+    level: 3
+    members: [RU, BY, KZ, KG, TJ]
+    sources: ["OTSC, États membres — https://en.odkb-csto.org/countries/"]
+
+  - id: csto_frozen
+    name: OTSC, participation gelée
+    bloc: axis
+    level: 1
+    members: [AM]
+    note: "L'Arménie a gelé sa participation en février 2024 sans quitter l'organisation"
+    sources: ["OC Media, Pashinyan : participation arménienne à l'OTSC « gelée » — https://oc-media.org/pashinyan-armenia-has-frozen-its-participation-in-the-csto/"]
+
+  - id: ru_kp
+    name: Traité Russie–Corée du Nord (assistance mutuelle, 2024)
+    bloc: axis
+    level: 3
+    members: [KP]
+    sources: ["Kremlin, signature du traité de partenariat stratégique global (juin 2024) — http://en.kremlin.ru/events/president/trips/74342"]
+
+  - id: ru_partners
+    name: Partenariats stratégiques formalisés avec la Russie
+    bloc: axis
+    level: 2
+    members: [CN, IR]
+    sources: ["Kremlin, déclaration conjointe Russie-Chine « amitié sans limites » (févr. 2022) — http://en.kremlin.ru/supplement/5770",
+              "Kremlin, traité de partenariat stratégique global Russie-Iran (janv. 2025) — http://en.kremlin.ru/events/president/news/76125"]

@@ -1,0 +1,23 @@
+{
+ "musk": {
+  "artist": "Gage Skidmore",
+  "file": "Elon Musk (54816836217) (cropped 2) (b).jpg",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Elon_Musk_(54816836217)_(cropped_2)_(b).jpg",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Elon_Musk_%2854816836217%29_%28cropped_2%29_%28b%29.jpg/250px-Elon_Musk_%2854816836217%29_%28cropped_2%29_%28b%29.jpg"
+ },
+ "trump": {
+  "artist": "Daniel Torok",
+  "file": "Official Presidential Portrait of President Donald J. Trump (2025).jpg",
+  "license": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File:Official_Presidential_Portrait_of_President_Donald_J._Trump_(2025).jpg",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Official_Presidential_Portrait_of_President_Donald_J._Trump_%282025%29.jpg/250px-Official_Presidential_Portrait_of_President_Donald_J._Trump_%282025%29.jpg"
+ },
+ "vance": {
+  "artist": "Emily J. Higgins",
+  "file": "March 2026 Official Vice Presidential Portrait of JD Vance.jpg",
+  "license": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File:March_2026_Official_Vice_Presidential_Portrait_of_JD_Vance.jpg",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/March_2026_Official_Vice_Presidential_Portrait_of_JD_Vance.jpg/250px-March_2026_Official_Vice_Presidential_Portrait_of_JD_Vance.jpg"
+ }
+}

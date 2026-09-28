@@ -32,6 +32,10 @@ geowatch ne calcule ni n'estime de probabilité.
   Non utilisé ; son tableau de bord gratuit sert au suivi temps réel. ACLED : pas d'API au niveau gratuit.
 - Licences : code MIT, données du graphe CC BY 4.0.
 - network.yaml reste la source de vérité ; rien n'y entre sans relecture humaine.
+- Blocs d'influence : `alignments.yaml` = liens FORMELS par niveau (3 défense mutuelle, 2 partenariat stratégique, 1 candidature/participation gelée, 0 intégration affichée seulement), sourcés ; `entity` rattache des groupes à un acteur (niveaux de l'UE). Satellites et « disputés » déduits des arêtes par `network.influence()`. Partis et personnalités jamais classés. Étape 2 prévue : cohésion réelle via les votes à l'Assemblée générale de l'ONU.
+- Personnes : champ `wikidata: Qxxx` → photo Wikimedia Commons (P18) dans `data/people.json`, avec auteur et licence, crédités dans la fiche (obligatoire pour CC BY-SA). Icônes Lucide (ISC) inlinées dans build.py.
+- YAML : le code ISO « NO » (Norvège) doit être entre guillemets, sinon il est lu comme false.
+- Carte (Leaflet + Natural Earth/world-atlas, sans tuiles) : `data/geo.json` (Wikidata P625/P299, tous les pays des acteurs et d'alignments.yaml, rafraîchi avec les profils) ; `coords` explicites pour les blocs.
 - Taille des nœuds = valeur mesurée (Banque mondiale : MS.MIL.XPND.CD, PIB ; UE via l'agrégat EUU) ou nb de soutiens — jamais un poids choisi à la main.
 - Les sites/pages générés échappent tout texte venant du graphe ou des marchés (contributions externes).
 

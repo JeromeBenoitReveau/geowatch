@@ -48,6 +48,15 @@ en calque « détail » les partis et personnalités (`base` = pays d'ancrage ob
 taille des acteurs suit une valeur mesurée (dépenses militaires ou PIB en dollars, Banque mondiale) ou le
 nombre de soutiens accordés ; cliquer un bloc surligne ses membres et liste leurs soutiens.
 
+Blocs d'influence : `alignments.yaml` liste les liens formels (traités, adhésions) avec un niveau —
+3 défense mutuelle (OTAN, UE, traités bilatéraux américains, OTSC…), 2 partenariat stratégique,
+1 candidature ou participation gelée, 0 intégration sans effet (zone euro, Schengen). Un acteur sans lien
+formel dont tous les soutiens actifs viennent d'un même bloc en est déduit « satellite ». La carte colore
+chaque pays selon son bloc, plus ou moins intensément selon le niveau.
+
+Personnalités : ajouter `wikidata: Qxxx` pour afficher leur photo (Wikimedia Commons, auteur et licence
+crédités dans la fiche). Groupes armés et partis sont représentés par des icônes Lucide.
+
 Contribuer : modifier `network.yaml`, lancer `python validate.py`, ouvrir une PR avec les sources.
 `update_network.py` aide à repérer les changements, mais rien n'entre sans relecture humaine.
 

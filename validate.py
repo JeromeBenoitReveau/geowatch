@@ -16,7 +16,7 @@ def months_since(ym, today=None):
     y, m = map(int, ym.split("-"))
     return (t.year - y) * 12 + t.month - m
 
-def check(actors, edges, today=None):
+def check(actors, edges, today=None, aligns=None):
     errors, warnings = [], []
     for aid, a in actors.items():
         if not a.get("name"):
@@ -29,6 +29,15 @@ def check(actors, edges, today=None):
             warnings.append(f"acteur {aid} : non étatique sans base ISO2 (pas de fiche pays hôte)")
         if a.get("kind") in ("party", "person") and not re.fullmatch(r"[A-Z]{2}", str(a.get("base", ""))):
             errors.append(f"acteur {aid} : un parti ou une personne doit avoir une base ISO2 (pays d'ancrage)")
+        if a.get("wikidata") is not None and not re.fullmatch(r"Q\d+", str(a["wikidata"])):
+            errors.append(f"acteur {aid} : wikidata doit être un identifiant Qxxx")
+        c = a.get("coords")
+        if c is not None and not (isinstance(c, list) and len(c) == 2
+                                  and all(isinstance(x, (int, float)) for x in c)
+                                  and -90 <= c[0] <= 90 and -180 <= c[1] <= 180):
+            errors.append(f"acteur {aid} : coords doit être [lat, lon]")
+        if a.get("kind") == "bloc" and c is None:
+            warnings.append(f"acteur {aid} : bloc sans coords, absent de la carte")
         for bloc in a.get("member_of") or []:
             if actors.get(bloc, {}).get("kind") != "bloc":
                 errors.append(f"acteur {aid} : member_of « {bloc} » n'est pas un bloc de actors")
@@ -65,6 +74,28 @@ def check(actors, edges, today=None):
         elif months_since(v, today) > STALE_MONTHS:
             warnings.append(f"{where} : vérifiée en {v}, à revoir (> {STALE_MONTHS} mois)")
 
+    ids = set()
+    for g in (aligns or {}).get("groups", []):
+        k = g.get("id")
+        if k in ids:
+            errors.append(f"groupe {k} : id en double")
+        ids.add(k)
+        if g.get("bloc") not in (aligns.get("blocs") or {}):
+            errors.append(f"groupe {k} : bloc « {g.get('bloc')} » absent de blocs")
+        if g.get("level") not in (0, 1, 2, 3):
+            errors.append(f"groupe {k} : level doit valoir 0, 1, 2 ou 3")
+        if g.get("entity") and g["entity"] not in actors:
+            errors.append(f"groupe {k} : entity « {g['entity']} » absente de actors")
+        srcs = g.get("sources") or []
+        if not srcs or not all(isinstance(x, str) and "http" in x for x in srcs):
+            errors.append(f"groupe {k} : sources avec URL requises")
+        for m in g.get("members") or []:
+            if not re.fullmatch(r"[A-Z]{2}", str(m)):
+                errors.append(f"groupe {k} : membre « {m} » n'est pas un code ISO2")
+    for b, v in ((aligns or {}).get("blocs") or {}).items():
+        if not re.fullmatch(r"#[0-9a-fA-F]{6}", str(v.get("color", ""))):
+            errors.append(f"bloc {b} : color doit être #rrggbb")
+
     for name, d in DYADS.items():
         for aid in d["countries"]:
             if aid not in actors:
@@ -73,7 +104,7 @@ def check(actors, edges, today=None):
 
 if __name__ == "__main__":
     actors, edges = network.load()
-    errors, warnings = check(actors, edges)
+    errors, warnings = check(actors, edges, aligns=network.alignments())
     for w in warnings:
         print(f"⚠️  {w}")
     for e in errors:

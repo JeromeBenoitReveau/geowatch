@@ -5,6 +5,8 @@
 # kind   : state | non_state | bloc | party | person
 # base   : pays d'ancrage (ISO2) — obligatoire pour non_state, party, person
 # member_of : blocs dont l'État est membre (ex. [EU]) — sert au « zoom » sur un bloc
+# wikidata : identifiant Qxxx (personnes) — sert à récupérer la photo sur Wikimedia Commons
+# coords : [lat, lon] pour la carte, seulement si le pays d'ancrage ne suffit pas (ex. bloc)
 # types  : arms | financial | training | troops | intelligence | political | economic | dual_use
 # status : active | reduced | ended | alleged
 # confidence : high (documenté officiellement) | medium (sources concordantes) | low (allégations)
@@ -30,7 +32,7 @@ actors:
   TR: {name: Turquie, kind: state}
   VE: {name: Venezuela, kind: state}
   GY: {name: Guyana, kind: state}
-  EU: {name: Union européenne, kind: bloc}
+  EU: {name: Union européenne, kind: bloc, coords: [50.85, 4.35]}  # Bruxelles, pour la carte
   # partis et personnalités (calque « détail »)
   afd: {name: AfD (Alternative für Deutschland), kind: party, base: DE,
         note: "Classée « extrémiste de droite » par l'Office fédéral de protection de la Constitution (mai 2025), classement contesté en justice",
@@ -38,9 +40,9 @@ actors:
   rn: {name: Rassemblement national, kind: party, base: FR,
        note: "Parti de Marine Le Pen, condamnée en mars 2025 pour détournement de fonds européens (appel en cours)",
        sources: ["France 24 (avr. 2025) — https://www.france24.com/en/americas/20250404-marine-le-pen-jd-vance-not-democracy-minor-charge-usa-france-donald-trump"]}
-  trump: {name: Donald Trump, kind: person, base: US, note: "Président des États-Unis"}
-  vance: {name: JD Vance, kind: person, base: US, note: "Vice-président des États-Unis"}
-  musk: {name: Elon Musk, kind: person, base: US, note: "Propriétaire de X, SpaceX, Tesla"}
+  trump: {name: Donald Trump, kind: person, base: US, note: "Président des États-Unis", wikidata: Q22686}
+  vance: {name: JD Vance, kind: person, base: US, note: "Vice-président des États-Unis", wikidata: Q28935729}
+  musk: {name: Elon Musk, kind: person, base: US, note: "Propriétaire de X, SpaceX, Tesla", wikidata: Q317521}
   houthis:  {name: Houthis (Ansar Allah), kind: non_state, base: YE}
   hezbollah: {name: Hezbollah, kind: non_state, base: LB}
   hamas: {name: Hamas, kind: non_state, base: PS}

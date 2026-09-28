@@ -28,6 +28,10 @@ def run_profiles(c):
     for iso, p in profiles.fetch(sorted(isos)).items():
         db.save_profile(c, iso, p)
     c.commit()
+    # carte : coordonnées de tous les pays, y compris ceux cités seulement dans alignments.yaml
+    every = {i for i in isos if i not in profiles.WB_CODES} | set(network.formal_ties(network.alignments()))
+    db.save_geo(profiles.geo(every))
+    db.save_people(profiles.people({a: v["wikidata"] for a, v in actors.items() if v.get("wikidata")}))
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()

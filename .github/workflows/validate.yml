@@ -2,9 +2,9 @@ name: validate network
 
 on:
   push:
-    paths: [network.yaml, validate.py, config.py, network.py]
+    paths: [network.yaml, alignments.yaml, validate.py, config.py, network.py]
   pull_request:
-    paths: [network.yaml, validate.py, config.py, network.py]
+    paths: [network.yaml, alignments.yaml, validate.py, config.py, network.py]
 
 jobs:
   validate:

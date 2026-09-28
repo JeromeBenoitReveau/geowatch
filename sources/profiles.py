@@ -1,5 +1,5 @@
 """Profil pays : Banque mondiale (démographie, ressources, techno, défense) + Wikidata (régime)."""
-import httpx
+import re, httpx
 
 WB = "https://api.worldbank.org/v2/country/{isos}/indicator/{code}"
 WB_CODES = {"EU": "EUU"}  # agrégats Banque mondiale pour les blocs (renvoyés sous l'id « EU »)
@@ -78,6 +78,52 @@ def _government(iso):
         "forms": sorted({x["govLabel"]["value"] for x in b if "govLabel" in x}),
         "head_of_state": sorted({x["headLabel"]["value"] for x in b if "headLabel" in x}),
     }
+
+def people(qids):
+    """Photo Wikimedia Commons (Wikidata P18) de chaque personne, avec licence et auteur à créditer.
+    qids = {id acteur: Qxxx}."""
+    H = {"User-Agent": "geowatch/0.1 (open-source research tool)"}
+    out = {}
+    for aid, q in sorted(qids.items()):
+        c = httpx.get("https://www.wikidata.org/w/api.php", headers=H, timeout=30,
+                      params={"action": "wbgetclaims", "entity": q, "property": "P18", "format": "json"}).json()
+        claims = c.get("claims", {}).get("P18")
+        if not claims:
+            continue
+        f = claims[0]["mainsnak"]["datavalue"]["value"]
+        m = httpx.get("https://commons.wikimedia.org/w/api.php", headers=H, timeout=30, params={
+            "action": "query", "titles": "File:" + f, "prop": "imageinfo", "iiprop": "url|extmetadata",
+            "iiurlwidth": 128, "format": "json"}).json()
+        ii = next(iter(m["query"]["pages"].values()))["imageinfo"][0]
+        em = ii.get("extmetadata", {})
+        strip = lambda v: re.sub(r"<[^>]+>", "", v or "").strip()
+        out[aid] = {"file": f, "thumb": ii["thumburl"].split("?")[0], "page": ii["descriptionurl"],
+                    "license": strip(em.get("LicenseShortName", {}).get("value")),
+                    "artist": strip(em.get("Artist", {}).get("value"))[:120]}
+    return out
+
+def geo(isos):
+    """Coordonnées (P625), code ISO numérique (P299, pour les contours de la carte) et nom français
+    de chaque pays, en une seule requête Wikidata."""
+    values = " ".join(f'"{i}"' for i in sorted(isos))
+    q = f"""SELECT ?iso ?coord ?num ?cLabel WHERE {{
+      VALUES ?iso {{ {values} }}
+      ?c wdt:P297 ?iso .
+      OPTIONAL {{ ?c wdt:P625 ?coord }}
+      OPTIONAL {{ ?c wdt:P299 ?num }}
+      SERVICE wikibase:label {{ bd:serviceParam wikibase:language "fr,mul,en". }} }}"""
+    r = httpx.get("https://query.wikidata.org/sparql", params={"query": q, "format": "json"},
+                  headers={"User-Agent": "geowatch/0.1 (open-source research tool)"}, timeout=60)
+    r.raise_for_status()
+    out = {}
+    for b in r.json()["results"]["bindings"]:
+        iso = b["iso"]["value"]
+        if iso in out or "coord" not in b:
+            continue  # premier point si Wikidata en donne plusieurs
+        lon, lat = map(float, b["coord"]["value"].removeprefix("Point(").rstrip(")").split())
+        out[iso] = {"lat": round(lat, 3), "lon": round(lon, 3), "name": b["cLabel"]["value"],
+                    "iso_numeric": b.get("num", {}).get("value")}
+    return out
 
 def fetch(isos):
     """{iso: profil}. Un appel Banque mondiale par indicateur, tous pays groupés."""
