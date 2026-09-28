@@ -11,6 +11,7 @@
 # status : active | reduced | ended | alleged
 # confidence : high (documenté officiellement) | medium (sources concordantes) | low (allégations)
 # verified : date de ta dernière vérification — à revoir si > 6 mois
+# since / until : AAAA ou AAAA-MM — plus ancienne date documentée par les sources citées (pas forcément le vrai début) et fin éventuelle
 
 actors:
   IR: {name: Iran, kind: state,
@@ -34,6 +35,15 @@ actors:
   TR: {name: Turquie, kind: state}
   VE: {name: Venezuela, kind: state}
   GY: {name: Guyana, kind: state}
+  SD: {name: Soudan (armée et gouvernement de Port-Soudan), kind: state}
+  AE: {name: Émirats arabes unis, kind: state}
+  EG: {name: Égypte, kind: state}
+  CD: {name: RD Congo, kind: state}
+  RW: {name: Rwanda, kind: state}
+  ML: {name: Mali, kind: state}
+  BF: {name: Burkina Faso, kind: state}
+  NE: {name: Niger, kind: state}
+  MM: {name: Birmanie (junte militaire), kind: state}
   EU: {name: Union européenne, kind: bloc, coords: [50.85, 4.35]}  # Bruxelles, pour la carte
   # partis et personnalités (calque « détail »)
   afd: {name: AfD (Alternative für Deutschland), kind: party, base: DE,
@@ -46,6 +56,8 @@ actors:
   trump: {name: Donald Trump, kind: person, base: US, note: "Président des États-Unis", wikidata: Q22686}
   vance: {name: JD Vance, kind: person, base: US, note: "Vice-président des États-Unis", wikidata: Q28935729}
   musk: {name: Elon Musk, kind: person, base: US, note: "Propriétaire de X, SpaceX, Tesla", wikidata: Q317521}
+  rsf: {name: Forces de soutien rapide (FSR), kind: non_state, base: SD}
+  m23: {name: AFC/M23, kind: non_state, base: CD}
   houthis:  {name: Houthis (Ansar Allah), kind: non_state, base: YE}
   hezbollah: {name: Hezbollah, kind: non_state, base: LB}
   hamas: {name: Hamas, kind: non_state, base: PS}
@@ -54,45 +66,50 @@ actors:
 
 edges:
   # --- "Axe de la résistance" ---
-  - {from: IR, to: houthis, types: [arms, financial, training], status: active, confidence: high,
+  - {from: IR, to: houthis, since: "2014", types: [arms, financial, training], status: active, confidence: high,
      sources: ["Rapports du Panel d'experts ONU sur le Yémen",
                "ONU, Panel d'experts sur le Yémen, rapport final S/2024/731 (oct. 2024) — https://documents.un.org/doc/undoc/gen/n24/259/53/pdf/n2425953.pdf",
-               "Fortune, attaques houthies contre les zones gouvernementales du Yémen (août 2026) — https://fortune.com/2026/08/11/houthi-attacks-yemen-red-sea-iran-hormuz/"], verified: 2026-09,
+               "Fortune, attaques houthies contre les zones gouvernementales du Yémen (août 2026) — https://fortune.com/2026/08/11/houthi-attacks-yemen-red-sea-iran-hormuz/",
+               "CFR, soutien iranien aux Houthis : armes iraniennes « dès 2014 » selon la plupart des experts — https://www.cfr.org/articles/irans-support-houthis-what-know"], verified: 2026-09,
      note: "Frappes sur Israël à partir de mars 2026 pendant la guerre contre l'Iran ; nouvelles attaques au Yémen en août 2026"}
-  - {from: IR, to: hezbollah, types: [arms, financial, training], status: active, confidence: high,
+  - {from: IR, to: hezbollah, since: "1982", types: [arms, financial, training], status: active, confidence: high,
      sources: ["US State Dept, Country Reports on Terrorism",
                "US Treasury, sanctions réseau financier IRGC-QF / Hezbollah (janv. 2024) — https://home.treasury.gov/news/press-releases/jy2065",
                "Washington Institute, l'IRGC maintient le Hezbollah malgré ses pertes (mai 2026) — https://www.washingtoninstitute.org/policy-analysis/beyond-disarmament-how-irgc-keeps-hezbollah-power-despite-its-military-losses",
-               "Al Jazeera, accord Israël–Liban liant cessez-le-feu et désarmement du Hezbollah (juin 2026) — https://www.aljazeera.com/features/2026/6/27/israel-lebanon-deal-ties-ceasefire-to-hezbollah-disarmament-will-it-work"], verified: 2026-09,
+               "Al Jazeera, accord Israël–Liban liant cessez-le-feu et désarmement du Hezbollah (juin 2026) — https://www.aljazeera.com/features/2026/6/27/israel-lebanon-deal-ties-ceasefire-to-hezbollah-disarmament-will-it-work",
+               "CFR, qu'est-ce que le Hezbollah : fonds et formation de l'IRGC dès 1982 — https://www.cfr.org/backgrounders/what-hezbollah"], verified: 2026-09,
      note: "Environ 1 Md$ iranien transféré en 2025 (estimation Washington Institute) ; guerre avec Israël depuis mars 2026, accord de juin liant retrait israélien et désarmement, rejeté par le Hezbollah"}
-  - {from: IR, to: hamas, types: [financial, arms], status: active, confidence: high,
+  - {from: IR, to: hamas, since: "2021", types: [financial, arms], status: active, confidence: high,
      sources: ["US Treasury, désignations OFAC",
                "US Treasury, sanctions Hamas et soutien iranien (oct. 2023) — https://home.treasury.gov/news/press-releases/jy1845",
-               "Al Jazeera, accord de désarmement par étapes du Hamas annoncé par le Board of Peace (juill. 2026) — https://www.aljazeera.com/news/2026/7/31/gaza-board-of-peace-announces-hamas-disarmament-agreement-what-we-know"], verified: 2026-06,
+               "Al Jazeera, accord de désarmement par étapes du Hamas annoncé par le Board of Peace (juill. 2026) — https://www.aljazeera.com/news/2026/7/31/gaza-board-of-peace-announces-hamas-disarmament-agreement-what-we-know",
+               "CFR, qu'est-ce que le Hamas : environ 100 M$ par an de l'Iran au Hamas, au JIP et à d'autres groupes (estimation du Département d'État, 2021) — https://www.cfr.org/backgrounders/what-hamas"], verified: 2026-06,
      note: "Accord de désarmement par étapes annoncé le 31 juillet 2026 ; aucune source de 2026 sur la poursuite du financement iranien — relation non revérifiée"}
-  - {from: IR, to: pij, types: [financial, arms], status: active, confidence: high,
+  - {from: IR, to: pij, since: "2021", types: [financial, arms], status: active, confidence: high,
      sources: ["US State Dept",
-               "US Treasury, financement iranien de Hamas et du JIP via la Fondation des martyrs (oct. 2023) — https://home.treasury.gov/news/press-releases/jy1845"], verified: 2026-06,
+               "US Treasury, financement iranien de Hamas et du JIP via la Fondation des martyrs (oct. 2023) — https://home.treasury.gov/news/press-releases/jy1845",
+               "CFR, qu'est-ce que le Hamas : environ 100 M$ par an de l'Iran au Hamas, au JIP et à d'autres groupes (estimation du Département d'État, 2021) — https://www.cfr.org/backgrounders/what-hamas"], verified: 2026-06,
      note: "Aucune source de 2026 sur la poursuite du financement iranien — relation non revérifiée"}
-  - {from: IR, to: kataib_hezbollah, types: [arms, financial, training], status: active, confidence: high,
+  - {from: IR, to: kataib_hezbollah, since: "2008", types: [arms, financial, training], status: active, confidence: high,
      sources: ["US DoD / désignations US",
                "US Treasury, Kataeb Hezbollah « formé, financé et soutenu » par l'IRGC-QF (nov. 2023) — https://home.treasury.gov/news/press-releases/jy1921",
-               "FDD Long War Journal, attaques contre l'ambassade américaine à Bagdad puis pause (mars 2026) — https://www.longwarjournal.org/archives/2026/03/strikes-continue-hitting-iran-backed-iraqi-militias-kataib-hezbollah-declares-temporary-us-embassy-ceasefire.php"], verified: 2026-09,
+               "FDD Long War Journal, attaques contre l'ambassade américaine à Bagdad puis pause (mars 2026) — https://www.longwarjournal.org/archives/2026/03/strikes-continue-hitting-iran-backed-iraqi-militias-kataib-hezbollah-declares-temporary-us-embassy-ceasefire.php",
+               "US Treasury, désignation de Kataeb Hezbollah : financé par la Force Al-Qods « en 2008 » (juill. 2009) — https://home.treasury.gov/news/press-releases/tg195"], verified: 2026-09,
      note: "Attaques contre des cibles américaines en Irak pendant la guerre de 2026, pause annoncée le 19 mars"}
 
   # --- Guerre en Ukraine ---
-  - {from: IR, to: RU, types: [arms], status: reduced, confidence: high,
+  - {from: IR, to: RU, since: "2022-08", types: [arms], status: reduced, confidence: high,
      sources: ["Gouvernements UE/US/UK — drones Shahed",
                "Conseil de l'UE, sanctions pour transferts iraniens de drones et missiles à la Russie (oct. 2024) — https://www.consilium.europa.eu/en/press/press-releases/2024/10/14/iran-seven-individuals-and-seven-entities-sanctioned-in-response-to-iran-s-missile-transfer-to-russia/",
                "CSIS, du Shahed au Geran : production russe à Alabuga et Izhevsk (sept. 2026) — https://www.csis.org/analysis/shahed-geran-how-russia-continues-reinvent-one-way-attack-drone"], verified: 2026-09,
      note: "Production des drones transférée en Russie (Alabuga, Izhevsk), qui dépend de moins en moins de l'Iran ; en 2026 le flux s'inverse (voir Russie → Iran)"}
-  - {from: KP, to: RU, types: [arms, troops], status: active, confidence: high,
+  - {from: KP, to: RU, since: "2023", types: [arms, troops], status: active, confidence: high,
      sources: ["Renseignement sud-coréen ; confirmation nord-coréenne avril 2025",
                "MSMT (11 États), 1er rapport sur la coopération militaire RPDC-Russie (mai 2025) — https://www.mfat.govt.nz/en/media-and-resources/joint-statement-of-the-multilateral-sanctions-monitoring-team-msmt-on-the-first-report-covering-dprk-russia-military-cooperation",
                "RFA, la Corée du Nord confirme ses troupes à Koursk (avr. 2025) — https://www.rfa.org/english/korea/2025/04/28/north-korea-confirm-troop-russia/",
                "Defense News, les forces nord-coréennes en appui de la guerre russe (août 2026) — https://www.defensenews.com/global/europe/2026/08/07/how-north-korean-forces-are-bolstering-russias-war-against-ukraine/"], verified: 2026-09,
      note: "Unité de missiles balistiques déployée dans l'ouest de la Russie en 2026 (jusqu'à 120 missiles, 40 déjà livrés)"}
-  - {from: CN, to: RU, types: [economic, dual_use], status: active, confidence: high,
+  - {from: CN, to: RU, since: "2024", types: [economic, dual_use], status: active, confidence: high,
      sources: ["Paquets de sanctions UE / désignations US",
                "US Treasury, entités de la RPC fournissant la base militaro-industrielle russe (mai 2024) — https://home.treasury.gov/news/press-releases/jy2318",
                "Conseil de l'UE, 20e paquet de sanctions : entités chinoises fournissant biens à double usage ou armes au complexe militaro-industriel russe (avr. 2026) — https://www.consilium.europa.eu/en/press/press-releases/2026/04/23/russia-s-war-of-aggression-against-ukraine-20th-round-of-stern-eu-sanctions-hits-energy-military-industrial-complex-trade-and-financial-services-including-crypto/"], verified: 2026-09}
@@ -101,53 +118,58 @@ edges:
                "Atlantic Council, Chine et Russie aident l'Iran via leurs chaînes d'approvisionnement (mars 2026) — https://www.atlanticcouncil.org/dispatches/from-drones-to-rocket-fuel-china-and-russia-are-helping-iran-through-supply-chains/"],
      verified: 2026-09,
      note: "Achats de pétrole documentés officiellement (Trésor américain) ; transferts de technologies de navigation et de précurseurs de carburant de missile rapportés en 2026 — d'où la confiance moyenne"}
-  - {from: RU, to: IR, types: [political, arms, intelligence], status: active, confidence: medium,
+  - {from: RU, to: IR, since: "2025-01", types: [political, arms, intelligence], status: active, confidence: medium,
      sources: ["Traité de partenariat stratégique global, janvier 2025",
                "Kremlin, signature du traité le 17 janv. 2025 — http://en.kremlin.ru/events/president/news/76125",
                "Atlantic Council, drones russes et imagerie satellite fournis à l'Iran pendant la guerre (mars 2026) — https://www.atlanticcouncil.org/dispatches/from-drones-to-rocket-fuel-china-and-russia-are-helping-iran-through-supply-chains/"], verified: 2026-09,
      note: "Traité de 2025 officiel ; livraisons de drones et partage d'imagerie satellite pendant la guerre de 2026 rapportés, non confirmés officiellement — d'où la confiance moyenne"}
-  - {from: US, to: UA, types: [arms, intelligence], status: reduced, confidence: high,
+  - {from: US, to: UA, since: "2022-02", types: [arms, intelligence], status: reduced, confidence: high,
      sources: ["Annonces DoD / Maison-Blanche",
                "Kiel Institute, Ukraine Support Tracker — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/",
                "Bibliothèque de la Chambre des communes, aide militaire à l'Ukraine depuis janvier 2025 (mise à jour août 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10308/"], verified: 2026-09,
      note: "Aucun nouveau financement demandé au Congrès depuis janvier 2025 ; armes américaines payées par les alliés via le mécanisme PURL ; partage de renseignement maintenu"}
-  - {from: EU, to: UA, types: [financial, arms], status: active, confidence: high,
+  - {from: EU, to: UA, since: "2022", types: [financial, arms], status: active, confidence: high,
      sources: ["Conseil de l'UE — Facilité pour l'Ukraine, Facilité européenne pour la paix",
                "Conseil de l'UE, soutien militaire à l'Ukraine — https://www.consilium.europa.eu/en/policies/military-support-ukraine/",
                "Kiel Institute, près de 11 Md€ alloués par les institutions européennes via le prêt de soutien à l'Ukraine en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/"], verified: 2026-09}
 
   # --- Autres ---
-  - {from: US, to: IL, types: [arms, financial], status: active, confidence: high,
+  - {from: US, to: IL, since: "2015", types: [arms, financial], status: active, confidence: high,
      sources: ["MoU 2016, 3,8 Md$/an 2019-2028",
                "Maison-Blanche (archives), fiche sur le MoU de 2016 — https://obamawhitehouse.archives.gov/the-press-office/2016/09/14/fact-sheet-memorandum-understanding-reached-israel",
-               "Bibliothèque de la Chambre des communes, guerre et cessez-le-feu États-Unis–Iran en 2026 (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"], verified: 2026-09,
+               "Bibliothèque de la Chambre des communes, guerre et cessez-le-feu États-Unis–Iran en 2026 (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/",
+               "SIPRI, Trends in International Arms Transfers 2019 (fiche de mars 2020), période 2015-19 — https://www.sipri.org/sites/default/files/2020-03/fs_2003_at_2019.pdf"], verified: 2026-09,
      note: "Opérations militaires conjointes contre l'Iran depuis le 28 février 2026"}
-  - {from: DE, to: IL, types: [arms], status: active, confidence: high,
+  - {from: DE, to: IL, since: "2015", types: [arms], status: active, confidence: high,
      sources: ["SIPRI, réponses des exportateurs à la guerre à Gaza : Allemagne = 33 % des importations d'armes d'Israël (2020-24) — https://www.sipri.org/commentary/topical-backgrounder/2025/how-top-arms-exporters-have-responded-war-gaza-2025-update",
-               "Al Jazeera, levée des restrictions allemandes (nov. 2025) — https://www.aljazeera.com/news/2025/11/17/germany-lifts-curbs-on-arms-exports-to-israel-citing-gaza-ceasefire"],
+               "Al Jazeera, levée des restrictions allemandes (nov. 2025) — https://www.aljazeera.com/news/2025/11/17/germany-lifts-curbs-on-arms-exports-to-israel-citing-gaza-ceasefire",
+               "SIPRI, Trends in International Arms Transfers 2019 (fiche de mars 2020), période 2015-19 — https://www.sipri.org/sites/default/files/2020-03/fs_2003_at_2019.pdf"],
      verified: 2026-09,
      note: "Exportations utilisables à Gaza suspendues d'août à novembre 2025, reprises au cas par cas après le cessez-le-feu"}
-  - {from: US, to: TW, types: [arms], status: active, confidence: high,
+  - {from: US, to: TW, since: "1979", types: [arms], status: active, confidence: high,
      sources: ["Taiwan Relations Act ; notifications DSCA",
                "Taiwan Relations Act, 22 U.S.C. § 3302 — https://www.law.cornell.edu/uscode/text/22/3302"], verified: 2026-06}
-  - {from: CN, to: PK, types: [arms, economic], status: active, confidence: high,
+  - {from: CN, to: PK, since: "2015", types: [arms, economic], status: active, confidence: high,
      sources: ["SIPRI Arms Transfers Database ; CPEC",
-               "SIPRI, Trends in International Arms Transfers 2024 : 81 % des importations d'armes du Pakistan viennent de Chine (2020-24) — https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-international-arms-transfers-2024"], verified: 2026-06}
-  - {from: RU, to: IN, types: [arms], status: active, confidence: high,
+               "SIPRI, Trends in International Arms Transfers 2024 : 81 % des importations d'armes du Pakistan viennent de Chine (2020-24) — https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-international-arms-transfers-2024",
+               "SIPRI, Trends in International Arms Transfers 2019 (fiche de mars 2020), période 2015-19 — https://www.sipri.org/sites/default/files/2020-03/fs_2003_at_2019.pdf"], verified: 2026-06}
+  - {from: RU, to: IN, since: "2010", types: [arms], status: active, confidence: high,
      sources: ["SIPRI Arms Transfers Database",
                "SIPRI, Trends in International Arms Transfers 2024 : Russie = 36 % des importations d'armes de l'Inde (2020-24) — https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-international-arms-transfers-2024"], verified: 2026-06}
-  - {from: FR, to: IN, types: [arms], status: active, confidence: high,
+  - {from: FR, to: IN, since: "2015", types: [arms], status: active, confidence: high,
      sources: ["SIPRI — Rafale, sous-marins Scorpène",
-               "SIPRI, Trends in International Arms Transfers 2024 : France = 33 % des importations d'armes de l'Inde (2020-24) — https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-international-arms-transfers-2024"], verified: 2026-06}
-  - {from: TR, to: PK, types: [arms], status: active, confidence: high,
-     sources: ["SIPRI, Trends in International Arms Transfers 2024 : le Pakistan reçoit 10 % des exportations d'armes turques (2020-24) — https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-international-arms-transfers-2024"],
+               "SIPRI, Trends in International Arms Transfers 2024 : France = 33 % des importations d'armes de l'Inde (2020-24) — https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-international-arms-transfers-2024",
+               "SIPRI, Trends in International Arms Transfers 2019 (fiche de mars 2020), période 2015-19 — https://www.sipri.org/sites/default/files/2020-03/fs_2003_at_2019.pdf"], verified: 2026-06}
+  - {from: TR, to: PK, since: "2015", types: [arms], status: active, confidence: high,
+     sources: ["SIPRI, Trends in International Arms Transfers 2024 : le Pakistan reçoit 10 % des exportations d'armes turques (2020-24) — https://www.sipri.org/publications/2025/sipri-fact-sheets/trends-international-arms-transfers-2024",
+               "SIPRI, Trends in International Arms Transfers 2019 (fiche de mars 2020), période 2015-19 — https://www.sipri.org/sites/default/files/2020-03/fs_2003_at_2019.pdf"],
      verified: 2026-09}
 
   # --- Venezuela / Guyana ---
-  - {from: US, to: GY, types: [training], status: active, confidence: high,
+  - {from: US, to: GY, since: "2022", types: [training], status: active, confidence: high,
      sources: ["Ambassade des États-Unis au Guyana, exercices conjoints US Army / Guyana Defence Force depuis 2022 (nov. 2023) — https://gy.usembassy.gov/u-s-army-guyana-defence-forces-strengthen-military-partnership/"],
      verified: 2026-09}
-  - {from: IR, to: VE, types: [economic], status: reduced, confidence: medium,
+  - {from: IR, to: VE, since: "2001", types: [economic], status: reduced, confidence: medium,
      sources: ["Atlantic Council, la relation Iran-Venezuela et la capture de Maduro (janv. 2026) — https://www.atlanticcouncil.org/blogs/menasource/the-venezuela-iran-connection-and-what-maduros-capture-means-for-tehran-explained/",
                "Caracas Chronicles, la politique étrangère de Delcy Rodríguez (août 2026) — https://www.caracaschronicles.com/2026/08/12/how-delcy-rodriguez-is-rewriting-venezuelas-foreign-policy/"],
      verified: 2026-09,
@@ -158,47 +180,100 @@ edges:
      note: "La Chine ne prend plus 80 % du pétrole vénézuélien, mais ses entreprises d'État gardent des coentreprises"}
 
   # --- Soutiens à l'Ukraine au sein de l'Europe (zoom UE) ---
-  - {from: DE, to: UA, types: [arms, financial], status: active, confidence: high,
+  - {from: DE, to: UA, since: "2022", types: [arms, financial], status: active, confidence: high,
      sources: ["Kiel Institute, 700 M€ d'aide militaire allouée en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
                "Kiel Institute, avec le Royaume-Uni, ~2/3 de l'aide militaire d'Europe de l'Ouest 2022-2025 — https://www.kielinstitut.de/publications/news/ukraine-support-after-4-years-of-war-europe-steps-up/"],
      verified: 2026-09}
-  - {from: DK, to: UA, types: [arms], status: active, confidence: high,
-     sources: ["Kiel Institute, 600 M€ d'aide militaire allouée en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/"],
+  - {from: DK, to: UA, since: "2022-02", types: [arms], status: active, confidence: high,
+     sources: ["Kiel Institute, 600 M€ d'aide militaire allouée en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
+               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/"],
      verified: 2026-09}
-  - {from: NL, to: UA, types: [arms], status: active, confidence: high,
-     sources: ["Kiel Institute, 500 M€ d'aide militaire allouée en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/"],
+  - {from: NL, to: UA, since: "2022-02", types: [arms], status: active, confidence: high,
+     sources: ["Kiel Institute, 500 M€ d'aide militaire allouée en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
+               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/"],
      verified: 2026-09}
-  - {from: SE, to: UA, types: [financial], status: active, confidence: high,
-     sources: ["Kiel Institute, 360 M€ d'aide financière et humanitaire en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/"],
+  - {from: SE, to: UA, since: "2022-02", types: [financial], status: active, confidence: high,
+     sources: ["Kiel Institute, 360 M€ d'aide financière et humanitaire en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
+               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/"],
      verified: 2026-09}
-  - {from: FR, to: UA, types: [arms], status: active, confidence: high,
-     sources: ["Kiel Institute, hausse nette des allocations militaires françaises en 2025 (déc. 2025) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-fails-to-offset-us-aid-drop/"],
+  - {from: FR, to: UA, since: "2022-02", types: [arms], status: active, confidence: high,
+     sources: ["Kiel Institute, hausse nette des allocations militaires françaises en 2025 (déc. 2025) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-fails-to-offset-us-aid-drop/",
+               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/"],
      verified: 2026-09}
-  - {from: GB, to: UA, types: [arms, financial], status: active, confidence: high,
+  - {from: GB, to: UA, since: "2022", types: [arms, financial], status: active, confidence: high,
      sources: ["Kiel Institute, ~1,5 Md€ d'aide financière et humanitaire en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
                "Kiel Institute, avec l'Allemagne, ~2/3 de l'aide militaire d'Europe de l'Ouest 2022-2025 — https://www.kielinstitut.de/publications/news/ukraine-support-after-4-years-of-war-europe-steps-up/"],
      verified: 2026-09}
 
   # --- Soutiens politiques américains à des partis européens (calque « détail ») ---
-  - {from: musk, to: afd, types: [political], status: active, confidence: high,
+  - {from: musk, to: afd, since: "2025-01", types: [political], status: active, confidence: high,
      sources: ["France 24, tribune dans Welt am Sonntag et entretien en direct avec Alice Weidel sur X (janv. 2025) — https://www.france24.com/en/europe/20250110-musk-praises-afd-leader-reiterates-support-german-far-right-party"],
      verified: 2026-09,
      note: "« Strongly recommending that people vote for AfD » (janv. 2025)"}
-  - {from: vance, to: afd, types: [political], status: active, confidence: high,
+  - {from: vance, to: afd, since: "2025-02", types: [political], status: active, confidence: high,
      sources: ["Euronews, réaction au classement de l'AfD (mai 2025) — https://www.euronews.com/my-europe/2025/05/03/us-secretary-of-state-rubio-says-germany-is-a-tyranny-in-disguise-after-afd-verdict"],
      verified: 2026-09,
      note: "Rencontre avec Alice Weidel à Munich (févr. 2025) ; dénonce le classement de l'AfD (mai 2025)"}
-  - {from: US, to: afd, types: [political], status: active, confidence: medium,
+  - {from: US, to: afd, since: "2025-05", types: [political], status: active, confidence: medium,
      sources: ["Euronews, Marco Rubio : « tyranny in disguise » (mai 2025) — https://www.euronews.com/my-europe/2025/05/03/us-secretary-of-state-rubio-says-germany-is-a-tyranny-in-disguise-after-afd-verdict"],
      verified: 2026-09,
      note: "Position officielle du secrétaire d'État contre le classement de l'AfD comme extrémiste"}
-  - {from: trump, to: rn, types: [political], status: active, confidence: high,
+  - {from: trump, to: rn, since: "2025-04", types: [political], status: active, confidence: high,
      sources: ["France 24, Trump sur Truth Social après la condamnation de Marine Le Pen (avr. 2025) — https://www.france24.com/en/americas/20250404-marine-le-pen-jd-vance-not-democracy-minor-charge-usa-france-donald-trump"],
      verified: 2026-09,
      note: "« Witch Hunt against Marine Le Pen » (avr. 2025)"}
-  - {from: vance, to: rn, types: [political], status: active, confidence: medium,
+  - {from: vance, to: rn, since: "2025-04", types: [political], status: active, confidence: medium,
      sources: ["France 24 (avr. 2025) — https://www.france24.com/en/americas/20250404-marine-le-pen-jd-vance-not-democracy-minor-charge-usa-france-donald-trump"],
      verified: 2026-09}
-  - {from: musk, to: rn, types: [political], status: active, confidence: medium,
+  - {from: musk, to: rn, since: "2025-04", types: [political], status: active, confidence: medium,
      sources: ["France 24, « Free Le Pen! » sur X (avr. 2025) — https://www.france24.com/en/americas/20250404-marine-le-pen-jd-vance-not-democracy-minor-charge-usa-france-donald-trump"],
      verified: 2026-09}
+
+  # --- Soudan : armée (SAF) contre Forces de soutien rapide (FSR), depuis avril 2023 ---
+  - {from: AE, to: rsf, types: [arms, training], status: alleged, confidence: medium,
+     sources: ["HCDH, mission d'établissement des faits de l'ONU : réseaux de soutien extérieurs aux FSR (sept. 2026) — https://www.ohchr.org/en/press-releases/2026/09/sudan-external-support-networks-are-fuelling-conflict-and-civilian-harm-un"],
+     verified: 2026-09,
+     note: "L'ONU établit que des entités, intermédiaires et recruteurs opérant depuis les EAU ont acheminé armes, personnel et formation aux FSR ; l'État émirien dément tout soutien"}
+  - {from: EG, to: SD, types: [arms, training], status: active, confidence: medium,
+     sources: ["Middle East Eye, l'Égypte et la Turquie renforcent leur soutien à l'armée soudanaise après la chute d'El-Fasher (nov. 2025) — https://www.middleeasteye.net/news/egypt-and-turkey-move-support-saf-following-fall-el-fasher"],
+     verified: 2026-09,
+     note: "Armes, conseil opérationnel et salle d'opérations conjointe, selon un responsable du renseignement militaire égyptien cité par la presse"}
+  - {from: TR, to: SD, since: "2024", types: [arms], status: active, confidence: medium,
+     sources: ["Middle East Eye, l'Égypte et la Turquie renforcent leur soutien à l'armée soudanaise après la chute d'El-Fasher (nov. 2025) — https://www.middleeasteye.net/news/egypt-and-turkey-move-support-saf-following-fall-el-fasher"],
+     verified: 2026-09,
+     note: "Drones, missiles air-sol et opérateurs de drones, selon un responsable turc cité par la presse"}
+
+  # --- RD Congo : AFC/M23 dans l'est du pays ---
+  - {from: RW, to: m23, since: "2021-11", types: [troops, arms, training], status: active, confidence: high,
+     sources: ["ONU, Groupe d'experts sur la RD Congo, rapport final S/2025/446 : « commandement et contrôle » du Rwanda sur l'AFC/M23 (juill. 2025) — https://documents.un.org/doc/undoc/gen/n25/124/40/pdf/n2512440.pdf",
+               "Al Jazeera, feuille de route RDC–M23 pour les négociations (août 2026) — https://www.aljazeera.com/news/2026/8/23/dr-congo-m23-rebels-agree-on-roadmap-for-peace-talks",
+               "Al Jazeera, rapport des experts de l'ONU : interventions militaires rwandaises « depuis au moins novembre 2021 » (août 2022) — https://www.aljazeera.com/news/2022/8/4/rwanda-backing-m23-rebels-in-drc-un-experts"],
+     verified: 2026-09,
+     note: "Troupes rwandaises présentes aux côtés de l'AFC/M23 selon l'ONU ; Kigali dément. Accords de Washington (déc. 2025) non appliqués, négociations RDC–M23 en cours"}
+
+  # --- Sahel : présence militaire russe (Africa Corps, successeur de Wagner) ---
+  - {from: RU, to: ML, since: "2021", types: [troops, training], status: active, confidence: high,
+     sources: ["Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region"],
+     verified: 2026-09,
+     note: "Environ 2 000 combattants russes ; l'Africa Corps a remplacé Wagner en juin 2025"}
+  - {from: RU, to: BF, since: "2024-01", types: [training], status: active, confidence: medium,
+     sources: ["Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region",
+               "CTC West Point, Africa Corps : arrivées au Burkina Faso (janv. 2024) et au Niger (avr. 2024) — https://ctc.westpoint.edu/africa-corps-has-russia-hit-a-ceiling-in-africa/"],
+     verified: 2026-09,
+     note: "Entre 100 et 300 militaires russes, rôle d'encadrement"}
+  - {from: RU, to: NE, since: "2024-04", types: [training], status: active, confidence: medium,
+     sources: ["Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region",
+               "CTC West Point, Africa Corps : arrivées au Burkina Faso (janv. 2024) et au Niger (avr. 2024) — https://ctc.westpoint.edu/africa-corps-has-russia-hit-a-ceiling-in-africa/"],
+     verified: 2026-09,
+     note: "Une centaine de militaires russes, rôle d'encadrement"}
+
+  # --- Birmanie : junte militaire depuis le coup d'État de février 2021 ---
+  - {from: RU, to: MM, since: "2021-02", types: [arms], status: active, confidence: high,
+     sources: ["HCDH, rapporteur spécial de l'ONU : plus de 400 M$ d'armes russes depuis le coup d'État (mai 2023) — https://www.ohchr.org/en/press-releases/2023/05/un-expert-exposes-1-billion-death-trade-myanmar-military"],
+     verified: 2026-09,
+     note: "Avions de combat, hélicoptères d'attaque, missiles ; chiffres 2021-2023, le rapport annuel 2025 du HCDH signale des livraisons d'armes toujours en cours"}
+  - {from: CN, to: MM, since: "2021-02", types: [arms, political], status: active, confidence: high,
+     sources: ["HCDH, rapporteur spécial de l'ONU : 260 M$ d'armes chinoises depuis le coup d'État (mai 2023) — https://www.ohchr.org/en/press-releases/2023/05/un-expert-exposes-1-billion-death-trade-myanmar-military",
+               "HCDH, bilan 2025 : l'armée reprend Lashio « à la suite d'interventions de la Chine » (févr. 2026) — https://bangkok.ohchr.org/sites/default/files/documents/2026-02/ohchr_myanmar_annual_update_2025.pdf"],
+     verified: 2026-09}
+

@@ -68,6 +68,19 @@ def check(actors, edges, today=None, aligns=None):
             errors.append(f"{where} : au moins une source requise")
         elif not any("http" in s for s in sources):
             warnings.append(f"{where} : aucune source avec URL")
+        dates = {}
+        for k in ("since", "until"):
+            if e.get(k) is not None:
+                d = str(e[k])
+                if not re.fullmatch(r"\d{4}(-\d{2})?", d):
+                    errors.append(f"{where} : {k} « {d} » doit être au format AAAA ou AAAA-MM")
+                dates[k] = d
+        if "since" not in dates:
+            warnings.append(f"{where} : pas de date de début (since)")
+        if len(dates) == 2 and dates["until"] < dates["since"]:
+            errors.append(f"{where} : until antérieur à since")
+        if e.get("status") == "ended" and "until" not in dates:
+            warnings.append(f"{where} : relation terminée sans date de fin (until)")
         v = str(e.get("verified", ""))
         if not re.fullmatch(r"\d{4}-\d{2}", v):
             errors.append(f"{where} : verified « {v} » doit être au format AAAA-MM")

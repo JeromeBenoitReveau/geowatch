@@ -21,7 +21,8 @@ def polymarket(keywords):
             out.append({"source": "polymarket", "id": str(m.get("id")),
                         "question": m["question"], "prob": float(prices[0]),  # prix du "Yes"
                         "volume": float(m.get("volume") or 0),
-                        "url": f"https://polymarket.com/event/{ev.get('slug', '')}"})
+                        "url": f"https://polymarket.com/event/{ev.get('slug', '')}",
+                        "end_date": m.get("endDate")})
     return out
 
 KALSHI = "https://api.elections.kalshi.com/trade-api/v2"
@@ -70,7 +71,8 @@ def kalshi(keywords, events):
                 continue
             out.append({"source": "kalshi", "id": m["ticker"], "question": question,
                         "prob": float(m["last_price_dollars"]), "volume": volume,
-                        "url": f"https://kalshi.com/markets/{ev.get('series_ticker', '').lower()}"})
+                        "url": f"https://kalshi.com/markets/{ev.get('series_ticker', '').lower()}",
+                        "end_date": m.get("close_time")})
     return out
 
 def fetch(keywords, kalshi_evs):
@@ -80,3 +82,34 @@ def fetch(keywords, kalshi_evs):
     except httpx.HTTPError as e:
         print(f"  [polymarket] → {e}")
     return out + kalshi(keywords, kalshi_evs)
+
+def resolve(source, market_id):
+    """Issue d'un marché clos : {"resolved_at", "outcome": 1 (Oui) | 0 (Non)}, ou None s'il n'est pas
+    (encore) tranché. Un marché annulé ou réglé à 50/50 reste None : il n'entre pas dans le bilan."""
+    if source == "polymarket":
+        # l'API renvoie l'état ouvert d'un marché tant qu'on ne demande pas explicitement closed=true,
+        # et un marché archivé après résolution n'apparaît qu'avec archived=true
+        m = {}
+        for extra in ({}, {"archived": "true"}):
+            r = httpx.get("https://gamma-api.polymarket.com/markets", timeout=30,
+                          params={"id": market_id, "closed": "true", **extra})
+            r.raise_for_status()
+            if r.json():
+                m = r.json()[0]
+                break
+        if not m.get("closed") or m.get("umaResolutionStatus") != "resolved":
+            return None
+        prices = m.get("outcomePrices")
+        prices = json.loads(prices) if isinstance(prices, str) else prices
+        yes = float(prices[0]) if prices else None
+        if yes is None or 0.01 < yes < 0.99:
+            return None
+        return {"resolved_at": m.get("closedTime") or m.get("endDate"), "outcome": int(yes >= 0.99)}
+    if source == "kalshi":
+        r = httpx.get(f"{KALSHI}/markets/{market_id}", timeout=30)
+        r.raise_for_status()
+        m = r.json().get("market", {})
+        if m.get("status") not in ("finalized", "settled") or m.get("result") not in ("yes", "no"):
+            return None
+        return {"resolved_at": m.get("close_time"), "outcome": int(m["result"] == "yes")}
+    return None

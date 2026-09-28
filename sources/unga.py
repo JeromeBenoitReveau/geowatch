@@ -9,6 +9,7 @@ import csv, io, httpx
 API = "https://dataverse.harvard.edu/api"
 DOI = "doi:10.7910/DVN/LEJUQZ"
 REFS = {"west": ["FRA", "DEU"], "axis": ["RUS", "CHN"]}
+FIRST_YEAR = 2010
 H = {"User-Agent": "geowatch/0.1 (open-source research tool)"}
 
 def _meta():
@@ -49,15 +50,19 @@ def fetch(prev_version=None):
                 agree.setdefault(int(r["year"]), {}).setdefault(a, {})[b] = float(r["agree"])
     year = max(agree)
 
-    countries = {}
-    for c, d in agree[year].items():
+    def score(d, c):
         # un pays de référence n'est comparé qu'aux AUTRES membres de son groupe
         means = {k: [d[x] for x in refs if x != c and x in d] for k, refs in REFS.items()}
         if not all(means.values()):
-            continue
+            return None
         w, x = (sum(v) / len(v) for v in (means["west"], means["axis"]))
-        countries[c] = {"west": round(w, 3), "axis": round(x, 3), "usa": round(d["USA"], 3) if "USA" in d else None,
-                        "lean": round(w - x, 3)}
+        return {"west": round(w, 3), "axis": round(x, 3), "usa": round(d["USA"], 3) if "USA" in d else None,
+                "lean": round(w - x, 3)}
+
+    countries = {c: v for c, d in agree[year].items() if (v := score(d, c))}
+    # penchant année par année (curseur temporel du site), depuis FIRST_YEAR
+    by_year = {y: {c: v["lean"] for c, d in agree[y].items() if (v := score(d, c))}
+               for y in range(FIRST_YEAR, year + 1) if y in agree}
 
     # écart de vote États-Unis ↔ moyenne France/Allemagne sur l'axe unique, pour suivre la dérive transatlantique
     last = max(ideal["USA"])
@@ -74,4 +79,4 @@ def fetch(prev_version=None):
                        "url": "https://doi.org/10.7910/DVN/LEJUQZ", "license": "CC0 1.0",
                        "version": m["version"], "published": m["published"],
                        "cite": "Bailey, Strezhnev & Voeten (2017), Journal of Conflict Resolution 61(2)"},
-            "refs": REFS, "agreement_year": year, "countries": countries, "drift": drift}
+            "refs": REFS, "agreement_year": year, "countries": countries, "by_year": by_year, "drift": drift}

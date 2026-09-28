@@ -1,5 +1,5 @@
 """Profil pays : Banque mondiale (démographie, ressources, techno, défense) + Wikidata (régime)."""
-import re, httpx
+import re, time, httpx
 
 WB = "https://api.worldbank.org/v2/country/{isos}/indicator/{code}"
 WB_CODES = {"EU": "EUU"}  # agrégats Banque mondiale pour les blocs (renvoyés sous l'id « EU »)
@@ -30,9 +30,16 @@ INDICATORS = {
 }
 
 def _wb_series(isos, code):
-    r = httpx.get(WB.format(isos=";".join(WB_CODES.get(i, i) for i in isos), code=code), timeout=60,
-                  params={"format": "json", "date": "2005:2026", "per_page": 5000})
-    r.raise_for_status()
+    for attempt in range(3):  # l'API Banque mondiale expire parfois : sans nouvel essai, un indicateur manque pour tous les pays
+        try:
+            r = httpx.get(WB.format(isos=";".join(WB_CODES.get(i, i) for i in isos), code=code), timeout=90,
+                          params={"format": "json", "date": "2005:2026", "per_page": 5000})
+            r.raise_for_status()
+            break
+        except httpx.HTTPError:
+            if attempt == 2:
+                raise
+            time.sleep(10)
     body = r.json()
     rows = body[1] if len(body) > 1 and body[1] else []
     out = {}

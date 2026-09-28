@@ -17,6 +17,25 @@ def run_markets():
         n_k = sum(m["source"] == "kalshi" for m in found)
         print(f"→ {name} : {len(found) - n_k} Polymarket, {n_k} Kalshi")
     history.record(fetched_at, batch)
+    check_resolutions({(m["source"], m["id"]) for _, m in batch})
+
+def check_resolutions(seen):
+    """Marchés suivis absents de ce relevé (clos ou plus trouvés) et pas encore résolus : on demande leur issue."""
+    done, new = history.resolutions(), []
+    for r in history.markets():
+        key = (r["source"], r["market_id"])
+        if key in seen or key in done:
+            continue
+        try:
+            res = markets.resolve(*key)
+        except markets.httpx.HTTPError as e:
+            print(f"  [résolution] {key} → {e}")
+            continue
+        if res:
+            new.append((*key, res["resolved_at"], res["outcome"]))
+    history.record_resolutions(new)
+    if new:
+        print(f"→ {len(new)} marché(s) résolu(s)")
 
 def run_profiles(c):
     actors, _ = network.load()
@@ -29,7 +48,8 @@ def run_profiles(c):
         db.save_profile(c, iso, p)
     c.commit()
     # votes à l'ONU (Voeten) : téléchargés seulement si une nouvelle version est publiée
-    u = unga.fetch(db.load_unga().get("source", {}).get("version"))
+    known = db.load_unga()
+    u = unga.fetch(known.get("source", {}).get("version") if "by_year" in known else None)
     if u:
         db.save_unga(u)
         print(f"→ votes ONU : version {u['source']['version']}, accord {u['agreement_year']}, {len(u['countries'])} pays")

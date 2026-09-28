@@ -25,6 +25,14 @@ DYADS = {
         "countries": ["VE", "GY"],
         "keywords": ["venezuela", "guyana"],
     },
+    "sudan-war": {
+        "countries": ["SD"],
+        "keywords": ["sudan", "ceasefire"],
+    },
+    "mali-junta": {
+        "countries": ["ML"],
+        "keywords": ["goïta"],
+    },
 }
 
 MOVE_ALERT_PTS = 10  # variation de cote (points de %) sur 7 j jugée notable

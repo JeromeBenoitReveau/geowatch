@@ -136,6 +136,10 @@ publiées ou de règles écrites ici) ; rien n'entre dans le graphe sans source 
 (signalée au-delà de 6 mois).</li>
 </ul>
 <p>Sites les plus cités : {", ".join(f"{e(dom)} ({n})" for dom, n in domains.most_common(8))}.</p>
+<p><b>Dates</b> : <code>since</code> est la plus ancienne date documentée par les sources citées — pas forcément le vrai
+début d'une relation (l'aide américaine à l'Ukraine est datée de 2022 car la source couvre la période depuis l'invasion) ;
+<code>until</code> marque une fin. Le curseur « Année » du site n'affiche que les relations actives l'année choisie ;
+{sum(1 for x in edges if not x.get("since"))} relation(s) sans date restent affichées toutes les années.</p>
 <p><code>validate.py</code> refuse une relation sans source, avec un acteur inconnu ou une valeur hors liste, et tourne sur
 GitHub à chaque modification. <code>update_network.py</code> peut proposer des mises à jour (Claude + recherche web) dans un
 fichier séparé : rien n'entre dans le graphe sans relecture.</p>
@@ -188,6 +192,13 @@ apparaissent dans son titre. Polymarket : recherche publique ; Kalshi : événem
 Chaque relevé est ajouté à <code>data/odds.csv</code> ; la variation affichée compare la cote actuelle au dernier relevé
 d'il y a 7 jours, signalée au-delà de {MOVE_ALERT_PTS} points. Le prix d'un marché reflète les paris de ses participants,
 pas une probabilité objective.</p>
+<h3>Bilan des marchés</h3>
+<p>À chaque relevé, les marchés suivis qui ont disparu (clos) sont interrogés : l'issue est enregistrée dans
+<code>data/resolutions.csv</code> (Polymarket : prix final de 1 ou 0 après résolution ; Kalshi : champ <code>result</code>).
+Les marchés annulés ou réglés à 50/50 sont écartés. Pour chaque marché résolu, on retient la dernière cote relevée
+1, 7 et 30 jours avant l'issue, et on calcule le <b>score de Brier</b> : moyenne de (cote − issue)², où l'issue vaut
+1 (Oui) ou 0 (Non). 0 est parfait ; 0,25 correspond à une cote de 50 % à chaque fois. Tant que moins de 30 marchés
+sont résolus, le score est indicatif. Ce bilan juge les marchés, pas geowatch, qui ne produit aucune probabilité.</p>
 
 <h2 id="profils">Profils pays</h2>
 <p>Banque mondiale (dernière année disponible, souvent avec 1 à 2 ans de retard) : {", ".join(f"<code>{c}</code>" for c in INDICATORS.values())}.

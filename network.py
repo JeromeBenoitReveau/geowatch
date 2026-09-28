@@ -60,8 +60,11 @@ def influence(actors, edges, al):
                         {"bloc": None, "role": "contested", "level": top, "blocs": leaders, "via": via_all, "ties": tied})
         else:
             via = via_all
-            blocs = sorted({bloc_of(v) for v in via} - {None})
-            if not blocs:
+            of = [bloc_of(v) for v in via]
+            blocs = sorted(set(of) - {None})
+            if not blocs or (len(blocs) == 1 and None in of):
+                # aucun soutien de bloc, ou un soutien hors bloc à côté : pas de satellite
+                # (ex. Soudan soutenu par la Turquie, membre de l'OTAN, et par l'Égypte, hors bloc)
                 out[aid] = {"bloc": None, "role": "none", "level": 0, "via": via, "ties": tied}
             elif len(blocs) == 1:
                 out[aid] = {"bloc": blocs[0], "role": "satellite", "level": 1, "via": via, "ties": tied}

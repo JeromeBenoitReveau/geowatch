@@ -42,9 +42,10 @@ def build():
     if unga:  # le jeu Voeten est indexé en ISO3, le site en ISO2
         by3 = {v["iso3"]: k for k, v in geo.items() if v.get("iso3")}
         unga["countries"] = {by3[c]: v for c, v in unga["countries"].items() if c in by3}
+        unga["by_year"] = {y: {by3[c]: v for c, v in d.items() if c in by3} for y, d in unga.get("by_year", {}).items()}
     data = {"actors": actors, "edges": edges, "profiles": profiles, "colors": TYPE_COLORS,
             "align": aligns, "influence": network.influence(actors, edges, aligns), "geo": geo, "people": db.load_people(), "unga": unga,
-            "markets": markets, "alert": MOVE_ALERT_PTS, "built": db.now()}
+            "markets": markets, "calibration": track.calibration(), "alert": MOVE_ALERT_PTS, "built": db.now()}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
                             .replace("</", "<\\/"))
     (OUT / "index.html").write_text(html, encoding="utf-8")
@@ -102,6 +103,7 @@ h1{font-size:20px;margin:0 0 4px}h2{font-size:12px;text-transform:uppercase;lett
   <label class="map-only">Couleur des pays : <select id="colormode">
     <option value="formal">liens formels (traités, adhésions)</option><option value="votes">votes à l'ONU</option></select></label>
   <label class="map-only">Organisation : <select id="org"><option value="">aucune</option></select></label>
+  <label>Année : <input type="range" id="year" min="2014" step="1" style="vertical-align:middle;width:130px"> <b id="year-label"></b></label>
   <label class="graph-only"><input type="checkbox" id="lyr-armed" checked> Groupes armés non étatiques</label>
   <label class="graph-only"><input type="checkbox" id="lyr-detail"> Partis & personnalités</label>
 </div></div>
@@ -166,6 +168,25 @@ document.addEventListener("click", ev => {
   const gl = ev.target.closest("[data-group]"); if(gl){ ev.preventDefault(); showGroup(gl.dataset.group); }
   const cl = ev.target.closest("[data-country]"); if(cl){ ev.preventDefault(); D.actors[cl.dataset.country] ? show(cl.dataset.country) : showCountry(cl.dataset.country); } });
 
+// ---------- Bilan des marchés : cotes passées face à l'issue réelle ----------
+function calibrationBlock(){ const C = D.calibration || {}, ms = C.markets || [], B = C.brier || {};
+  const day = t => esc((t||"").slice(0,10)), odd = p => p == null ? "n/d" : (p < .01 ? "&lt;1" : Math.round(p*100)) + " %";
+  let h = `<h2>Bilan des marchés</h2>`;
+  if(!ms.length){
+    h += `<p class="mute">Aucun marché suivi n'est encore résolu : le bilan se remplira à chaque échéance.</p>`;
+  } else {
+    const n = Math.max(...Object.values(B).map(b => b.n));
+    h += `<p class="mute">${ms.length} marché(s) résolu(s). Score de Brier (0 = parfait, 0,25 = une cote de 50 % à chaque fois) :
+      ${Object.entries(B).filter(([,b]) => b.n).map(([k,b]) => `<b>${String(b.score).replace(".", ",")}</b> ${esc(k)} avant (${b.n})`).join(" · ")}
+      ${n < 30 ? " — trop peu de marchés pour conclure, indicatif seulement." : ""}</p>` +
+      ms.slice(0, 8).map(m => `<div class="rel"><a href="${safeUrl(m.url)}" target="_blank" rel="noopener">${esc(m.question)}</a>
+        <span class="mute"><br>Issue : <b>${m.outcome ? "Oui" : "Non"}</b> le ${day(m.resolved_at)} · cote 7 j avant ${odd(m.odds["7 j"])},
+        1 j avant ${odd(m.odds["1 j"])} · ${esc(m.source)}</span></div>`).join("");
+  }
+  if((C.overdue||[]).length) h += `<p class="mute">En attente de résolution : ${C.overdue.map(u => esc(u.question)).join(" ; ")}.</p>`;
+  if((C.upcoming||[]).length) h += `<p class="mute">Prochaines échéances : ${C.upcoming.map(u => `${esc(u.question)} (${day(u.end_date)})`).join(" ; ")}.</p>`;
+  return h; }
+
 // ---------- Votes à l'ONU (Voeten) ----------
 const U = D.unga || {}, UC = U.countries || {};
 const pct = x => x == null ? "n/d" : Math.round(x*100) + " %";
@@ -173,9 +194,11 @@ function ungaLine(iso){ const v = UC[iso]; if(!v) return "";
   return `Votes à l'ONU (${U.agreement_year}) : comme France/Allemagne <b>${pct(v.west)}</b>, comme Russie/Chine <b>${pct(v.axis)}</b>,
     ${iso==="US" ? "" : `comme les États-Unis ${pct(v.usa)} `}— penche ${v.lean > .05 ? "vers l'Europe" : v.lean < -.05 ? "vers Russie/Chine" : "entre les deux"}
     (${v.lean > 0 ? "+" : ""}${v.lean.toFixed(2)})`; }
-function votesColor(iso){ const v = UC[iso]; if(!v) return null;
-  const t = Math.min(1, Math.abs(v.lean) / .5) * .7;
-  return mix(v.lean >= 0 ? BLOCS.west.color : BLOCS.axis.color, css("--land"), t); }
+const voteYear = () => Math.min(YEAR(), U.agreement_year);
+const leanAt = iso => ((U.by_year || {})[voteYear()] || {})[iso];
+function votesColor(iso){ const lean = leanAt(iso); if(lean == null) return null;
+  const t = Math.min(1, Math.abs(lean) / .5) * .7;
+  return mix(lean >= 0 ? BLOCS.west.color : BLOCS.axis.color, css("--land"), t); }
 // Écart de vote États-Unis ↔ moyenne France/Allemagne (axe unique Voeten), comparé à l'écart France ↔ Allemagne
 function driftBlock(){ const d = U.drift || []; if(d.length < 2) return "";
   const W = 260, H = 60, max = Math.max(...d.map(x => x.us_gap)), X = i => 8 + i*(W-16)/(d.length-1), Y = v => H-8 - v/max*(H-16);
@@ -222,9 +245,20 @@ function nodeFor(id, size){ const a = D.actors[id], pic = a.kind==="state" || a.
          : blocColor(id) ? {border: blocColor(id), background: blocColor(id)} : undefined,
     borderWidth: blocColor(id) ? 1 + (inf(id).level || 1) : pic ? 1 : 1.5, font:{color:fg, size: 11 + Math.round(size/7)},
     hidden: !visible(layer(id))}; }
-const edgeList = D.edges.filter(e=>e.status!=="ended").map((e,i) => ({id:"e"+i, from:e.from, to:e.to, arrows:"to",
+// ---------- Temps : une relation est affichée pour l'année Y si since ≤ Y ≤ until ----------
+const NOW = +D.built.slice(0,4);
+const YEAR = () => +($("#year") ? $("#year").value : NOW);
+(() => { const y = $("#year"); y.max = NOW; y.value = NOW; })();
+function activeAt(e, Y){
+  const since = e.since ? +String(e.since).slice(0,4) : null, until = e.until ? +String(e.until).slice(0,4) : null;
+  if(since && Y < since) return false;
+  if(until && Y > until) return false;
+  return Y < NOW || e.status !== "ended";  // aujourd'hui : on masque ce qui est terminé
+}
+const dated = e => e.since ? `depuis ${e.since}${e.until ? ` jusqu'à ${e.until}` : ""}` : "début non daté";
+const edgeList = D.edges.map((e,i) => ({id:"e"+i, from:e.from, to:e.to, arrows:"to", hidden: !activeAt(e, NOW),
   color:D.colors[e.types[0]]||"#888", dashes: e.status!=="active" || e.confidence==="low",
-  width: e.confidence==="high"?2.2:1.2, title:`${(D.actors[e.from]||{}).name||e.from} → ${(D.actors[e.to]||{}).name||e.to} : ${e.types.join(", ")}`}));
+  width: e.confidence==="high"?2.2:1.2, title:`${(D.actors[e.from]||{}).name||e.from} → ${(D.actors[e.to]||{}).name||e.to} : ${e.types.join(", ")} (${dated(e)})`}));
 // lien d'ancrage parti/personnalité → pays (calque détail)
 const anchors = Object.entries(D.actors).filter(([id,a])=>DETAIL.has(a.kind) && D.actors[a.base])
   .map(([id,a]) => ({id:"b-"+id, from:id, to:a.base, dashes:[2,4], color:"#999", width:1, title:"rattaché à"}));
@@ -242,6 +276,10 @@ function refresh(){
   nodesDS.update(Object.keys(D.actors).map(id=>({id, size:sz(id), font:{color:fg, size:11+Math.round(sz(id)/7)},
     hidden: !visible(layer(id))}))); }
 ["metric","lyr-armed","lyr-detail"].forEach(i => $("#"+i).addEventListener("change", refresh));
+function onYear(){ const Y = YEAR();
+  $("#year-label").textContent = Y === NOW ? `${Y} (aujourd'hui)` : String(Y);
+  edgesDS.update(D.edges.map((e,i) => ({id:"e"+i, hidden: !activeAt(e, Y)}))); }
+$("#year").addEventListener("input", onYear); onYear();
 $("#metric").addEventListener("change", () => map && drawMarkers());
 
 // ---------- Vue carte : une couche Leaflet par type d'acteur, chacun dans son pays ----------
@@ -292,12 +330,12 @@ function curve(a, b){ const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2, dx=b[0]-a[0], dy
 function drawLinks(){
   groups.links.clearLayers(); linkLayers = [];
   const on = k => map.hasLayer(groups[k]);
-  D.edges.filter(e=>e.status!=="ended").forEach(e => {
+  D.edges.filter(e => activeAt(e, YEAR())).forEach(e => {
     const a = POS[e.from], b = POS[e.to];
     if(!a || !b || !on(layerOf(e.from)) || !on(layerOf(e.to))) return;
     const l = L.polyline(curve(a,b), {color: D.colors[e.types[0]]||"#888", weight: e.confidence==="high"?2.2:1.4,
       opacity:.8, dashArray: e.status!=="active"||e.confidence==="low" ? "5 5" : null})
-      .bindTooltip(`${D.actors[e.from].name} → ${D.actors[e.to].name} : ${e.types.join(", ")}`, {sticky:true})
+      .bindTooltip(`${D.actors[e.from].name} → ${D.actors[e.to].name} : ${e.types.join(", ")} (${dated(e)})`, {sticky:true})
       .addTo(groups.links);
     // flèche : petit cercle plein côté bénéficiaire
     const tip = L.circleMarker(b, {radius:3, color: D.colors[e.types[0]]||"#888", fillOpacity:1, weight:0, interactive:false}).addTo(groups.links);
@@ -316,7 +354,9 @@ async function initMap(){
   const byNum = Object.fromEntries(Object.entries(D.geo).filter(([_,g]) => g.iso_numeric)
     .map(([iso,g]) => [String(+g.iso_numeric), iso]));
   const formalTip = iso => `${cname(iso)}${blocColor(iso) ? " — " + (inf(iso).role==="contested" ? "disputé" : esc(BLOCS[inf(iso).bloc].name) + (inf(iso).role==="member" ? `, niveau ${inf(iso).level}/3` : ", satellite")) : ""}`;
-  const votesTip = iso => UC[iso] ? `${cname(iso)} — vote comme France/Allemagne ${pct(UC[iso].west)}, comme Russie/Chine ${pct(UC[iso].axis)} (${U.agreement_year})` : `${cname(iso)} — pas de données de vote`;
+  const votesTip = iso => leanAt(iso) == null ? `${cname(iso)} — pas de données de vote pour ${voteYear()}`
+    : voteYear() === U.agreement_year && UC[iso] ? `${cname(iso)} — vote comme France/Allemagne ${pct(UC[iso].west)}, comme Russie/Chine ${pct(UC[iso].axis)} (${U.agreement_year})`
+    : `${cname(iso)} — penchant ${leanAt(iso) > 0 ? "+" : ""}${leanAt(iso).toFixed(2)} en ${voteYear()} (+ = vote comme France/Allemagne, − = comme Russie/Chine)`;
   const style = f => { const iso = byNum[String(+f.id)], votes = $("#colormode").value==="votes";
     const c = iso && (votes ? votesColor(iso) : blocColor(iso) && mix(blocColor(iso), css("--land"), TINT[inf(iso).level] || .25));
     const org = GROUPS[$("#org").value], inOrg = org && org.members.includes(iso);
@@ -329,6 +369,7 @@ async function initMap(){
       l.on("click", () => D.actors[iso] ? show(iso) : showCountry(iso)); }
   }).addTo(map);
   $("#colormode").addEventListener("change", () => countries.setStyle(style));
+  $("#year").addEventListener("input", () => { countries.setStyle(style); drawLinks(); });
   $("#org").addEventListener("change", () => { countries.setStyle(style); const g = GROUPS[$("#org").value]; if(g) showGroup(g.id); });
   groups = Object.fromEntries(Object.keys(MAP_LAYERS).map(k => [k, L.layerGroup().addTo(map)]));
   L.control.layers(null, Object.fromEntries(Object.entries(MAP_LAYERS).map(([k,label]) => [label, groups[k]])),
@@ -349,7 +390,7 @@ function f(v, unit="", d=1){ if(!v) return "n/d"; let x=v.value, s;
 const tags = t => t.map(x=>`<span class="tag" style="background:${D.colors[x]||'#888'}">${esc(x)}</span>`).join("");
 const src = s => esc(s).replace(/https?:\/\/[^\s<]+/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
 const rel = (e, other) => `<div class="rel"><b data-id="${esc(other)}">${nm(other)}</b> ${tags(e.types)}
-  <div class="mute">${esc(e.status)} · confiance ${esc(e.confidence)} · vérifié ${esc(e.verified)} · ${(e.sources||[]).map(src).join(" ; ")}${e.note?"<br>"+esc(e.note):""}</div></div>`;
+  <div class="mute">${esc(e.status)} · confiance ${esc(e.confidence)} · ${esc(dated(e))} · vérifié ${esc(e.verified)} · ${(e.sources||[]).map(src).join(" ; ")}${e.note?"<br>"+esc(e.note):""}</div></div>`;
 document.addEventListener("click", ev => { const b = ev.target.closest("[data-id]"); if(b) show(b.dataset.id); });
 
 function spark(daily){ if(!daily || daily.length<2) return "";
@@ -444,6 +485,10 @@ function legend(){
   1 candidature ou participation gelée (sources : alignments.yaml, cliquer un pays). Sans lien formel, un acteur
   dont tous les soutiens actifs viennent d'un même bloc en est « satellite » (niveau 1, déduit du graphe).
   Partis et personnalités ne sont pas classés.</p>
+  ${calibrationBlock()}
+  <h2>Curseur « Année »</h2><p class="mute">Il n'affiche que les relations actives l'année choisie (dates <code>since</code>/<code>until</code>
+  des sources) ; ${D.edges.filter(e => !e.since).length} relation(s) sans date de début restent affichées toutes les années.
+  En vue carte, « votes à l'ONU » suit aussi l'année (données ${Math.min(...Object.keys(U.by_year||{}).map(Number))}–${U.agreement_year}).</p>
   <h2>Forums économiques et politiques</h2><p class="mute">${D.align.groups.filter(g => g.kind==="forum").map(g =>
     `<a href="#" data-group="${esc(g.id)}">${esc(g.name)}</a>`).join(" · ")}. Ce sont des cadres de coopération, pas des alliances :
   les BRICS réunissent l'Inde et la Chine, l'OCS l'Inde et le Pakistan. Ils n'entrent donc pas dans le calcul des blocs ;
