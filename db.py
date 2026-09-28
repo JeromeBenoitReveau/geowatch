@@ -24,6 +24,13 @@ def save_geo(data):
     GEO.write_text(json.dumps(data, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
 
 PEOPLE = PROFILES.with_name("people.json")
+UNGA = PROFILES.with_name("unga.json")
+
+def save_unga(data):
+    UNGA.write_text(json.dumps(data, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+
+def load_unga():
+    return json.loads(UNGA.read_text(encoding="utf-8")) if UNGA.exists() else {}
 
 def save_people(data):
     PEOPLE.write_text(json.dumps(data, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")

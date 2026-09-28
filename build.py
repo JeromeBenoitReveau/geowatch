@@ -38,8 +38,12 @@ def build():
                for name, d in DYADS.items()}
     OUT.mkdir(exist_ok=True)
     aligns = network.alignments()
+    geo, unga = db.load_geo(), db.load_unga()
+    if unga:  # le jeu Voeten est indexé en ISO3, le site en ISO2
+        by3 = {v["iso3"]: k for k, v in geo.items() if v.get("iso3")}
+        unga["countries"] = {by3[c]: v for c, v in unga["countries"].items() if c in by3}
     data = {"actors": actors, "edges": edges, "profiles": profiles, "colors": TYPE_COLORS,
-            "align": aligns, "influence": network.influence(actors, edges, aligns), "geo": db.load_geo(), "people": db.load_people(),
+            "align": aligns, "influence": network.influence(actors, edges, aligns), "geo": geo, "people": db.load_people(), "unga": unga,
             "markets": markets, "alert": MOVE_ALERT_PTS, "built": db.now()}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
                             .replace("</", "<\\/"))
@@ -69,6 +73,7 @@ border-radius:8px;padding:8px 10px;font-size:12px;display:flex;flex-direction:co
 #views button[aria-pressed=true]{background:var(--fg);color:var(--bg)}
 #map{position:absolute;inset:0;display:none;background:var(--ocean)}
 body.map #map{display:block}body.map #graph,body.map .graph-only{display:none}
+.map-only{display:none}body.map .map-only{display:block}
 .leaflet-container{background:var(--ocean);font:inherit}
 .leaflet-control-layers,.leaflet-bar a,.leaflet-tooltip{background:var(--card);color:var(--fg);border-color:var(--line)}
 .mk{display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -92,6 +97,8 @@ h1{font-size:20px;margin:0 0 4px}h2{font-size:12px;text-transform:uppercase;lett
   <label>Taille des acteurs : <select id="metric">
     <option value="military">dépenses militaires ($)</option><option value="gdp">PIB ($)</option>
     <option value="supports">nombre de soutiens accordés</option></select></label>
+  <label class="map-only">Couleur des pays : <select id="colormode">
+    <option value="formal">liens formels (traités, adhésions)</option><option value="votes">votes à l'ONU</option></select></label>
   <label class="graph-only"><input type="checkbox" id="lyr-armed" checked> Groupes armés non étatiques</label>
   <label class="graph-only"><input type="checkbox" id="lyr-detail"> Partis & personnalités</label>
 </div></div>
@@ -137,6 +144,34 @@ function blocLine(id){ const i = inf(id), nmv = i.via.map(nm).join(", ");
   if(i.role==="satellite") return `Bloc : <b style="color:${blocColor(id)}">${esc(BLOCS[i.bloc].name)}</b> — satellite, sans lien formel (soutenu par ${nmv})`;
   if(i.role==="contested") return `Bloc : <b style="color:${CONTESTED}">disputé</b> entre ${i.blocs.map(b=>esc(BLOCS[b].name)).join(" et ")}${ties ? ` (${ties})` : ` (soutenu par ${nmv})`}`;
   return ""; }
+// ---------- Votes à l'ONU (Voeten) ----------
+const U = D.unga || {}, UC = U.countries || {};
+const pct = x => x == null ? "n/d" : Math.round(x*100) + " %";
+function ungaLine(iso){ const v = UC[iso]; if(!v) return "";
+  return `Votes à l'ONU (${U.agreement_year}) : comme France/Allemagne <b>${pct(v.west)}</b>, comme Russie/Chine <b>${pct(v.axis)}</b>,
+    ${iso==="US" ? "" : `comme les États-Unis ${pct(v.usa)} `}— penche ${v.lean > .05 ? "vers l'Europe" : v.lean < -.05 ? "vers Russie/Chine" : "entre les deux"}
+    (${v.lean > 0 ? "+" : ""}${v.lean.toFixed(2)})`; }
+function votesColor(iso){ const v = UC[iso]; if(!v) return null;
+  const t = Math.min(1, Math.abs(v.lean) / .5) * .7;
+  return mix(v.lean >= 0 ? BLOCS.west.color : BLOCS.axis.color, css("--land"), t); }
+// Écart de vote États-Unis ↔ moyenne France/Allemagne (axe unique Voeten), comparé à l'écart France ↔ Allemagne
+function driftBlock(){ const d = U.drift || []; if(d.length < 2) return "";
+  const W = 260, H = 60, max = Math.max(...d.map(x => x.us_gap)), X = i => 8 + i*(W-16)/(d.length-1), Y = v => H-8 - v/max*(H-16);
+  const line = k => d.map((x,i) => `${X(i).toFixed(1)},${Y(x[k]).toFixed(1)}`).join(" ");
+  const a = d[d.length-2], b = d[d.length-1];
+  return `<h2>Dérive transatlantique</h2><svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px" aria-hidden="true">
+    <polyline points="${line("us_gap")}" fill="none" stroke="${BLOCS.west.color}" stroke-width="2"/>
+    <polyline points="${line("fr_de_gap")}" fill="none" stroke="var(--mute)" stroke-width="1.5" stroke-dasharray="3 3"/></svg>
+    <p class="mute">Écart de vote à l'ONU États-Unis ↔ France/Allemagne (trait plein) : <b>${a.us_gap} en ${a.year} → ${b.us_gap} en ${b.year}</b>,
+    contre ${b.fr_de_gap} entre France et Allemagne (pointillés), ${d[0].year}–${b.year}. Mesure sur l'axe unique de Voeten,
+    fiable pour un écart entre deux pays, pas pour placer un pays entre deux blocs.</p>`; }
+function euCohesion(id){ const g = D.align.groups.find(x => x.entity===id && x.level===3); if(!g) return "";
+  const vals = g.members.filter(m => UC[m]).map(m => [m, UC[m].west]).sort((a,b) => a[1]-b[1]);
+  if(!vals.length) return "";
+  const mean = vals.reduce((s,[,v]) => s+v, 0) / vals.length;
+  return `<h2>Cohésion des votes (${U.agreement_year})</h2><p class="mute">Les membres votent comme France/Allemagne en moyenne
+    <b>${pct(mean)}</b> des fois. Les plus éloignés : ${vals.slice(0,3).map(([m,v]) => `${cname(m)} ${pct(v)}`).join(", ")}.</p>`; }
+
 // Groupes formels rattachés à une entité (ex. niveaux de l'UE : membres, candidats, zone euro, Schengen)
 function tiers(id){ const gs = D.align.groups.filter(g => g.entity===id);
   return gs.length ? `<h2>Niveaux</h2>` + gs.map(g => `<div class="rel"><b>${esc(g.name)}</b>
@@ -258,15 +293,19 @@ async function initMap(){
   world.features = world.features.filter(f => f.id !== "010").map(fixAntimeridian);  // sans l'Antarctique
   const byNum = Object.fromEntries(Object.entries(D.geo).filter(([_,g]) => g.iso_numeric)
     .map(([iso,g]) => [String(+g.iso_numeric), iso]));
-  L.geoJSON(world, {
-    style: f => { const iso = byNum[String(+f.id)], c = iso && blocColor(iso);
-      return {color: css("--line"), weight:.6, fillOpacity:1,
-              fillColor: c ? mix(c, css("--land"), TINT[inf(iso).level] || .25) : iso && D.actors[iso] ? css("--land-hl") : css("--land")}; },
+  const formalTip = iso => `${cname(iso)}${blocColor(iso) ? " — " + (inf(iso).role==="contested" ? "disputé" : esc(BLOCS[inf(iso).bloc].name) + (inf(iso).role==="member" ? `, niveau ${inf(iso).level}/3` : ", satellite")) : ""}`;
+  const votesTip = iso => UC[iso] ? `${cname(iso)} — vote comme France/Allemagne ${pct(UC[iso].west)}, comme Russie/Chine ${pct(UC[iso].axis)} (${U.agreement_year})` : `${cname(iso)} — pas de données de vote`;
+  const style = f => { const iso = byNum[String(+f.id)], votes = $("#colormode").value==="votes";
+    const c = iso && (votes ? votesColor(iso) : blocColor(iso) && mix(blocColor(iso), css("--land"), TINT[inf(iso).level] || .25));
+    return {color: css("--line"), weight:.6, fillOpacity:1,
+            fillColor: c || (iso && D.actors[iso] ? css("--land-hl") : css("--land"))}; };
+  const countries = L.geoJSON(world, {style,
     onEachFeature: (f, l) => { const iso = byNum[String(+f.id)];
       if(!iso) return;
-      l.bindTooltip(`${cname(iso)}${blocColor(iso) ? " — " + (inf(iso).role==="contested" ? "disputé" : esc(BLOCS[inf(iso).bloc].name) + (inf(iso).role==="member" ? `, niveau ${inf(iso).level}/3` : ", satellite")) : ""}`, {sticky:true});
+      l.bindTooltip(() => ($("#colormode").value==="votes" ? votesTip : formalTip)(iso), {sticky:true});
       l.on("click", () => D.actors[iso] ? show(iso) : showCountry(iso)); }
   }).addTo(map);
+  $("#colormode").addEventListener("change", () => countries.setStyle(style));
   groups = Object.fromEntries(Object.keys(MAP_LAYERS).map(k => [k, L.layerGroup().addTo(map)]));
   L.control.layers(null, Object.fromEntries(Object.entries(MAP_LAYERS).map(([k,label]) => [label, groups[k]])),
     {collapsed: innerWidth < 800, position:"bottomleft"}).addTo(map);
@@ -310,7 +349,8 @@ function show(id){
   let h = `<h1>${nm(id)}</h1><div class="mute">${esc(KIND[a.kind]||a.kind)}${a.base&&a.kind!=="state"?" · "+nm(a.base)+" ("+esc(a.base)+")":""}${(a.member_of||[]).length?" · membre : "+a.member_of.map(nm).join(", "):""}</div>`;
   if(D.people[id]) h = `<img src="${safeUrl(D.people[id].thumb)}" alt="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;float:right;margin-left:10px">` + h;
   if(blocLine(id)) h += `<p class="mute">${blocLine(id)}</p>`;
-  h += tiers(id);
+  if(ungaLine(id)) h += `<p class="mute">${ungaLine(id)}</p>`;
+  h += tiers(id) + euCohesion(id) + (id==="US" || id==="EU" ? driftBlock() : "");
   if(a.note) h += `<p>${esc(a.note)}${(a.sources||[]).length?`<br><span class="mute">${a.sources.map(src).join(" ; ")}</span>`:""}</p>`;
   h += credit(id);
   if(members.length){
@@ -353,10 +393,11 @@ function showCountry(iso){
   const i = inf(iso);
   $("#panel").innerHTML = `<h1>${cname(iso)}</h1><div class="mute">État — hors du graphe de soutiens</div>
     ${blocLine(iso) ? `<p class="mute">${blocLine(iso)}</p>` : ""}
-    <h2>Liens formels</h2>` + i.ties.map(t => { const g = GROUPS[t];
+    ${ungaLine(iso) ? `<p class="mute">${ungaLine(iso)}</p>` : ""}
+    ${i.ties.length ? "<h2>Liens formels</h2>" : ""}` + i.ties.map(t => { const g = GROUPS[t];
       return `<div class="rel"><b>${esc(g.name)}</b> <span class="mute">${g.level ? `niveau ${g.level}/3` : "sans effet sur l'alignement"}
         ${g.note ? "<br>"+esc(g.note) : ""}<br>${g.sources.map(src).join(" ; ")}</span></div>`; }).join("")
-    + `<p class="mute">Ce pays n'a encore aucune relation de soutien sourcée dans network.yaml.</p>`; }
+    + `<p class="mute">Ce pays n'a ${i.ties.length ? "encore" : "ni lien formel dans alignments.yaml, ni"} aucune relation de soutien sourcée dans network.yaml.</p>`; }
 function legend(){
   if(map) highlightLinks(null);
   const all = Object.values(D.markets).flatMap(v=>v.markets).filter(m=>!m.stale);
@@ -376,8 +417,13 @@ function legend(){
   <p class="mute">Intensité = niveau du lien formel le plus fort : 3 défense mutuelle, 2 partenariat stratégique,
   1 candidature ou participation gelée (sources : alignments.yaml, cliquer un pays). Sans lien formel, un acteur
   dont tous les soutiens actifs viennent d'un même bloc en est « satellite » (niveau 1, déduit du graphe).
-  Les liens formels ne disent rien de la cohésion réelle — ce sera l'étape 2 (votes à l'ONU).
   Partis et personnalités ne sont pas classés.</p>
+  <h2>Votes à l'ONU</h2><p class="mute">Sur la carte, « Couleur des pays : votes à l'ONU » place chaque pays selon la fréquence
+  à laquelle il vote comme France/Allemagne ou comme Russie/Chine (Assemblée générale, votes enregistrés, ${U.agreement_year}).
+  Beaucoup de votes du Sud global (développement, décolonisation) coïncident avec ceux de la Chine : pencher vers
+  Russie/Chine ne veut pas dire appartenir à l'axe. Source : <a href="${safeUrl((U.source||{}).url)}" target="_blank" rel="noopener">Voeten,
+  UNGA Ideal Points</a> v${esc((U.source||{}).version)} (CC0) — ${esc((U.source||{}).cite)}.</p>
+  ${driftBlock()}
   <h2>Types de soutien</h2><div class="legend">${tags(Object.keys(D.colors))}</div>
   <h2>Mouvements de marché ≥ ${D.alert} pts sur 7 j</h2>${moves.length ? moves.map(mkt).join("")
     : `<p class="mute">Aucun${all.length?"":" — pas encore de cotes relevées"}.</p>`}

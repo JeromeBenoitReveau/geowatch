@@ -102,27 +102,29 @@ def people(qids):
                     "artist": strip(em.get("Artist", {}).get("value"))[:120]}
     return out
 
-def geo(isos):
-    """Coordonnées (P625), code ISO numérique (P299, pour les contours de la carte) et nom français
-    de chaque pays, en une seule requête Wikidata."""
-    values = " ".join(f'"{i}"' for i in sorted(isos))
-    q = f"""SELECT ?iso ?coord ?num ?cLabel WHERE {{
-      VALUES ?iso {{ {values} }}
-      ?c wdt:P297 ?iso .
+def geo(codes, prop="P297"):
+    """Coordonnées (P625), codes ISO2/ISO3/numérique et nom français de chaque pays, en une requête Wikidata.
+    codes : ISO2 (prop P297) ou ISO3 (prop P298). Résultat indexé en ISO2."""
+    values = " ".join(f'"{c}"' for c in sorted(codes))
+    q = f"""SELECT ?code ?iso2 ?iso3 ?coord ?num ?cLabel WHERE {{
+      VALUES ?code {{ {values} }}
+      ?c wdt:{prop} ?code ; wdt:P297 ?iso2 .
+      FILTER NOT EXISTS {{ ?c wdt:P576 ?dissolved }}
+      OPTIONAL {{ ?c wdt:P298 ?iso3 }}
       OPTIONAL {{ ?c wdt:P625 ?coord }}
       OPTIONAL {{ ?c wdt:P299 ?num }}
       SERVICE wikibase:label {{ bd:serviceParam wikibase:language "fr,mul,en". }} }}"""
     r = httpx.get("https://query.wikidata.org/sparql", params={"query": q, "format": "json"},
-                  headers={"User-Agent": "geowatch/0.1 (open-source research tool)"}, timeout=60)
+                  headers={"User-Agent": "geowatch/0.1 (open-source research tool)"}, timeout=90)
     r.raise_for_status()
     out = {}
     for b in r.json()["results"]["bindings"]:
-        iso = b["iso"]["value"]
+        iso = b["iso2"]["value"]
         if iso in out or "coord" not in b:
             continue  # premier point si Wikidata en donne plusieurs
         lon, lat = map(float, b["coord"]["value"].removeprefix("Point(").rstrip(")").split())
         out[iso] = {"lat": round(lat, 3), "lon": round(lon, 3), "name": b["cLabel"]["value"],
-                    "iso_numeric": b.get("num", {}).get("value")}
+                    "iso3": b.get("iso3", {}).get("value"), "iso_numeric": b.get("num", {}).get("value")}
     return out
 
 def fetch(isos):

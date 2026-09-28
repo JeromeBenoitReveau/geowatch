@@ -54,6 +54,12 @@ Blocs d'influence : `alignments.yaml` liste les liens formels (traités, adhési
 formel dont tous les soutiens actifs viennent d'un même bloc en est déduit « satellite ». La carte colore
 chaque pays selon son bloc, plus ou moins intensément selon le niveau.
 
+Votes à l'ONU : la carte peut aussi colorer chaque pays selon la fréquence à laquelle il vote comme
+France/Allemagne ou comme Russie/Chine à l'Assemblée générale (jeu de données d'Erik Voeten, Harvard
+Dataverse, CC0 ; dernière année disponible, environ un an de retard). L'écart de vote États-Unis ↔
+France/Allemagne est suivi à part, jusqu'à l'année écoulée. Pencher vers Russie/Chine n'est pas appartenir
+à l'axe : beaucoup de votes du Sud global coïncident avec ceux de la Chine.
+
 Personnalités : ajouter `wikidata: Qxxx` pour afficher leur photo (Wikimedia Commons, auteur et licence
 crédités dans la fiche). Groupes armés et partis sont représentés par des icônes Lucide.
 
