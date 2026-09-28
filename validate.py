@@ -80,7 +80,10 @@ def check(actors, edges, today=None, aligns=None):
         if k in ids:
             errors.append(f"groupe {k} : id en double")
         ids.add(k)
-        if g.get("bloc") not in (aligns.get("blocs") or {}):
+        if g.get("kind") == "forum":
+            if g.get("bloc") is not None or g.get("level") != 0:
+                errors.append(f"groupe {k} : un forum n'a ni bloc ni niveau (level: 0)")
+        elif g.get("bloc") not in (aligns.get("blocs") or {}):
             errors.append(f"groupe {k} : bloc « {g.get('bloc')} » absent de blocs")
         if g.get("level") not in (0, 1, 2, 3):
             errors.append(f"groupe {k} : level doit valoir 0, 1, 2 ou 3")

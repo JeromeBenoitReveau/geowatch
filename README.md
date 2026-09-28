@@ -60,6 +60,11 @@ Dataverse, CC0 ; dernière année disponible, environ un an de retard). L'écart
 France/Allemagne est suivi à part, jusqu'à l'année écoulée. Pencher vers Russie/Chine n'est pas appartenir
 à l'axe : beaucoup de votes du Sud global coïncident avec ceux de la Chine.
 
+Forums (BRICS, OCS, G7…) : listés dans `alignments.yaml` avec `kind: forum` ; affichés sur la carte, mais sans effet
+sur les blocs d'influence (ce sont des cadres de coopération, pas des alliances).
+
+La page `methode.html` du site détaille toutes les sources et règles de calcul.
+
 Personnalités : ajouter `wikidata: Qxxx` pour afficher leur photo (Wikimedia Commons, auteur et licence
 crédités dans la fiche). Groupes armés et partis sont représentés par des icônes Lucide.
 

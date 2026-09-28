@@ -20,7 +20,7 @@ geowatch ne calcule ni n'estime de probabilité.
 - `ingest.py` : GitHub Actions toutes les 6 h (`.github/workflows/ingest.yml`), commite `data/` / `ingest.py --profiles` (GitHub Actions, mensuel)
 - `.github/workflows/pages.yml` — construit et publie site/ sur GitHub Pages (inactif tant que le dépôt est privé)
 - `track.py` — cotes actuelles, variation 7 j, marchés disparus du relevé
-- `build.py` — site statique `site/` (vis-network) + exports `network.json` / `network.csv`
+- `build.py` — site statique `site/` (vis-network, Leaflet) + exports `network.json` / `network.csv` ; `method.py` — page `methode.html` (méthode et sources) générée à partir des mêmes données, à tenir à jour quand une règle de calcul change
 - `country.py` — fiche pays en terminal ; `update_network.py` — Claude + web search propose des MAJ dans network.pending.yaml (relecture humaine obligatoire)
 
 ## Décisions prises
@@ -36,6 +36,7 @@ geowatch ne calcule ni n'estime de probabilité.
 - Personnes : champ `wikidata: Qxxx` → photo Wikimedia Commons (P18) dans `data/people.json`, avec auteur et licence, crédités dans la fiche (obligatoire pour CC BY-SA). Icônes Lucide (ISC) inlinées dans build.py.
 - Votes à l'ONU (étape 2) : `sources/unga.py`, jeu Voeten (Harvard Dataverse, CC0), `data/unga.json` retéléchargé seulement si nouvelle version (vérifié avec les profils, mensuel). Placement des pays = taux d'accord (dernière année dispo, ~1 an de retard) avec France/Allemagne vs Russie/Chine. Les points idéaux (axe unique, année écoulée) ne servent QU'à l'écart États-Unis ↔ France/Allemagne : un axe unique place mal un pays entre deux blocs (en 2025 la Russie y « remonte » artificiellement).
 - `data/geo.json` couvre tous les membres de l'ONU (requête Wikidata par ISO3, P298).
+- Forums (BRICS, OCS, UEEA, G7, Mercosur, ASEAN) : groupes `kind: forum` d'alignments.yaml, sans bloc ni niveau, hors calcul des blocs ; sélecteur « Organisation » de la carte.
 - YAML : le code ISO « NO » (Norvège) doit être entre guillemets, sinon il est lu comme false.
 - Carte (Leaflet + Natural Earth/world-atlas, sans tuiles) : `data/geo.json` (Wikidata P625/P299, tous les pays des acteurs et d'alignments.yaml, rafraîchi avec les profils) ; `coords` explicites pour les blocs.
 - Taille des nœuds = valeur mesurée (Banque mondiale : MS.MIL.XPND.CD, PIB ; UE via l'agrégat EUU) ou nb de soutiens — jamais un poids choisi à la main.

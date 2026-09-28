@@ -102,3 +102,60 @@ groups:
     members: [CN, IR]
     sources: ["Kremlin, déclaration conjointe Russie-Chine « amitié sans limites » (févr. 2022) — http://en.kremlin.ru/supplement/5770",
               "Kremlin, traité de partenariat stratégique global Russie-Iran (janv. 2025) — http://en.kremlin.ru/events/president/news/76125"]
+
+  # ---------- Forums économiques et politiques (sans bloc, sans effet sur l'alignement) ----------
+  # kind: forum — affichés via le sélecteur « Organisation » de la carte et dans les fiches.
+  - id: brics
+    name: BRICS (membres)
+    kind: forum
+    level: 0
+    members: [BR, RU, IN, CN, ZA, EG, ET, IR, AE, ID]
+    note: "L'Arabie saoudite, invitée en 2023, n'a pas formalisé son adhésion"
+    sources: ["DD News, sommet de Rio : l'Indonésie membre, dix pays partenaires (juill. 2025) — https://ddnews.gov.in/en/brics-indonesia-joins-as-full-member-10-countries-welcomed-as-partners/"]
+
+  - id: brics_partners
+    name: BRICS (pays partenaires)
+    kind: forum
+    level: 0
+    members: [BY, BO, KZ, NG, MY, TH, CU, VN, UG, UZ]
+    sources: ["DD News, sommet de Rio : l'Indonésie membre, dix pays partenaires (juill. 2025) — https://ddnews.gov.in/en/brics-indonesia-joins-as-full-member-10-countries-welcomed-as-partners/"]
+
+  - id: sco
+    name: Organisation de coopération de Shanghai (OCS)
+    kind: forum
+    level: 0
+    members: [CN, RU, IN, PK, IR, KZ, KG, TJ, UZ, BY]
+    note: "Coopération de sécurité sans clause de défense mutuelle"
+    sources: ["OCS, questions fréquentes (liste des 9 membres avant 2024) — https://eng.sectsco.org/20231127/1168690.html",
+              "Anadolu, la Biélorussie devient le 10e membre (juill. 2024) — https://www.aa.com.tr/en/asia-pacific/belarus-joins-shanghai-cooperation-organization-as-10th-member-state/3265708"]
+
+  - id: eaeu
+    name: Union économique eurasiatique (UEEA)
+    kind: forum
+    level: 0
+    members: [RU, BY, KZ, KG, AM]
+    sources: ["Union économique eurasiatique, États membres — https://eaeunion.org/?lang=en"]
+
+  - id: g7
+    name: G7
+    kind: forum
+    level: 0
+    members: [US, CA, FR, DE, IT, JP, GB]
+    note: "L'Union européenne participe aux sommets sans être membre"
+    sources: ["G7 Information Centre (Université de Toronto), qu'est-ce que le G7 — https://www.g7.utoronto.ca/what_is_g8.html"]
+
+  - id: mercosur
+    name: Mercosur
+    kind: forum
+    level: 0
+    members: [AR, BR, PY, UY, BO]
+    note: "Le Venezuela est suspendu ; la Bolivie a jusqu'en 2028 pour intégrer les règles communes"
+    sources: ["Mercosur, pays membres — https://www.mercosur.int/en/about-mercosur/countries"]
+
+  - id: asean
+    name: ASEAN
+    kind: forum
+    level: 0
+    members: [BN, KH, ID, LA, MY, MM, PH, SG, TH, VN, TL]
+    note: "Timor-Leste admis comme 11e membre en octobre 2025"
+    sources: ["ASEAN, admission du Timor-Leste (oct. 2025) — https://asean.org/forging-a-new-era-timor-leste-admitted-into-asean/"]

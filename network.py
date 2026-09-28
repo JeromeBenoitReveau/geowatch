@@ -35,7 +35,7 @@ def influence(actors, edges, al):
     def best(iso):
         per_bloc = {}
         for g in ties.get(iso, []):
-            if g["level"] > 0:
+            if g["level"] > 0 and g.get("bloc"):
                 per_bloc[g["bloc"]] = max(per_bloc.get(g["bloc"], 0), g["level"])
         return per_bloc
     def bloc_of(aid):  # bloc d'un soutien : le sien s'il est membre (niveau ≥ 2), sinon celui de son pays d'ancrage

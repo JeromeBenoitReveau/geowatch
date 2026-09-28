@@ -3,7 +3,7 @@ et le graphe en données ouvertes (network.json, network.csv — CC BY 4.0). Pub
 from dotenv import load_dotenv; load_dotenv()
 import csv, json
 from pathlib import Path
-import db, network, track
+import db, method, network, track
 from config import DYADS, MOVE_ALERT_PTS
 
 OUT = Path("site")
@@ -49,7 +49,8 @@ def build():
                             .replace("</", "<\\/"))
     (OUT / "index.html").write_text(html, encoding="utf-8")
     export_data(actors, edges)
-    print(f"→ {OUT}/index.html, network.json, network.csv")
+    method.write(OUT, data)
+    print(f"→ {OUT}/index.html, methode.html, network.json, network.csv")
 
 TEMPLATE = r"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -65,12 +66,13 @@ TEMPLATE = r"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 display:grid;grid-template-columns:1fr 380px;height:100vh}
 @media (max-width:800px){body{grid-template-columns:1fr;grid-template-rows:60vh auto;height:auto}}
 #stage{position:relative;border-right:1px solid var(--line);min-height:60vh}#graph{position:absolute;inset:0}
-#controls{position:absolute;top:10px;left:10px;z-index:1000;background:var(--card);border:1px solid var(--line);
+#controls{position:absolute;top:52px;left:10px;z-index:1000;background:var(--card);border:1px solid var(--line);
 border-radius:8px;padding:8px 10px;font-size:12px;display:flex;flex-direction:column;gap:4px;max-width:calc(100% - 20px)}
 #controls select{font:inherit;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:4px}
 #views{position:absolute;top:10px;right:10px;z-index:1000;display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 #views button{font:inherit;font-size:12px;padding:6px 12px;border:0;background:var(--card);color:var(--fg);cursor:pointer}
 #views button[aria-pressed=true]{background:var(--fg);color:var(--bg)}
+#views a{font-size:12px;padding:6px 12px;background:var(--card);color:var(--fg);text-decoration:none;border-left:1px solid var(--line)}
 #map{position:absolute;inset:0;display:none;background:var(--ocean)}
 body.map #map{display:block}body.map #graph,body.map .graph-only{display:none}
 .map-only{display:none}body.map .map-only{display:block}
@@ -92,13 +94,14 @@ h1{font-size:20px;margin:0 0 4px}h2{font-size:12px;text-transform:uppercase;lett
 .spark{width:80px;height:22px}.spark polyline{fill:none;stroke:currentColor;stroke-width:1.5}
 </style></head><body>
 <div id="stage"><div id="graph"></div><div id="map"></div>
-<div id="views"><button id="v-graph" aria-pressed="true">Graphe</button><button id="v-map" aria-pressed="false">Carte</button></div>
+<div id="views"><button id="v-graph" aria-pressed="true">Graphe</button><button id="v-map" aria-pressed="false">Carte</button><a href="methode.html">Méthode & sources</a></div>
 <div id="controls">
   <label>Taille des acteurs : <select id="metric">
     <option value="military">dépenses militaires ($)</option><option value="gdp">PIB ($)</option>
     <option value="supports">nombre de soutiens accordés</option></select></label>
   <label class="map-only">Couleur des pays : <select id="colormode">
     <option value="formal">liens formels (traités, adhésions)</option><option value="votes">votes à l'ONU</option></select></label>
+  <label class="map-only">Organisation : <select id="org"><option value="">aucune</option></select></label>
   <label class="graph-only"><input type="checkbox" id="lyr-armed" checked> Groupes armés non étatiques</label>
   <label class="graph-only"><input type="checkbox" id="lyr-detail"> Partis & personnalités</label>
 </div></div>
@@ -144,6 +147,25 @@ function blocLine(id){ const i = inf(id), nmv = i.via.map(nm).join(", ");
   if(i.role==="satellite") return `Bloc : <b style="color:${blocColor(id)}">${esc(BLOCS[i.bloc].name)}</b> — satellite, sans lien formel (soutenu par ${nmv})`;
   if(i.role==="contested") return `Bloc : <b style="color:${CONTESTED}">disputé</b> entre ${i.blocs.map(b=>esc(BLOCS[b].name)).join(" et ")}${ties ? ` (${ties})` : ` (soutenu par ${nmv})`}`;
   return ""; }
+// ---------- Organisations (groupes d'alignments.yaml) : sélecteur de la carte, fiches ----------
+(() => { const sel = $("#org"), add = (label, gs) => { if(!gs.length) return;
+    const og = document.createElement("optgroup"); og.label = label;
+    gs.forEach(g => { const o = document.createElement("option"); o.value = g.id; o.textContent = `${g.name} (${g.members.length})`; og.append(o); });
+    sel.append(og); };
+  add("Forums économiques et politiques", D.align.groups.filter(g => g.kind==="forum"));
+  Object.entries(BLOCS).forEach(([k,b]) => add(b.name, D.align.groups.filter(g => g.bloc===k))); })();
+const forumsOf = iso => D.align.groups.filter(g => g.kind==="forum" && g.members.includes(iso));
+const forumLine = iso => { const f = forumsOf(iso);
+  return f.length ? `Organisations : ${f.map(g => `<a href="#" data-group="${esc(g.id)}">${esc(g.name)}</a>`).join(", ")}` : ""; };
+function showGroup(gid){ const g = GROUPS[gid]; if(!g) return;
+  $("#panel").innerHTML = `<h1>${esc(g.name)}</h1><div class="mute">${g.kind==="forum" ? "forum — sans effet sur les blocs d'influence"
+      : `${esc(BLOCS[g.bloc].name)} — niveau ${g.level}/3`} · ${g.members.length} pays</div>
+    <p>${g.members.map(m => `<a href="#" data-country="${esc(m)}">${cname(m)}</a>`).join(", ")}</p>
+    ${g.note ? `<p class="mute">${esc(g.note)}</p>` : ""}<p class="mute">${g.sources.map(src).join(" ; ")}</p>`; }
+document.addEventListener("click", ev => {
+  const gl = ev.target.closest("[data-group]"); if(gl){ ev.preventDefault(); showGroup(gl.dataset.group); }
+  const cl = ev.target.closest("[data-country]"); if(cl){ ev.preventDefault(); D.actors[cl.dataset.country] ? show(cl.dataset.country) : showCountry(cl.dataset.country); } });
+
 // ---------- Votes à l'ONU (Voeten) ----------
 const U = D.unga || {}, UC = U.countries || {};
 const pct = x => x == null ? "n/d" : Math.round(x*100) + " %";
@@ -297,7 +319,8 @@ async function initMap(){
   const votesTip = iso => UC[iso] ? `${cname(iso)} — vote comme France/Allemagne ${pct(UC[iso].west)}, comme Russie/Chine ${pct(UC[iso].axis)} (${U.agreement_year})` : `${cname(iso)} — pas de données de vote`;
   const style = f => { const iso = byNum[String(+f.id)], votes = $("#colormode").value==="votes";
     const c = iso && (votes ? votesColor(iso) : blocColor(iso) && mix(blocColor(iso), css("--land"), TINT[inf(iso).level] || .25));
-    return {color: css("--line"), weight:.6, fillOpacity:1,
+    const org = GROUPS[$("#org").value], inOrg = org && org.members.includes(iso);
+    return {color: inOrg ? css("--fg") : css("--line"), weight: inOrg ? 2 : .6, fillOpacity: org && !inOrg ? .35 : 1,
             fillColor: c || (iso && D.actors[iso] ? css("--land-hl") : css("--land"))}; };
   const countries = L.geoJSON(world, {style,
     onEachFeature: (f, l) => { const iso = byNum[String(+f.id)];
@@ -306,6 +329,7 @@ async function initMap(){
       l.on("click", () => D.actors[iso] ? show(iso) : showCountry(iso)); }
   }).addTo(map);
   $("#colormode").addEventListener("change", () => countries.setStyle(style));
+  $("#org").addEventListener("change", () => { countries.setStyle(style); const g = GROUPS[$("#org").value]; if(g) showGroup(g.id); });
   groups = Object.fromEntries(Object.keys(MAP_LAYERS).map(k => [k, L.layerGroup().addTo(map)]));
   L.control.layers(null, Object.fromEntries(Object.entries(MAP_LAYERS).map(([k,label]) => [label, groups[k]])),
     {collapsed: innerWidth < 800, position:"bottomleft"}).addTo(map);
@@ -350,6 +374,7 @@ function show(id){
   if(D.people[id]) h = `<img src="${safeUrl(D.people[id].thumb)}" alt="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;float:right;margin-left:10px">` + h;
   if(blocLine(id)) h += `<p class="mute">${blocLine(id)}</p>`;
   if(ungaLine(id)) h += `<p class="mute">${ungaLine(id)}</p>`;
+  if(forumLine(id)) h += `<p class="mute">${forumLine(id)}</p>`;
   h += tiers(id) + euCohesion(id) + (id==="US" || id==="EU" ? driftBlock() : "");
   if(a.note) h += `<p>${esc(a.note)}${(a.sources||[]).length?`<br><span class="mute">${a.sources.map(src).join(" ; ")}</span>`:""}</p>`;
   h += credit(id);
@@ -394,16 +419,17 @@ function showCountry(iso){
   $("#panel").innerHTML = `<h1>${cname(iso)}</h1><div class="mute">État — hors du graphe de soutiens</div>
     ${blocLine(iso) ? `<p class="mute">${blocLine(iso)}</p>` : ""}
     ${ungaLine(iso) ? `<p class="mute">${ungaLine(iso)}</p>` : ""}
-    ${i.ties.length ? "<h2>Liens formels</h2>" : ""}` + i.ties.map(t => { const g = GROUPS[t];
+    ${forumLine(iso) ? `<p class="mute">${forumLine(iso)}</p>` : ""}
+    ${i.ties.some(t => GROUPS[t].kind!=="forum") ? "<h2>Liens formels</h2>" : ""}` + i.ties.filter(t => GROUPS[t].kind!=="forum").map(t => { const g = GROUPS[t];
       return `<div class="rel"><b>${esc(g.name)}</b> <span class="mute">${g.level ? `niveau ${g.level}/3` : "sans effet sur l'alignement"}
         ${g.note ? "<br>"+esc(g.note) : ""}<br>${g.sources.map(src).join(" ; ")}</span></div>`; }).join("")
-    + `<p class="mute">Ce pays n'a ${i.ties.length ? "encore" : "ni lien formel dans alignments.yaml, ni"} aucune relation de soutien sourcée dans network.yaml.</p>`; }
+    + `<p class="mute">Ce pays n'a ${i.ties.some(t => GROUPS[t].kind!=="forum") ? "encore" : "ni lien formel dans alignments.yaml, ni"} aucune relation de soutien sourcée dans network.yaml.</p>`; }
 function legend(){
   if(map) highlightLinks(null);
   const all = Object.values(D.markets).flatMap(v=>v.markets).filter(m=>!m.stale);
   const moves = all.filter(m=>m.delta_pts!=null && Math.abs(m.delta_pts)>=D.alert)
                    .sort((a,b)=>Math.abs(b.delta_pts)-Math.abs(a.delta_pts));
-  $("#panel").innerHTML = `<h1>Réseau de soutiens</h1><p class="mute">Clique un acteur ; clique un bloc (UE) pour voir ses membres.
+  $("#panel").innerHTML = `<h1>Réseau de soutiens</h1><p><a href="methode.html">Comment ces données sont construites, et d'où elles viennent →</a></p><p class="mute">Clique un acteur ; clique un bloc (UE) pour voir ses membres.
   Drapeau = État ou bloc · épées = groupe armé · urne = parti · photo = personnalité. Trait plein = actif & confirmé,
   pointillé = réduit / allégué ; pointillé gris = rattachement d'un parti ou d'une personne à son pays.</p>
   <p class="mute">Vue « Carte » : chaque acteur dans son pays d'ancrage (coordonnées Wikidata), une couche par type
@@ -418,6 +444,10 @@ function legend(){
   1 candidature ou participation gelée (sources : alignments.yaml, cliquer un pays). Sans lien formel, un acteur
   dont tous les soutiens actifs viennent d'un même bloc en est « satellite » (niveau 1, déduit du graphe).
   Partis et personnalités ne sont pas classés.</p>
+  <h2>Forums économiques et politiques</h2><p class="mute">${D.align.groups.filter(g => g.kind==="forum").map(g =>
+    `<a href="#" data-group="${esc(g.id)}">${esc(g.name)}</a>`).join(" · ")}. Ce sont des cadres de coopération, pas des alliances :
+  les BRICS réunissent l'Inde et la Chine, l'OCS l'Inde et le Pakistan. Ils n'entrent donc pas dans le calcul des blocs ;
+  le sélecteur « Organisation » de la carte en surligne les membres.</p>
   <h2>Votes à l'ONU</h2><p class="mute">Sur la carte, « Couleur des pays : votes à l'ONU » place chaque pays selon la fréquence
   à laquelle il vote comme France/Allemagne ou comme Russie/Chine (Assemblée générale, votes enregistrés, ${U.agreement_year}).
   Beaucoup de votes du Sud global (développement, décolonisation) coïncident avec ceux de la Chine : pencher vers
