@@ -41,6 +41,7 @@ actors:
   GB: {name: Royaume-Uni, kind: state}
   TR: {name: Turquie, kind: state}
   VE: {name: Venezuela, kind: state}
+  CU: {name: Cuba, kind: state}
   GY: {name: Guyana, kind: state}
   SD: {name: Soudan (armée et gouvernement de Port-Soudan), kind: state,
        leader: {name: Abdel Fattah al-Burhan, wikidata: Q63111184, role: "Général, chef de l'armée et du Conseil de souveraineté"}}
@@ -189,7 +190,29 @@ edges:
                "SIPRI, Trends in International Arms Transfers 2019 (fiche de mars 2020), période 2015-19 — https://www.sipri.org/sites/default/files/2020-03/fs_2003_at_2019.pdf"],
      verified: 2026-09}
 
-  # --- Venezuela / Guyana ---
+  # --- Venezuela / Cuba / Guyana ---
+  - {from: US, to: VE, since: "2026-01", types: [economic, political], status: active, confidence: high,
+     sources: ["Cleary Gottlieb, licence générale 52 de l'OFAC assouplissant les sanctions contre PdVSA (mars 2026) — https://www.clearygottlieb.com/news-and-insights/publication-listing/ofac-issues-gl-52-further-loosening-sanctions-against-pdvsa",
+               "Axios, Trump doit rencontrer Delcy Rodríguez à l'ONU (sept. 2026) — https://www.axios.com/2026/09/17/delcy-rodriguez-venezuela-trump-un-general-assembly",
+               "CNN, Delcy Rodríguez, dirigeante non élue, en quête de légitimité (sept. 2026) — https://www.cnn.com/2026/09/23/americas/us-venezuela-rodriguez-un-trump-intl-hnk"],
+     verified: 2026-09,
+     note: "Après la capture de Maduro : licences pétrolières (GL 46 à 52), reprise des relations diplomatiques, discussions sur la dette, l'énergie et les mines",
+     why: "Washington veut que les entreprises américaines développent le pétrole vénézuélien et garder la main sur le gouvernement intérimaire de Delcy Rodríguez, qui gouverne sous sa pression selon le CFR"}
+  - {from: VE, to: CU, since: "2000", until: "2026-01", types: [economic], status: ended, confidence: high,
+     sources: ["Al Jazeera, le pétrole vénézuélien est-il vraiment de nouveau accessible à Cuba ? (févr. 2026) — https://www.aljazeera.com/economy/2026/2/26/trump-u-turn-is-venezuela-oil-really-available-to-cuba-again",
+               "The Conversation, sans Maduro ni pétrole vénézuélien, Cuba isolée et vulnérable (janv. 2026) — https://theconversation.com/with-maduro-gone-and-venezuelas-oil-cut-off-cuba-is-isolated-and-vulnerable-273119"],
+     verified: 2026-09,
+     note: "Jusqu'à la moitié du pétrole de Cuba (environ 35 000 barils par jour) ; coupé après la capture de Maduro en janvier 2026"}
+  - {from: RU, to: CU, since: "2026-03", types: [economic], status: active, confidence: high,
+     sources: ["Radio Free Europe/Radio Liberty, un pétrolier russe sous sanctions arrive à Cuba (mars 2026) — https://www.rferl.org/a/russia-oil-tanker-kolodkin-cuba-tanker-sanctions/33719298.html",
+               "CNN, Trump laisse un pétrolier russe atteindre Cuba (mars 2026) — https://www.cnn.com/2026/03/30/americas/us-russian-oil-tanker-access-cuba-intl-hnk"],
+     verified: 2026-09,
+     note: "Le pétrolier Anatoly Kolodkin livre environ 730 000 barils le 30 mars 2026, seul chargement à passer le blocus ; un second fait demi-tour en mai"}
+  - {from: CN, to: CU, since: "2026-01", types: [economic, financial], status: active, confidence: high,
+     sources: ["Al Jazeera, Cuba remercie la Chine pour une livraison de riz (mai 2026) — https://www.aljazeera.com/news/2026/5/24/cuba-thanks-china-for-rice-shipment-amid-worsening-humanitarian-conditions",
+               "South China Morning Post, la Chine envoie une aide alimentaire d'urgence à Cuba (2026) — https://www.scmp.com/news/china/diplomacy/article/3340604/china-sends-emergency-food-aid-cuba-us-sanctions-worsen-shortages"],
+     verified: 2026-09,
+     note: "60 000 tonnes de riz et 80 millions de dollars d'aide pour la crise énergétique ; parcs solaires"}
   - {from: US, to: GY, since: "2022", types: [training], status: active, confidence: high,
      sources: ["Ambassade des États-Unis au Guyana, exercices conjoints US Army / Guyana Defence Force depuis 2022 (nov. 2023) — https://gy.usembassy.gov/u-s-army-guyana-defence-forces-strengthen-military-partnership/"],
      verified: 2026-09}
@@ -381,6 +404,20 @@ tensions:
   - {from: US, to: IR, type: sanctions, status: active, confidence: high,
      sources: ["Trésor américain, alerte sur les raffineries « teapot » qui achètent le pétrole iranien (avr. 2026) — https://home.treasury.gov/news/press-releases/sb0476"],
      verified: 2026-09}
+  - {from: US, to: VE, type: war, since: "2025-09", until: "2026-01", status: ended, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : l'instabilité au Venezuela (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/instability-venezuela"],
+     verified: 2026-09,
+     note: "Frappes contre des bateaux présentés comme narcotrafiquants dès septembre 2025 ; frappes sur Caracas et capture de Maduro le 3 janvier 2026, relations diplomatiques reprises depuis"}
+  - {from: US, to: VE, type: sanctions, since: "2015", status: reduced, confidence: high,
+     sources: ["Holland & Knight, l'OFAC autorise certaines activités du secteur pétrolier vénézuélien (févr. 2026) — https://www.hklaw.com/en/insights/publications/2026/02/ofac-authorizes-certain-venezuelan-oil-sector-activities",
+               "Cleary Gottlieb, licence générale 52 de l'OFAC assouplissant les sanctions contre PdVSA (mars 2026) — https://www.clearygottlieb.com/news-and-insights/publication-listing/ofac-issues-gl-52-further-loosening-sanctions-against-pdvsa"],
+     verified: 2026-09, note: "Sanctions pétrolières depuis 2019, largement assouplies par licences depuis la capture de Maduro ; le régime de sanctions reste en place"}
+  - {from: US, to: CU, type: sanctions, since: "1962", status: active, confidence: high,
+     sources: ["Haut-Commissariat de l'ONU aux droits de l'homme, des experts condamnent le blocus pétrolier imposé à Cuba (févr. 2026) — https://www.ohchr.org/en/press-releases/2026/02/un-experts-condemn-us-executive-order-imposing-fuel-blockade-cuba",
+               "Al Jazeera, Washington sanctionne la compagnie pétrolière nationale cubaine (juin 2026) — https://www.aljazeera.com/news/2026/6/11/trump-administration-sanctions-cubas-national-oil-company-blasts-castros",
+               "Al Jazeera, Díaz-Canel confirme des discussions avec les États-Unis (mars 2026) — https://www.aljazeera.com/news/2026/3/13/cuban-president-diaz-canel-says-talks-held-with-us-amid-trump-threats"],
+     verified: 2026-09,
+     note: "Embargo depuis 1962 ; depuis le décret du 29 janvier 2026, droits de douane contre tout pays qui livre du pétrole à Cuba, soit un blocus pétrolier de fait ; négociations menées par Marco Rubio"}
   - {from: CN, to: TW, type: claims, status: active, confidence: high,
      sources: ["Council on Foreign Relations, Global Conflict Tracker : la confrontation autour de Taïwan (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-over-taiwan"],
      verified: 2026-09, note: "Pékin revendique Taïwan et vise la « réunification » d'ici 2049 ; pression militaire croissante autour de l'île"}
