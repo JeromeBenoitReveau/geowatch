@@ -11,6 +11,9 @@ geowatch ne calcule ni n'estime de probabilité.
 ## Architecture
 - `network.yaml` — graphe (États, non étatiques, blocs), curé à la main, chaque arête sourcée et datée. Source de vérité.
 - Kinds du graphe : state, bloc (membres via `member_of`), non_state, party, person (calque « détail », `base` obligatoire)
+- Personnes (décision 2026-09-29) : `person` = nœud SEULEMENT si relation propre, distincte de l'institution dirigée (Musk ; Trump/Vance pour RN/AfD). Un chef qui n'agit qu'à travers son institution = champ `leader` de l'acteur ({name, wikidata, role, sources} ou id de person ; photo « leader:<id> » dans people.json). validate.py signale une personne sans relation propre. Session dédiée prévue : typologie des personnalités d'influence (dirigeants, milliardaires, religieux, idéologues, médias) et critères de sélection.
+- Site : `index.html` = accueil (`pages.py` : baseline, cartes des conflits, blocs Explorer), `explorer.html` = graphe/carte/organisations (build.py ; ancres #graphe, #carte, #organisations, #graphe:<id>), `manifeste.html` (pages.py), `methode.html` (method.py). Nom et baseline dans `brand.py` (« Lignes de force », validé par Jérôme le 2026-09-29 ; « geowatch » était pris, le dépôt garde ce nom)
+- `dossiers.yaml` + `dossier.py` — pages « dossier » pour néophytes (site/<id>.html ; `upcoming` = conflits « en préparation » de l'accueil) : récit sourcé ; camps et soutiens LUS dans network.yaml. Champ `why` sur les arêtes = motivation, analyse attribuée à sa source. Pilote : Soudan (2026-09-29)
 - `network.py` — requêtes sur le graphe ; `validate.py` — contrôle du schéma (CI : `.github/workflows/validate.yml`)
 - `config.py` — paires suivies (`countries` = ids du graphe, `keywords` pour matcher les titres de marchés)
 - `sources/markets.py` — Polymarket (gamma-api public-search) + Kalshi (trade-api v2)
@@ -24,6 +27,7 @@ geowatch ne calcule ni n'estime de probabilité.
 - `country.py` — fiche pays en terminal ; `update_network.py` — Claude + web search propose des MAJ dans network.pending.yaml (relecture humaine obligatoire)
 
 ## Décisions prises
+- 2026-09-29 : réorientation vers les néophytes — l'entrée principale devient les dossiers (qui s'affronte, qui soutient, POURQUOI, enjeux) ; graphe, carte et vue Organisations = mode « Explorer ». World Monitor = stats froides, geowatch = relations expliquées.
 - 2026-09-26 : historique des cotes en CSV dans le dépôt (et non SQLite) pour que GitHub Actions l'alimente ; c'est aussi une donnée ouverte.
 - Kalshi : scan unique des événements World/Politics par run ; très peu de marchés sur nos paires (surtout US-centrés), Polymarket fournit l'essentiel.
 - 2026-09-26 : recentrage. Le Q&A (ask.py) faisait doublon avec WM Analyst de World Monitor → retiré,

@@ -58,7 +58,11 @@ def run_profiles(c):
     g = profiles.geo(every)
     g.update({k: v for k, v in profiles.geo(set(db.load_unga().get("countries", {})), prop="P298").items() if k not in g})
     db.save_geo(g)
-    db.save_people(profiles.people({a: v["wikidata"] for a, v in actors.items() if v.get("wikidata")}))
+    # photos : personnes du graphe (clé = id) et dirigeants décrits dans un champ leader (clé = « leader:<id> »)
+    qids = {a: v["wikidata"] for a, v in actors.items() if v.get("wikidata")}
+    qids |= {f"leader:{a}": v["leader"]["wikidata"] for a, v in actors.items()
+             if isinstance(v.get("leader"), dict) and v["leader"].get("wikidata")}
+    db.save_people(profiles.people(qids))
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()

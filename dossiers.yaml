@@ -1,0 +1,156 @@
+# Dossiers — une page par conflit ou tension, écrite pour quelqu'un qui n'y connaît rien. Curé à la main.
+# Les acteurs et les soutiens viennent de network.yaml (source de vérité) : ici, seulement le récit.
+# Chaque paragraphe cite ses sources ; une interprétation (« pourquoi ») est attribuée à qui la formule.
+#
+# id        : nom de la page (site/<id>.html)
+# dyad      : paire suivie sur les marchés (config.DYADS) — seules cotes affichées en pourcentage
+# sides     : les camps ; actors = ids de network.yaml. Soutiens ET dirigeant (champ leader) lus dans le graphe.
+# stakes    : les enjeux concrets ; timeline : dates AAAA ou AAAA-MM
+# market_labels : traduction française des questions de marché (affichées aussi en version originale)
+# glossary  : termes expliqués au survol partout où ils apparaissent dans la page
+
+dossiers:
+  - id: soudan
+    title: La guerre au Soudan
+    since: "2023-04"
+    verified: 2026-09
+    dyad: sudan-war
+    market_labels:
+      "Sudan civil war ceasefire by December 31, 2026?": Un cessez-le-feu dans la guerre au Soudan d'ici le 31 décembre 2026 ?
+    lede: >-
+      Depuis avril 2023, l'armée soudanaise et les Forces de soutien rapide, deux anciens alliés qui avaient pris
+      le pouvoir ensemble, se font la guerre pour le contrôle du pays. Des puissances étrangères arment chacun des
+      deux camps, attirées par l'or, la mer Rouge et le Nil. Près de 14 millions de personnes ont dû fuir leur foyer.
+    lede_sources:
+      - "Council on Foreign Relations, Global Conflict Tracker : la guerre civile au Soudan — https://www.cfr.org/global-conflict-tracker/conflict/power-struggle-sudan"
+      - "Al Jazeera, selon le HCR environ 14 millions de personnes chassées de chez elles (janv. 2026) — https://www.aljazeera.com/news/2026/1/28/sudans-war-displaced-crisis-peaks-as-millions-eye-return-to-ruined-homes"
+
+    origins:
+      text: >-
+        En 2019, un soulèvement populaire fait tomber le dictateur Omar el-Béchir. Militaires et civils doivent partager
+        le pouvoir, mais en 2021 le chef de l'armée, Abdel Fattah al-Burhan, et le chef des FSR, Mohamed Hamdan Dagalo
+        dit « Hemedti », écartent ensemble le gouvernement civil. Un accord de décembre 2022 prévoit d'intégrer les FSR
+        dans l'armée : les deux généraux ne s'entendent ni sur le calendrier ni sur qui commandera. Le 15 avril 2023,
+        les combats éclatent à Khartoum.
+      sources:
+        - "Council on Foreign Relations, Global Conflict Tracker : la guerre civile au Soudan — https://www.cfr.org/global-conflict-tracker/conflict/power-struggle-sudan"
+
+    sides:
+      - name: L'armée soudanaise
+        actors: [SD]
+        text: >-
+          Dirigée par le général al-Burhan. Elle tient la capitale Khartoum, la vallée du Nil et l'est du pays,
+          dont Port-Soudan, sur la mer Rouge, où siège son gouvernement.
+        sources:
+          - "International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"
+      - name: Les Forces de soutien rapide (FSR)
+        actors: [rsf]
+        text: >-
+          Groupe paramilitaire dirigé par Hemedti. Il tient l'essentiel du Darfour, à l'ouest, ravitaillé par le Tchad
+          et la Libye. En août 2025, il a formé un gouvernement parallèle à Nyala, qu'aucun État ne reconnaît.
+        sources:
+          - "International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"
+
+    stakes:
+      - label: L'or
+        icon: gem
+        text: >-
+          C'est la première source d'argent des deux camps. La plus grande partie de l'or soudanais finit aux Émirats
+          arabes unis, par où les deux camps font aussi transiter leurs paiements.
+        sources:
+          - "Chatham House, « Gold and the war in Sudan » (mars 2025, mis à jour mars 2026) — https://www.chathamhouse.org/2025/03/gold-and-war-sudan"
+      - label: La mer Rouge
+        icon: anchor
+        text: >-
+          Le Soudan a une façade sur la mer Rouge, l'une des grandes routes du commerce mondial. Les Émirats y
+          projettent un port de 6 milliards de dollars ; la Turquie et l'Arabie saoudite y défendent aussi leur
+          influence.
+        sources:
+          - "Middle East Eye, les FSR, alliées clés des intérêts logistiques et commerciaux émiriens (sept. 2024) — https://www.middleeasteye.net/news/sudan-rsf-key-ally-uae-logistical-and-corporate-interests"
+          - "International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"
+      - label: Le Nil
+        icon: waves
+        text: >-
+          L'Égypte, en aval du fleuve, veut garder la main sur ses intérêts dans le bassin du Nil et un voisin stable
+          au sud : elle soutient l'armée. L'Éthiopie, sa rivale régionale, penche de plus en plus vers les FSR.
+        sources:
+          - "International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"
+      - label: Les terres agricoles
+        icon: wheat
+        text: >-
+          Les Émirats exploitent plus de 200 000 hectares de terres au Soudan pour leur sécurité alimentaire.
+        sources:
+          - "Middle East Eye, les FSR, alliées clés des intérêts logistiques et commerciaux émiriens (sept. 2024) — https://www.middleeasteye.net/news/sudan-rsf-key-ally-uae-logistical-and-corporate-interests"
+      - label: Les routes d'approvisionnement
+        icon: route
+        text: >-
+          Selon les enquêteurs de l'ONU, armes, mercenaires (dont des ex-militaires colombiens) et matériel arrivent
+          aux FSR par le Tchad, le sud-est de la Libye et le port somalien de Bosaso.
+        sources:
+          - "ONU Info, des réseaux extérieurs alimentent la guerre au Soudan (sept. 2026) — https://news.un.org/en/story/2026/09/1168270"
+
+    toll:
+      text: >-
+        Environ 14 millions de personnes ont dû fuir leur foyer. En octobre 2025, après 18 mois de siège, les FSR ont
+        pris la ville d'El-Fasher, au Darfour : les enquêteurs de l'ONU y ont relevé les « marques d'un génocide »
+        contre les communautés zaghawa et four.
+      sources:
+        - "Al Jazeera, selon le HCR environ 14 millions de personnes chassées de chez elles (janv. 2026) — https://www.aljazeera.com/news/2026/1/28/sudans-war-displaced-crisis-peaks-as-millions-eye-return-to-ruined-homes"
+        - "ONU Info, les « marques d'un génocide » à El-Fasher (févr. 2026) — https://news.un.org/en/story/2026/02/1166997"
+
+    now:
+      text: >-
+        Le pays glisse vers une partition de fait : chaque camp a proclamé son propre gouvernement. Depuis l'été 2026,
+        l'armée mène une offensive au Kordofan, au centre, et les FSR frappent des villes avec des drones kamikazes,
+        notamment El-Obeid. Le plan de paix du « Quad » (trêve de trois mois, puis cessez-le-feu et transition
+        civile) est enlisé : l'armée l'a rejeté, et ses parrains ne s'accordent pas entre eux.
+      sources:
+        - "Security Council Report, prévisions de septembre 2026 — https://www.securitycouncilreport.org/monthly-forecast/2026-09/sudan-41.php"
+        - "International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"
+
+    timeline:
+      - date: "2019"
+        text: Chute d'Omar el-Béchir après un soulèvement populaire
+        source: "Council on Foreign Relations, Global Conflict Tracker — https://www.cfr.org/global-conflict-tracker/conflict/power-struggle-sudan"
+      - date: "2021"
+        text: Burhan et Hemedti renversent ensemble le gouvernement civil
+        source: "Council on Foreign Relations, Global Conflict Tracker — https://www.cfr.org/global-conflict-tracker/conflict/power-struggle-sudan"
+      - date: "2023-04"
+        text: Début de la guerre à Khartoum
+        source: "Council on Foreign Relations, Global Conflict Tracker — https://www.cfr.org/global-conflict-tracker/conflict/power-struggle-sudan"
+      - date: "2025-03"
+        text: L'armée reprend le palais présidentiel et Khartoum
+        source: "Middle East Eye, l'armée reprend le palais présidentiel (mars 2025) — https://www.middleeasteye.net/news/sudan-army-retake-control-presidential-palace-rsf"
+      - date: "2025-08"
+        text: Les FSR forment un gouvernement parallèle à Nyala
+        source: "International Crisis Group (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"
+      - date: "2025-09"
+        text: Plan de paix du Quad (États-Unis, Arabie saoudite, Émirats, Égypte)
+        source: "International Crisis Group (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"
+      - date: "2025-10"
+        text: Chute d'El-Fasher, massacres qualifiés de « marques d'un génocide » par l'ONU
+        source: "ONU Info (févr. 2026) — https://news.un.org/en/story/2026/02/1166997"
+      - date: "2026-07"
+        text: Offensive de l'armée au Kordofan ; drones des FSR sur les villes
+        source: "Security Council Report (sept. 2026) — https://www.securitycouncilreport.org/monthly-forecast/2026-09/sudan-41.php"
+      - date: "2026-09"
+        text: L'ONU documente les réseaux étrangers qui arment les FSR
+        source: "ONU Info (sept. 2026) — https://news.un.org/en/story/2026/09/1168270"
+
+    glossary:
+      FSR: Forces de soutien rapide — groupe paramilitaire soudanais, rival de l'armée
+      paramilitaire: force armée organisée comme une armée, mais qui n'est pas l'armée officielle de l'État
+      Quad: groupe de médiation formé par les États-Unis, l'Arabie saoudite, les Émirats et l'Égypte
+      gouvernement parallèle: gouvernement rival proclamé par un camp, sans reconnaissance internationale
+      Darfour: vaste région de l'ouest du Soudan, bastion des FSR
+      Kordofan: région du centre du Soudan, principale ligne de front en 2026
+
+# Conflits suivis dans le graphe mais pas encore racontés : cartes « en préparation » sur l'accueil.
+# actors = acteurs de network.yaml concernés ; le premier est ouvert dans l'explorateur.
+upcoming:
+  - {title: La guerre en Ukraine, actors: [UA, RU]}
+  - {title: "Iran, Israël et États-Unis", actors: [IR, IL, US]}
+  - {title: Chine et Taïwan, actors: [TW, CN]}
+  - {title: L'est de la RD Congo, actors: [m23, CD]}
+  - {title: Le Sahel, actors: [ML, BF, NE]}
+  - {title: La Birmanie, actors: [MM]}

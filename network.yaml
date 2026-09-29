@@ -6,11 +6,18 @@
 # base   : pays d'ancrage (ISO2) — obligatoire pour non_state, party, person
 # member_of : blocs dont l'État est membre (ex. [EU]) — sert au « zoom » sur un bloc
 # wikidata : identifiant Qxxx (personnes) — sert à récupérer la photo sur Wikimedia Commons
+# leader : qui dirige l'acteur — {name, wikidata, role, sources} ou id d'un acteur « person » (ex. US: trump).
+#          Affiché sur la fiche et dans les dossiers, PAS un nœud du graphe.
+# person : réservé aux personnes qui ont au moins une relation sourcée PROPRE, distincte de l'institution qu'elles
+#          dirigent (Musk ; Trump et Vance pour leurs soutiens personnels au RN, à l'AfD). Un chef d'armée ou d'État
+#          qui n'agit qu'à travers son institution est un leader, pas un nœud.
 # coords : [lat, lon] pour la carte, seulement si le pays d'ancrage ne suffit pas (ex. bloc)
 # types  : arms | financial | training | troops | intelligence | political | economic | dual_use
 # status : active | reduced | ended | alleged
 # confidence : high (documenté officiellement) | medium (sources concordantes) | low (allégations)
 # verified : date de ta dernière vérification — à revoir si > 6 mois
+# why    : pourquoi l'acteur s'implique, en une phrase simple pour un néophyte — c'est une ANALYSE : elle doit
+#          être couverte par une des sources de l'arête (think tank, ONU, presse de référence) et présentée comme telle
 # since / until : AAAA ou AAAA-MM — plus ancienne date documentée par les sources citées (pas forcément le vrai début) et fin éventuelle
 
 actors:
@@ -18,7 +25,7 @@ actors:
        note: "Ali Khamenei tué le 28 février 2026 lors des frappes américano-israéliennes ; Mojtaba Khamenei lui a succédé. Cessez-le-feu le 8 avril, mémorandum États-Unis–Iran le 17 juin 2026, échanges de frappes depuis",
        sources: ["Bibliothèque de la Chambre des communes, guerre et cessez-le-feu États-Unis–Iran en 2026 (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"]}
   IL: {name: Israël, kind: state}
-  US: {name: États-Unis, kind: state}
+  US: {name: États-Unis, kind: state, leader: trump}
   RU: {name: Russie, kind: state}
   UA: {name: Ukraine, kind: state}
   CN: {name: Chine, kind: state}
@@ -35,9 +42,13 @@ actors:
   TR: {name: Turquie, kind: state}
   VE: {name: Venezuela, kind: state}
   GY: {name: Guyana, kind: state}
-  SD: {name: Soudan (armée et gouvernement de Port-Soudan), kind: state}
+  SD: {name: Soudan (armée et gouvernement de Port-Soudan), kind: state,
+       leader: {name: Abdel Fattah al-Burhan, wikidata: Q63111184, role: "Général, chef de l'armée et du Conseil de souveraineté"}}
   AE: {name: Émirats arabes unis, kind: state}
   EG: {name: Égypte, kind: state}
+  SA: {name: Arabie saoudite, kind: state}
+  ER: {name: Érythrée, kind: state}
+  ET: {name: Éthiopie, kind: state}
   CD: {name: RD Congo, kind: state}
   RW: {name: Rwanda, kind: state}
   ML: {name: Mali, kind: state}
@@ -56,7 +67,10 @@ actors:
   trump: {name: Donald Trump, kind: person, base: US, note: "Président des États-Unis", wikidata: Q22686}
   vance: {name: JD Vance, kind: person, base: US, note: "Vice-président des États-Unis", wikidata: Q28935729}
   musk: {name: Elon Musk, kind: person, base: US, note: "Propriétaire de X, SpaceX, Tesla", wikidata: Q317521}
-  rsf: {name: Forces de soutien rapide (FSR), kind: non_state, base: SD}
+  rsf: {name: Forces de soutien rapide (FSR), kind: non_state, base: SD,
+        leader: {name: "Mohamed Hamdan Dagalo, dit « Hemedti »", wikidata: Q63145660,
+                 role: "Chef des FSR ; préside le gouvernement parallèle formé à Nyala en août 2025",
+                 sources: ["International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"]}}
   m23: {name: AFC/M23, kind: non_state, base: CD}
   houthis:  {name: Houthis (Ansar Allah), kind: non_state, base: YE}
   hezbollah: {name: Hezbollah, kind: non_state, base: LB}
@@ -231,17 +245,49 @@ edges:
 
   # --- Soudan : armée (SAF) contre Forces de soutien rapide (FSR), depuis avril 2023 ---
   - {from: AE, to: rsf, types: [arms, training], status: alleged, confidence: medium,
-     sources: ["HCDH, mission d'établissement des faits de l'ONU : réseaux de soutien extérieurs aux FSR (sept. 2026) — https://www.ohchr.org/en/press-releases/2026/09/sudan-external-support-networks-are-fuelling-conflict-and-civilian-harm-un"],
+     sources: ["HCDH, mission d'établissement des faits de l'ONU : réseaux de soutien extérieurs aux FSR (sept. 2026) — https://www.ohchr.org/en/press-releases/2026/09/sudan-external-support-networks-are-fuelling-conflict-and-civilian-harm-un",
+               "International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace",
+               "Chatham House, « Gold and the war in Sudan » (mars 2025, mis à jour mars 2026) — https://www.chathamhouse.org/2025/03/gold-and-war-sudan",
+               "Middle East Eye, les FSR, alliées clés des intérêts logistiques et commerciaux émiriens (sept. 2024) — https://www.middleeasteye.net/news/sudan-rsf-key-ally-uae-logistical-and-corporate-interests"],
      verified: 2026-09,
-     note: "L'ONU établit que des entités, intermédiaires et recruteurs opérant depuis les EAU ont acheminé armes, personnel et formation aux FSR ; l'État émirien dément tout soutien"}
+     note: "L'ONU établit que des entités, intermédiaires et recruteurs opérant depuis les EAU ont acheminé armes, personnel et formation aux FSR ; l'État émirien dément tout soutien",
+     why: "Selon Crisis Group, remplacer le pouvoir de l'armée par un gouvernement favorable aux Émirats ; l'essentiel de l'or soudanais aboutit à Dubaï (Chatham House), et les Émirats ont des projets de port sur la mer Rouge et de terres agricoles au Soudan (Middle East Eye)"}
   - {from: EG, to: SD, types: [arms, training], status: active, confidence: medium,
-     sources: ["Middle East Eye, l'Égypte et la Turquie renforcent leur soutien à l'armée soudanaise après la chute d'El-Fasher (nov. 2025) — https://www.middleeasteye.net/news/egypt-and-turkey-move-support-saf-following-fall-el-fasher"],
+     sources: ["Middle East Eye, l'Égypte et la Turquie renforcent leur soutien à l'armée soudanaise après la chute d'El-Fasher (nov. 2025) — https://www.middleeasteye.net/news/egypt-and-turkey-move-support-saf-following-fall-el-fasher",
+               "International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"],
      verified: 2026-09,
-     note: "Armes, conseil opérationnel et salle d'opérations conjointe, selon un responsable du renseignement militaire égyptien cité par la presse"}
+     note: "Armes, conseil opérationnel et salle d'opérations conjointe, selon un responsable du renseignement militaire égyptien cité par la presse",
+     why: "Selon Crisis Group, défendre ses intérêts dans le bassin du Nil et garder un voisin stable sur sa frontière sud"}
   - {from: TR, to: SD, since: "2024", types: [arms], status: active, confidence: medium,
-     sources: ["Middle East Eye, l'Égypte et la Turquie renforcent leur soutien à l'armée soudanaise après la chute d'El-Fasher (nov. 2025) — https://www.middleeasteye.net/news/egypt-and-turkey-move-support-saf-following-fall-el-fasher"],
+     sources: ["Middle East Eye, l'Égypte et la Turquie renforcent leur soutien à l'armée soudanaise après la chute d'El-Fasher (nov. 2025) — https://www.middleeasteye.net/news/egypt-and-turkey-move-support-saf-following-fall-el-fasher",
+               "International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"],
      verified: 2026-09,
-     note: "Drones, missiles air-sol et opérateurs de drones, selon un responsable turc cité par la presse"}
+     note: "Drones, missiles air-sol et opérateurs de drones, selon un responsable turc cité par la presse",
+     why: "Selon Crisis Group, des liens avec des factions islamistes de la coalition de l'armée, et la volonté d'étendre son influence en mer Rouge face aux Émirats"}
+
+  - {from: SA, to: SD, types: [political], status: active, confidence: medium,
+     sources: ["International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace",
+               "International Crisis Group, sept priorités pour l'Afrique en 2026 (févr. 2026) — https://www.crisisgroup.org/brf/africa/b209-seven-peace-and-security-priorities-africa-2026"],
+     verified: 2026-09,
+     why: "D'abord médiatrice (pourparlers de Djeddah), elle s'est rapprochée de l'armée quand des frappes de drones des FSR ont menacé ses intérêts en mer Rouge, selon Crisis Group"}
+  - {from: IR, to: SD, since: "2024-01", types: [arms], status: active, confidence: medium,
+     sources: ["The National, des drones iraniens Mohajer-6 livrés à l'armée soudanaise, selon Bloomberg et des images satellite (janv. 2024) — https://www.thenationalnews.com/mena/2024/01/25/reports-on-drones-used-by-sudans-army-could-be-sign-of-expanding-iranian-influence/",
+               "International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"],
+     verified: 2026-09,
+     note: "Drones Mohajer-6 ; Crisis Group (avr. 2026) cite toujours l'Iran comme fournisseur de drones de l'armée",
+     why: "Selon la presse, un signe de l'influence croissante de l'Iran sur la mer Rouge et dans la région"}
+  - {from: ER, to: SD, types: [training], status: active, confidence: medium,
+     sources: ["International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace",
+               "International Crisis Group, sept priorités pour l'Afrique en 2026 (févr. 2026) — https://www.crisisgroup.org/brf/africa/b209-seven-peace-and-security-priorities-africa-2026"],
+     verified: 2026-09,
+     note: "Entraînement de milices alliées à l'armée",
+     why: "Sécuriser sa frontière ouest, selon Crisis Group"}
+  - {from: ET, to: rsf, types: [arms], status: alleged, confidence: low,
+     sources: ["International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace",
+               "Security Council Report, prévisions de septembre 2026 : allégations d'un couloir d'approvisionnement des FSR par le territoire éthiopien — https://www.securitycouncilreport.org/monthly-forecast/2026-09/sudan-41.php"],
+     verified: 2026-09,
+     note: "Crisis Group juge que l'Éthiopie « semble peser davantage » du côté des FSR ; l'usage de son territoire comme route d'approvisionnement reste une allégation",
+     why: "Selon Crisis Group, une rivalité régionale avec l'Égypte et l'Érythrée, qui soutiennent l'armée"}
 
   # --- RD Congo : AFC/M23 dans l'est du pays ---
   - {from: RW, to: m23, since: "2021-11", types: [troops, arms, training], status: active, confidence: high,

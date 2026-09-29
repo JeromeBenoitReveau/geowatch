@@ -11,6 +11,17 @@ def load():
     data = _data()
     return data["actors"], data["edges"]
 
+def leader(actors, aid):
+    """Dirigeant d'un acteur : {name, role, sources, photo_key, actor} ou None. Le champ leader est soit un dict
+    décrivant la personne (photo sous « leader:<id> » dans data/people.json), soit l'id d'un acteur « person »."""
+    ld = actors.get(aid, {}).get("leader")
+    if isinstance(ld, str):
+        p = actors.get(ld, {})
+        return {"name": p.get("name", ld), "role": p.get("note", ""), "photo_key": ld, "actor": ld}
+    if isinstance(ld, dict):
+        return {**ld, "photo_key": f"leader:{aid}", "actor": None}
+    return None
+
 ALIGN_PATH = Path(__file__).with_name("alignments.yaml")
 LEVELS = {3: "défense mutuelle", 2: "partenariat stratégique", 1: "candidature ou participation gelée", 0: "intégration"}
 

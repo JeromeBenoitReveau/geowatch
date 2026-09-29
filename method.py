@@ -4,7 +4,7 @@ from collections import Counter
 from html import escape as e
 from urllib.parse import urlparse
 import re
-import history
+import brand, history
 from config import DYADS, MOVE_ALERT_PTS
 from sources.profiles import INDICATORS
 
@@ -58,7 +58,7 @@ def page(d):
     fr = lambda table, k, n: table.get(k, (k, k))[n > 1]
     return f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>geowatch — méthode et sources</title>
+<title>Méthode et sources — {e(brand.NAME)}</title>
 <style>
 :root{{--bg:#fafaf8;--fg:#1c1c1c;--mute:#6b6b6b;--line:#e3e3df;--card:#fff;--accent:#2b6cb0}}
 @media (prefers-color-scheme:dark){{:root{{--bg:#141414;--fg:#eee;--mute:#9a9a9a;--line:#2c2c2c;--card:#1d1d1d;--accent:#7aa7e0}}}}
@@ -74,12 +74,12 @@ th{{color:var(--mute);font-weight:600}}.wrap{{overflow-x:auto}}code{{font-size:1
 .kpi{{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:12px 0}}
 .kpi div{{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px}}.kpi b{{display:block;font-size:22px}}
 </style></head><body><main>
-<p><a href="index.html">← Retour à la carte et au graphe</a></p>
+<p><a href="index.html">← {e(brand.NAME)}</a> · <a href="explorer.html">Explorer</a> · <a href="manifeste.html">Manifeste</a></p>
 <h1>Méthode et sources</h1>
 <p class="mute">Page générée automatiquement le {_date(d["built"])} à partir des données publiées. Code sous licence MIT,
-données du graphe sous CC BY 4.0 — <a href="https://github.com/JeromeBenoitReveau/geowatch">dépôt GitHub</a>.</p>
+données du graphe sous CC BY 4.0 — <a href="{brand.REPO}">dépôt GitHub</a>.</p>
 <nav class="mute"><a href="#principe">Principe</a><a href="#chaine">Chaîne de données</a><a href="#graphe">Graphe</a>
-<a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a><a href="#marches">Marchés</a>
+<a href="#dossiers">Dossiers</a><a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a><a href="#marches">Marchés</a>
 <a href="#profils">Profils</a><a href="#carte">Carte</a><a href="#limites">Limites</a><a href="#contribuer">Contribuer</a></nav>
 
 <div class="kpi">
@@ -92,10 +92,10 @@ données du graphe sous CC BY 4.0 — <a href="https://github.com/JeromeBenoitRe
 </div>
 
 <h2 id="principe">Principe</h2>
-<p>geowatch montre <b>qui soutient qui</b> dans les conflits en cours, sous forme d'un graphe dont chaque relation est
+<p>{e(brand.NAME)} montre <b>qui soutient qui</b> dans les conflits en cours, sous forme d'un graphe dont chaque relation est
 sourcée, datée et relue à la main, et le relie à ce qui se mesure : liens formels entre États, votes à l'ONU,
 dépenses militaires, cotes des marchés de prédiction.</p>
-<p><b>Règle non négociable : aucun pourcentage sans cote de marché réelle derrière.</b> geowatch ne calcule ni n'estime
+<p><b>Règle non négociable : aucun pourcentage sans cote de marché réelle derrière.</b> {e(brand.NAME)} ne calcule ni n'estime
 aucune probabilité. Les seuls pourcentages de probabilité affichés sont des prix de marchés (Polymarket, Kalshi), avec leur
 source. Les autres pourcentages sont des mesures (part des votes identiques à l'ONU, part du PIB…).</p>
 <p>Deux règles de conception : rien n'est pondéré à la main (tailles, couleurs et classements découlent de données
@@ -151,6 +151,22 @@ début d'une relation (l'aide américaine à l'Ukraine est datée de 2022 car la
 GitHub à chaque modification. <code>update_network.py</code> peut proposer des mises à jour (Claude + recherche web) dans un
 fichier séparé : rien n'entre dans le graphe sans relecture.</p>
 <p>Partis et personnalités forment un calque « détail » : ils sont rattachés à leur pays et ne sont jamais classés dans un bloc.</p>
+<p><b>Qui est une « personnalité » ?</b> Seulement une personne qui a au moins une relation sourcée <i>qui lui est propre</i>,
+distincte de l'institution qu'elle dirige : Elon Musk, ou Donald Trump et JD Vance pour leurs soutiens personnels à des partis
+étrangers. Un chef d'État ou de groupe armé qui n'agit qu'à travers son institution (le général al-Burhan pour l'armée
+soudanaise, Hemedti pour les FSR) n'est pas un nœud : il apparaît comme <b>dirigeant</b> sur la fiche de l'acteur et dans
+les dossiers, pour ne pas dédoubler l'acteur. {sum(1 for a in actors.values() if a.get("leader"))} acteur(s) ont un dirigeant renseigné.</p>
+
+<h2 id="dossiers">Dossiers et « pourquoi »</h2>
+<p>Un dossier (<code>dossiers.yaml</code>) explique un conflit à quelqu'un qui n'y connaît rien : les deux camps, leurs
+soutiens étrangers, les enjeux, le coût humain, la chronologie, la situation actuelle et les cotes des marchés liés.
+Les camps et les soutiens sont <b>lus dans le graphe</b> : un dossier ne peut pas contredire <code>network.yaml</code>.</p>
+<p>Chaque soutien peut porter un <b>« pourquoi »</b> (champ <code>why</code>) : la motivation de l'acteur en une phrase.
+C'est une <b>analyse, pas un fait</b> : elle est attribuée à qui la formule (« selon Crisis Group… ») et couverte par une
+source de la relation. Quand les analyses divergent, le dossier doit le dire plutôt que trancher. Dans la chronologie,
+« premier soutien documenté » renvoie à la date <code>since</code>, la plus ancienne attestée par les sources.</p>
+<p>Dossiers publiés : {", ".join(f'<a href="{e(x["id"])}.html">{e(x["title"])}</a>' for x in d.get("dossiers", [])) or "aucun"}.
+{sum(1 for x in edges if x.get("why"))} relation(s) sur {len(edges)} ont un « pourquoi ».</p>
 
 <h2 id="blocs">Blocs d'influence</h2>
 <p>Deux blocs : {" et ".join(f'<b style="color:{b["color"]}">{e(b["name"])}</b>' for b in blocs.values())}.
@@ -211,7 +227,7 @@ pas une probabilité objective.</p>
 Les marchés annulés ou réglés à 50/50 sont écartés. Pour chaque marché résolu, on retient la dernière cote relevée
 1, 7 et 30 jours avant l'issue, et on calcule le <b>score de Brier</b> : moyenne de (cote − issue)², où l'issue vaut
 1 (Oui) ou 0 (Non). 0 est parfait ; 0,25 correspond à une cote de 50 % à chaque fois. Tant que moins de 30 marchés
-sont résolus, le score est indicatif. Ce bilan juge les marchés, pas geowatch, qui ne produit aucune probabilité.</p>
+sont résolus, le score est indicatif. Ce bilan juge les marchés, pas {e(brand.NAME)}, qui ne produit aucune probabilité.</p>
 
 <h2 id="profils">Profils pays</h2>
 <p>Banque mondiale (dernière année disponible, souvent avec 1 à 2 ans de retard) : {", ".join(f"<code>{c}</code>" for c in INDICATORS.values())}.
@@ -237,7 +253,7 @@ s'appuie autant que possible sur des sources officielles.</li>
 <p>Modifier <code>network.yaml</code> ou <code>alignments.yaml</code>, lancer <code>python validate.py</code>, puis ouvrir une
 pull request avec les sources. Les données brutes sont réutilisables : <a href="network.json">network.json</a>,
 <a href="network.csv">network.csv</a> (CC BY 4.0), historique des cotes et profils dans le dossier
-<a href="https://github.com/JeromeBenoitReveau/geowatch/tree/main/data">data/</a> du dépôt.</p>
+<a href="{brand.REPO}/tree/main/data">data/</a> du dépôt.</p>
 </main></body></html>"""
 
 def write(out, data):

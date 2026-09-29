@@ -3,7 +3,7 @@ et le graphe en données ouvertes (network.json, network.csv — CC BY 4.0). Pub
 from dotenv import load_dotenv; load_dotenv()
 import csv, json
 from pathlib import Path
-import db, method, network, track
+import brand, db, dossier, method, network, pages, track
 from config import DYADS, MOVE_ALERT_PTS
 
 OUT = Path("site")
@@ -18,11 +18,11 @@ def export_data(actors, edges):
     with open(OUT / "network.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["from", "from_name", "to", "to_name", "types", "status", "confidence",
-                    "sources", "verified", "note"])
+                    "sources", "verified", "note", "why"])
         for e in edges:
             w.writerow([e["from"], network.name(actors, e["from"]), e["to"], network.name(actors, e["to"]),
                         ";".join(e["types"]), e["status"], e["confidence"], " | ".join(e["sources"]),
-                        e["verified"], e.get("note", "")])
+                        e["verified"], e.get("note", ""), e.get("why", "")])
 
 def build():
     actors, edges = network.load()
@@ -45,17 +45,20 @@ def build():
         unga["by_year"] = {y: {by3[c]: v for c, v in d.items() if c in by3} for y, d in unga.get("by_year", {}).items()}
     data = {"actors": actors, "edges": edges, "profiles": profiles, "colors": TYPE_COLORS,
             "align": aligns, "influence": network.influence(actors, edges, aligns), "geo": geo, "people": db.load_people(), "unga": unga,
-            "markets": markets, "calibration": track.calibration(), "alert": MOVE_ALERT_PTS, "built": db.now()}
+            "markets": markets, "calibration": track.calibration(),
+            "dossiers": [{"id": x["id"], "title": x["title"]} for x in dossier.load()], "alert": MOVE_ALERT_PTS, "built": db.now()}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
                             .replace("</", "<\\/"))
-    (OUT / "index.html").write_text(html, encoding="utf-8")
+    (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME), encoding="utf-8")
     export_data(actors, edges)
     method.write(OUT, data)
-    print(f"→ {OUT}/index.html, methode.html, network.json, network.csv")
+    dossier.write(OUT, data)
+    pages.write(OUT, data)
+    print(f"→ {OUT}/ : index.html (accueil), explorer.html, manifeste.html, methode.html, dossiers, network.json, network.csv")
 
 TEMPLATE = r"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>geowatch — réseau de soutiens</title>
+<title>Explorer — __NAME__</title>
 <script src="https://cdn.jsdelivr.net/npm/vis-network@10.1.2/standalone/umd/vis-network.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -103,7 +106,7 @@ h1{font-size:20px;margin:0 0 4px}h2{font-size:12px;text-transform:uppercase;lett
 .spark{width:80px;height:22px}.spark polyline{fill:none;stroke:currentColor;stroke-width:1.5}
 </style></head><body>
 <div id="stage"><div id="graph"></div><div id="map"></div><div id="venn"></div>
-<div id="views"><button id="v-graph" aria-pressed="true">Graphe</button><button id="v-map" aria-pressed="false">Carte</button><button id="v-venn" aria-pressed="false">Organisations</button><a href="methode.html">Méthode & sources</a></div>
+<div id="views"><button id="v-graph" aria-pressed="true">Graphe</button><button id="v-map" aria-pressed="false">Carte</button><button id="v-venn" aria-pressed="false">Organisations</button><a href="index.html">Accueil</a><a href="methode.html">Méthode</a></div>
 <div id="controls">
   <label>Taille des acteurs : <select id="metric">
     <option value="military">dépenses militaires ($)</option><option value="gdp">PIB ($)</option>
@@ -147,6 +150,13 @@ function picOf(id){ const a = D.actors[id];
   if(a.kind==="state" || a.kind==="bloc") return flag(id);
   if(D.people[id]) return D.people[id].thumb;
   return badge(a.kind, blocColor(id) || (a.kind==="non_state" ? "#8a8a8a" : "#6b4fbb")); }
+// Dirigeant (champ leader) : affiché sur la fiche, pas un nœud du graphe (sauf s'il a des relations propres)
+const leaderKey = id => { const l = (D.actors[id]||{}).leader; return typeof l === "string" ? l : l ? "leader:" + id : null; };
+function leaderLine(id){ const l = (D.actors[id]||{}).leader; if(!l) return "";
+  const k = leaderKey(id), p = D.people[k], name = typeof l === "string" ? `<b data-id="${esc(l)}" style="cursor:pointer">${nm(l)}</b>` : `<b>${esc(l.name)}</b>`;
+  const role = typeof l === "string" ? "" : l.role ? ` — ${esc(l.role)}` : "";
+  return `<div class="rel" style="display:flex;gap:10px;align-items:center">${p ? `<img src="${safeUrl(p.thumb)}" alt=""
+    style="width:40px;height:40px;border-radius:50%;object-fit:cover">` : ""}<div>Dirigeant : ${name}${role}</div></div>`; }
 const credit = id => { const p = D.people[id]; return p ? `<p class="mute">Photo : ${esc(p.artist)}, ${esc(p.license)} —
   <a href="${safeUrl(p.page)}" target="_blank" rel="noopener">Wikimedia Commons</a></p>` : ""; };
 function mix(a, b, t){ const h = x => [1,3,5].map(i => parseInt(x.slice(i,i+2),16));
@@ -555,7 +565,10 @@ function setView(v){
   document.body.classList.toggle("map", v==="map"); document.body.classList.toggle("venn", v==="venn");
   ["graph","map","venn"].forEach(k => $("#v-"+k).setAttribute("aria-pressed", v===k));
   if(v==="map"){ if(!map) initMap(); else map.invalidateSize(); }
-  if(v==="venn"){ drawVenn(); $("#orgs").open = !SEL.size; } }
+  if(v==="venn"){
+    // première visite : une sélection parlante plutôt qu'une liste vide
+    if(!SEL.size) document.querySelectorAll("#orgs input").forEach(i => i.checked = ["nato","eu","brics","sco"].includes(i.value));
+    if(!SEL.size) syncOrgs(); else drawVenn(); } }
 $("#v-venn").addEventListener("click", () => setView("venn"));
 $("#v-graph").addEventListener("click", () => setView("graph"));
 $("#v-map").addEventListener("click", () => setView("map"));
@@ -566,6 +579,7 @@ function f(v, unit="", d=1){ if(!v) return "n/d"; let x=v.value, s;
 const tags = t => t.map(x=>`<span class="tag" style="background:${D.colors[x]||'#888'}">${esc(x)}</span>`).join("");
 const src = s => esc(s).replace(/https?:\/\/[^\s<]+/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
 const rel = (e, other) => `<div class="rel"><b data-id="${esc(other)}">${nm(other)}</b> ${tags(e.types)}
+  ${e.why ? `<div><b>Pourquoi ?</b> ${esc(e.why)}</div>` : ""}
   <div class="mute">${esc(e.status)} · confiance ${esc(e.confidence)} · ${esc(dated(e))} · vérifié ${esc(e.verified)} · ${(e.sources||[]).map(src).join(" ; ")}${e.note?"<br>"+esc(e.note):""}</div></div>`;
 document.addEventListener("click", ev => { const b = ev.target.closest("[data-id]"); if(b) show(b.dataset.id); });
 
@@ -589,12 +603,13 @@ function show(id){
   const p = D.profiles[iso];
   let h = `<h1>${nm(id)}</h1><div class="mute">${esc(KIND[a.kind]||a.kind)}${a.base&&a.kind!=="state"?" · "+nm(a.base)+" ("+esc(a.base)+")":""}${(a.member_of||[]).length?" · membre : "+a.member_of.map(nm).join(", "):""}</div>`;
   if(D.people[id]) h = `<img src="${safeUrl(D.people[id].thumb)}" alt="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;float:right;margin-left:10px">` + h;
+  h += leaderLine(id);
   if(blocLine(id)) h += `<p class="mute">${blocLine(id)}</p>`;
   if(ungaLine(id)) h += `<p class="mute">${ungaLine(id)}</p>`;
   if(forumLine(id)) h += `<p class="mute">${forumLine(id)}</p>`;
   h += tiers(id) + euCohesion(id) + (id==="US" || id==="EU" ? driftBlock() : "");
   if(a.note) h += `<p>${esc(a.note)}${(a.sources||[]).length?`<br><span class="mute">${a.sources.map(src).join(" ; ")}</span>`:""}</p>`;
-  h += credit(id);
+  h += credit(id) + credit(leaderKey(id));
   if(members.length){
     h += `<h2>Membres suivis (${members.length})</h2><p class="mute">Surlignés sur le graphe.</p>` + members.map(m => {
       const out = D.edges.filter(e=>e.from===m && e.status!=="ended");
@@ -646,7 +661,9 @@ function legend(){
   const all = Object.values(D.markets).flatMap(v=>v.markets).filter(m=>!m.stale);
   const moves = all.filter(m=>m.delta_pts!=null && Math.abs(m.delta_pts)>=D.alert)
                    .sort((a,b)=>Math.abs(b.delta_pts)-Math.abs(a.delta_pts));
-  $("#panel").innerHTML = `<h1>Réseau de soutiens</h1><p><a href="methode.html">Comment ces données sont construites, et d'où elles viennent →</a></p><p class="mute">Clique un acteur ; clique un bloc (UE) pour voir ses membres.
+  $("#panel").innerHTML = `<h1>Réseau de soutiens</h1>
+  <p class="box-link">Nouveau venu ? Commence par un dossier expliqué simplement :
+  ${(D.dossiers||[]).map(x => `<a href="${esc(x.id)}.html"><b>${esc(x.title)}</b></a>`).join(" · ")}</p><p><a href="methode.html">Comment ces données sont construites, et d'où elles viennent →</a></p><p class="mute">Clique un acteur ; clique un bloc (UE) pour voir ses membres.
   Drapeau = État ou bloc · épées = groupe armé · urne = parti · photo = personnalité. Trait plein = actif & confirmé,
   pointillé = réduit / allégué ; pointillé gris = rattachement d'un parti ou d'une personne à son pays.</p>
   <p class="mute">Vue « Carte » : chaque acteur dans son pays d'ancrage (coordonnées Wikidata), une couche par type
@@ -684,6 +701,11 @@ function legend(){
   Données du graphe : <a href="network.json">JSON</a> · <a href="network.csv">CSV</a>, licence CC BY 4.0.
   Généré le ${esc(D.built.slice(0,16).replace("T"," "))} UTC.</p>`; }
 legend();
+// Lien direct depuis l'accueil : #graphe, #carte, #organisations, #graphe:<id acteur>
+(() => { const [v, id] = decodeURIComponent(location.hash.slice(1)).split(":");
+  const view = {carte:"map", organisations:"venn", graphe:"graph"}[v];
+  if(view && view !== "graph") setView(view);
+  if(id && D.actors[id]) show(id); })();
 </script></body></html>"""
 
 if __name__ == "__main__":

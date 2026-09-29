@@ -45,6 +45,23 @@ def check(actors, edges, today=None, aligns=None):
                 and not all(isinstance(x, str) and "http" in x for x in a["sources"]):
             warnings.append(f"acteur {aid} : source de la note sans URL")
 
+    # dirigeants et personnes : une personne n'est un nœud que si elle a une relation PROPRE (cf. network.yaml)
+    involved = {x.get("from") for x in edges} | {x.get("to") for x in edges}
+    for aid, a in actors.items():
+        ld = a.get("leader")
+        if isinstance(ld, str):
+            if actors.get(ld, {}).get("kind") != "person":
+                errors.append(f"acteur {aid} : leader « {ld} » n'est pas un acteur person")
+        elif isinstance(ld, dict):
+            if not ld.get("name"):
+                errors.append(f"acteur {aid} : leader sans name")
+            if ld.get("wikidata") is not None and not re.fullmatch(r"Q\d+", str(ld["wikidata"])):
+                errors.append(f"acteur {aid} : leader.wikidata doit être un identifiant Qxxx")
+        elif ld is not None:
+            errors.append(f"acteur {aid} : leader doit être un id de personne ou {{name, wikidata, role}}")
+        if a.get("kind") == "person" and aid not in involved:
+            warnings.append(f"acteur {aid} : personne sans relation propre — en faire le leader de son institution ?")
+
     seen = set()
     for i, e in enumerate(edges, 1):
         where = f"arête {i} ({e.get('from')} → {e.get('to')})"
@@ -129,9 +146,54 @@ def check(actors, edges, today=None, aligns=None):
                 errors.append(f"config.DYADS[{name}] : {aid} absent de actors")
     return errors, warnings
 
+def check_dossiers(dossiers, actors, edges):
+    """dossiers.yaml : acteurs connus, récit sourcé, dates valides ; signale les soutiens sans « pourquoi »."""
+    errors, warnings = [], []
+    has_url = lambda xs: bool(xs) and all(isinstance(x, str) and "http" in x for x in xs)
+    for x in dossiers:
+        k = x.get("id", "?")
+        if not re.fullmatch(r"[a-z0-9-]+", str(k)):
+            errors.append(f"dossier {k} : id en minuscules, chiffres et tirets seulement (nom de page)")
+        for f in ("title", "since", "verified", "lede", "sides"):
+            if not x.get(f):
+                errors.append(f"dossier {k} : champ {f} manquant")
+        if x.get("dyad") and x["dyad"] not in DYADS:
+            errors.append(f"dossier {k} : dyad « {x['dyad']} » absente de config.DYADS")
+        if len(x.get("sides") or []) != 2:
+            errors.append(f"dossier {k} : il faut exactement deux camps (sides)")
+        if not has_url(x.get("lede_sources")):
+            errors.append(f"dossier {k} : lede_sources avec URL requises")
+        for f in ("origins", "toll", "now"):
+            if x.get(f) and not has_url(x[f].get("sources")):
+                errors.append(f"dossier {k} : {f} sans source avec URL")
+        for i, st in enumerate(x.get("stakes") or []):
+            if not has_url(st.get("sources")):
+                errors.append(f"dossier {k} : enjeu {st.get('label', i)} sans source avec URL")
+        for t in x.get("timeline") or []:
+            if not re.fullmatch(r"\d{4}(-\d{2})?", str(t.get("date"))):
+                errors.append(f"dossier {k} : date de frise « {t.get('date')} » au format AAAA ou AAAA-MM")
+            if not has_url([t.get("source")]):
+                errors.append(f"dossier {k} : événement « {t.get('text')} » sans source avec URL")
+        for sd in x.get("sides") or []:
+            ids = set(sd.get("actors") or [])
+            for a in ids - set(actors):
+                errors.append(f"dossier {k} : acteur « {a} » absent de network.yaml")
+            if not has_url(sd.get("sources")):
+                errors.append(f"dossier {k} : camp « {sd.get('name')} » sans source avec URL")
+            for e in edges:
+                if e["to"] in ids and e["from"] not in ids and e["status"] != "ended" and not e.get("why"):
+                    warnings.append(f"dossier {k} : soutien {e['from']} → {e['to']} sans « why »")
+    return errors, warnings
+
 if __name__ == "__main__":
+    import dossier
     actors, edges = network.load()
     errors, warnings = check(actors, edges, aligns=network.alignments())
+    de, dw = check_dossiers(dossier.load(), actors, edges)
+    import pages
+    de += [f"dossier en préparation « {u.get('title')} » : acteur « {a} » absent de network.yaml"
+           for u in pages.upcoming() for a in (u.get("actors") or ["?"]) if a not in actors]
+    errors, warnings = errors + de, warnings + dw
     for w in warnings:
         print(f"⚠️  {w}")
     for e in errors:
