@@ -289,7 +289,7 @@ def page(dos, d):
                if (ld := network.leader(d["actors"], a)) and ld["photo_key"] in d["people"]]
 
     body = f"""<div class="wrap">
-{style.top("index.html")}
+{style.top(f"{dos['id']}.html")}
 
 <header class="doc"><h1>{e(dos["title"])}</h1>
 <p class="meta">Depuis {e(fr_date(dos["since"]))}. Dossier vérifié en {e(fr_date(dos["verified"]))}. Les mots soulignés en pointillés ont une définition au survol.</p>

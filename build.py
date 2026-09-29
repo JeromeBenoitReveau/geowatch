@@ -46,7 +46,8 @@ def build():
             "dossiers": [{"id": x["id"], "title": x["title"]} for x in dossier.load()], "built": db.now()}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
                             .replace("</", "<\\/"))
-    (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS).replace("__LOGO__", style.LOGO), encoding="utf-8")
+    (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS).replace("__TOP__", style.top("explorer.html"))
+        .replace("__ICON_ORGS__", style.icon("orgs", 16)).replace("__ICON_MAP__", style.icon("map", 16)).replace("__ICON_GRAPH__", style.icon("graph", 16)), encoding="utf-8")
     export_data(actors, edges)
     method.write(OUT, data)
     style.write(OUT)
@@ -68,19 +69,19 @@ TEMPLATE = r"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 /* explorateur : mêmes jetons que style.css ; l'interface reste discrète, la couleur sert aux données */
 :root{--land-hl:#e9ecef}
 @media (prefers-color-scheme:dark){:root{--land-hl:#28303b}}
-body{font:14.5px/1.5 var(--sans);display:grid;grid-template-columns:1fr 380px;height:100vh}
-@media (max-width:800px){body{grid-template-columns:1fr;grid-template-rows:60vh auto;height:auto}}
+body{font:14.5px/1.5 var(--sans);display:grid;grid-template-columns:1fr 380px;grid-template-rows:auto minmax(0,1fr);height:100vh}
+.xhead{grid-column:1/-1;padding:0 18px 12px;border-bottom:1px solid var(--mist);position:relative;z-index:1500}.xhead .top{padding-top:14px}
+@media (max-width:800px){body{grid-template-columns:1fr;grid-template-rows:auto 60vh auto;height:auto}}
 #stage{position:relative;min-height:60vh}#graph{position:absolute;inset:0}
-#bar{position:absolute;top:0;left:0;right:0;z-index:1001;display:flex;align-items:center;gap:28px;padding:14px 18px;
-background:linear-gradient(var(--paper) 60%,transparent);pointer-events:none}#bar>*{pointer-events:auto}
-#bar .brand{text-decoration:none;margin-right:auto}
-#views{display:flex;gap:18px}#views button{font:inherit;font-size:15px;padding:2px 0;border:0;border-bottom:1.5px solid transparent;
+/* sélecteur de vue : en tête du panneau de gauche, mêmes icônes que le menu Explorer */
+#views{display:flex;gap:4px;margin:-2px 0 4px;padding-bottom:8px;border-bottom:1px solid var(--mist)}
+#views button{font:inherit;font-size:13.5px;display:flex;align-items:center;gap:6px;padding:5px 8px;border:0;border-radius:4px;
 background:none;color:var(--graphite);cursor:pointer}#views button:hover{color:var(--ink)}
-#views button[aria-pressed=true]{color:var(--ink);border-bottom-color:var(--peach)}
-#bar .method{font-size:15px;color:var(--graphite);text-decoration:none}#bar .method:hover{color:var(--ink)}
-#controls{position:absolute;top:56px;left:14px;z-index:1000;background:color-mix(in srgb,var(--paper) 94%,transparent);
+#views button .ico{color:var(--peach)}
+#views button[aria-pressed=true]{color:var(--ink);background:color-mix(in srgb,var(--ink) 7%,transparent)}
+#controls{position:absolute;top:14px;left:14px;z-index:1000;background:color-mix(in srgb,var(--paper) 94%,transparent);
 border:1px solid var(--mist);border-radius:3px;padding:10px 12px;font-size:13.5px;display:flex;flex-direction:column;gap:6px;
-max-width:calc(100% - 28px);width:300px}
+max-width:calc(100% - 28px);width:340px}
 #controls select{font:inherit;background:var(--paper);color:var(--ink);border:1px solid var(--mist);border-radius:3px;padding:1px 2px;max-width:100%}
 #controls summary{cursor:pointer;color:var(--graphite)}#controls summary:hover{color:var(--ink)}
 #controls details[open] summary{color:var(--ink);margin-bottom:4px}#settings label{display:block;margin:4px 0}
@@ -88,7 +89,7 @@ max-width:calc(100% - 28px);width:300px}
 #map{position:absolute;inset:0;display:none;background:var(--ocean)}
 body.map #map{display:block}body.map #graph,body.map .graph-only{display:none}
 .map-only{display:none}body.map label.map-only{display:block}
-#venn{position:absolute;inset:0;display:none;padding:130px 12px 12px}body.venn #venn{display:block}
+#venn{position:absolute;inset:0;display:none;padding:190px 12px 12px}body.venn #venn{display:block}
 body.venn #graph,body.venn .graph-only{display:none}#venn svg{width:100%;height:100%;overflow:visible}
 #venn text{font-family:system-ui,sans-serif}.vc{cursor:pointer}.vc:hover circle{stroke:var(--fg)}
 .venn-empty{max-width:380px;margin:120px auto;text-align:center}.venn-note{position:absolute;bottom:4px;left:12px;right:12px;margin:0}
@@ -113,11 +114,10 @@ aside p{margin:0 0 10px}.keys{display:grid;grid-template-columns:78px 1fr;gap:6p
 #orgs i,.sw{display:inline-block;width:11px;height:11px;border-radius:3px;flex:none;border:1px solid var(--line);vertical-align:-1px}
 .future{opacity:.45}
 </style></head><body>
+<header class="xhead">__TOP__</header>
 <div id="stage"><div id="graph"></div><div id="map"></div><div id="venn"></div>
-<div id="bar"><a class="brand" href="index.html">__LOGO____NAME__</a>
-<div id="views" role="tablist"><button id="v-graph" aria-pressed="true">Graphe</button><button id="v-map" aria-pressed="false">Carte</button><button id="v-venn" aria-pressed="false">Organisations</button></div>
-<a class="method" href="methode.html">Méthode</a></div>
 <div id="controls">
+  <div id="views" role="group" aria-label="Vue"><button id="v-venn" aria-pressed="false">__ICON_ORGS__Organisations</button><button id="v-map" aria-pressed="false">__ICON_MAP__Carte</button><button id="v-graph" aria-pressed="true">__ICON_GRAPH__Graphe</button></div>
   <label>Année <input type="range" id="year" min="2014" step="1" style="vertical-align:middle;width:140px"> <b id="year-label"></b></label>
   <details id="orgs"><summary>Organisations <b id="orgs-n"></b></summary><div class="list"></div></details>
   <details id="settings"><summary>Réglages</summary>
@@ -694,11 +694,15 @@ function legend(){
   <a href="methode.html">méthode</a>. Données réutilisables : <a href="network.json">JSON</a>, <a href="network.csv">CSV</a>
   (CC BY 4.0). Mis à jour le ${esc(D.built.slice(0,10).split("-").reverse().join("/"))}.</p>`; }
 legend();
-// Lien direct depuis l'accueil : #graphe, #carte, #organisations, #graphe:<id acteur>
-(() => { const [v, id] = decodeURIComponent(location.hash.slice(1)).split(":");
+// Liens directs (accueil, menu Explorer) : #graphe, #carte, #organisations, #graphe:<id acteur>
+// — aussi quand on est déjà sur la page : le menu change l'ancre sans recharger
+function route(){ const [v, id] = decodeURIComponent(location.hash.slice(1)).split(":");
   const view = {carte:"map", organisations:"venn", graphe:"graph"}[v];
-  if(view && view !== "graph") setView(view);
-  if(id && D.actors[id]) show(id); })();
+  if(view) setView(view);
+  if(id && D.actors[id]) show(id);
+  document.querySelectorAll("details.menu[open]").forEach(d => d.open = false); }
+route();
+addEventListener("hashchange", route);
 </script></body></html>"""
 
 if __name__ == "__main__":

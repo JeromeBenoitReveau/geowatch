@@ -22,8 +22,20 @@ a:hover{text-decoration-thickness:2px}
 a:focus-visible,summary:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--peach);outline-offset:3px;border-radius:2px}
 .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:22px 0 0;font-size:15px}
-.top a{text-decoration:none}.top nav a{margin-left:22px;color:var(--graphite)}.top nav a:hover,.top nav a[aria-current]{color:var(--ink)}
-.top nav a[aria-current]{text-decoration:underline;text-decoration-color:var(--peach);text-underline-offset:8px;text-decoration-thickness:2px}
+.top a{text-decoration:none}
+/* menus déroulants de l'en-tête */
+.menus{display:flex;gap:26px}.menu{position:relative}
+.menu summary{list-style:none;cursor:pointer;color:var(--graphite);padding:4px 0;border-bottom:2px solid transparent;display:flex;align-items:center;gap:6px}
+.menu summary::-webkit-details-marker{display:none}
+.menu summary::after{content:"";width:6px;height:6px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:translateY(-2px) rotate(45deg);opacity:.7}
+.menu[open] summary::after{transform:translateY(1px) rotate(-135deg)}
+.menu summary:hover,.menu[open] summary,.menu[data-active] summary{color:var(--ink)}.menu[data-active] summary{border-bottom-color:var(--peach)}
+.menu-link{color:var(--ink);padding:4px 0;border-bottom:2px solid var(--peach)}
+.dd{position:absolute;right:0;top:calc(100% + 10px);z-index:2000;min-width:230px;background:var(--land);border:1px solid var(--mist);
+  border-radius:6px;padding:6px;box-shadow:0 8px 24px #0000001a;display:flex;flex-direction:column}
+.dd a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;color:var(--ink);white-space:nowrap}
+.dd a:hover,.dd a:focus-visible{background:color-mix(in srgb,var(--ink) 6%,var(--land))}.dd a[aria-current]{box-shadow:inset 2px 0 0 var(--peach)}
+.dd .ico,.explore .ico{color:var(--peach);flex:none}
 .brand{font-family:var(--serif);font-size:20px;display:inline-flex;align-items:center;gap:9px}.brand .logo{flex:none}
 h1{font:400 44px/1.1 var(--serif);letter-spacing:-.01em;margin:0 0 14px}
 h2{font:400 26px/1.25 var(--serif);margin:0 0 18px}
@@ -43,7 +55,7 @@ abbr{text-decoration:underline dotted var(--graphite);text-underline-offset:3px;
 .notes h2{font-size:21px;color:var(--ink)}.notes ol{margin:0;padding-left:22px;columns:2;column-gap:48px}
 .notes li{break-inside:avoid;margin:0 0 6px}.notes li:target{color:var(--ink)}
 footer{border-top:1px solid var(--mist);margin-top:64px;padding:20px 0 40px;font-size:13.5px;color:var(--graphite)}
-@media (max-width:760px){h1{font-size:34px}.lede{font-size:19px}.notes ol{columns:1}.top nav a{margin:0 16px 0 0}}
+@media (max-width:760px){h1{font-size:34px}.lede{font-size:19px}.notes ol{columns:1}.menus{gap:18px}.menu .dd{left:0;right:auto}.menu:last-child .dd{left:auto;right:0}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 """
 
@@ -58,7 +70,17 @@ FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
 <path d="M5.5 19C11 12 21 12 26.5 13" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>
 """
 
-NAV = [("index.html#conflits", "Conflits"), ("explorer.html", "Explorer"), ("manifeste.html", "Manifeste"), ("methode.html", "Méthode")]
+# Icônes des trois vues de l'explorateur (Lucide, ISC ; « orgs » dessiné pour le site : deux cercles qui se recoupent)
+ICONS = {
+    "orgs": '<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/>',
+    "map": '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+    "graph": '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>',
+}
+def icon(k, size=18):
+    return (f'<svg class="ico" viewBox="0 0 24 24" width="{size}" height="{size}" fill="none" stroke="currentColor" '
+            f'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[k]}</svg>')
+# les trois vues de l'explorateur : (ancre, icône, libellé) — mêmes entrées dans le menu, l'explorateur et l'accueil
+VIEWS = [("organisations", "orgs", "Organisations"), ("carte", "map", "Carte du monde"), ("graphe", "graph", "Graphe des soutiens")]
 
 def head(title, desc=brand.BASELINE, extra=""):
     return f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
@@ -68,8 +90,27 @@ def head(title, desc=brand.BASELINE, extra=""):
 <link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.svg" type="image/svg+xml">{extra}</head>"""
 
 def top(current=""):
-    links = "".join(f'<a href="{h}"{" aria-current=\"page\"" if h.split("#")[0] == current else ""}>{t}</a>' for h, t in NAV)
-    return f'<div class="top"><a class="brand" href="index.html">{LOGO}{e(brand.NAME)}</a><nav>{links}</nav></div>'
+    """En-tête commun : trois menus déroulants (Conflits, Explorer, À propos), identiques sur toutes les pages.
+    current = nom du fichier de la page, pour signaler la rubrique et la page actives."""
+    import dossier  # import tardif : dossier importe style
+    conflicts = [(f"{x['id']}.html", x["title"]) for x in dossier.load()]
+    about = [("manifeste.html", "Manifeste"), ("methode.html", "Méthode et sources")]
+    here = lambda h: ' aria-current="page"' if h == current else ""
+    def menu(label, items, active):
+        links = "".join(f'<a href="{h}"{here(h)}>{t}</a>' for h, t in items)
+        return f'<details class="menu"{" data-active" if active else ""}><summary>{label}</summary><div class="dd">{links}</div></details>'
+    # sur l'explorateur lui-même, pas de liste : les onglets du panneau de gauche choisissent la vue
+    explore = "".join(f'<a href="explorer.html#{a}">{icon(k)}{t}</a>' for a, k, t in VIEWS)
+    return f"""<div class="top"><a class="brand" href="index.html">{LOGO}{e(brand.NAME)}</a><nav class="menus">
+{menu("Conflits", conflicts, current in dict(conflicts))}
+{'<a class="menu-link" href="explorer.html" aria-current="page">Explorer</a>' if current == "explorer.html" else f'<details class="menu"><summary>Explorer</summary><div class="dd">{explore}</div></details>'}
+{menu("À propos", about, current in dict(about))}</nav></div>
+<script>
+// un seul menu ouvert à la fois ; un clic ailleurs ou Échap les ferme
+document.addEventListener("click", ev => document.querySelectorAll("details.menu[open]").forEach(d => {{ if(!d.contains(ev.target) || ev.target.closest(".dd a")) d.open = false; }}));
+document.addEventListener("keydown", ev => {{ if(ev.key === "Escape") document.querySelectorAll("details.menu[open]").forEach(d => d.open = false); }});
+document.querySelectorAll("details.menu").forEach(d => d.addEventListener("toggle", () => {{ if(d.open) document.querySelectorAll("details.menu[open]").forEach(o => {{ if(o !== d) o.open = false; }}); }}));
+</script>"""
 
 def foot(extra=""):
     return f"""<footer><div class="wrap">{extra}{e(brand.NAME)} est un projet indépendant et open source. Code sous licence MIT,

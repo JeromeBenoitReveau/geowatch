@@ -16,20 +16,14 @@ CSS = """
 .odds b{font:400 44px/1 var(--serif);font-variant-numeric:tabular-nums;margin-bottom:8px}
 .odds span{font-size:14.5px;line-height:1.4}.odds small{margin-top:8px;font-size:13px;color:var(--graphite)}
 .explore{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.explore .card{padding:22px}.explore svg{width:28px;height:28px;stroke:var(--ink);margin-bottom:12px}
+.explore .card{padding:22px}.explore .ico{display:block;margin-bottom:12px}
 .explore p{margin:0 0 14px;font-size:15.5px;color:var(--graphite)}.explore .count{font-size:14px;color:var(--ink)}
 .page{padding:64px 0 0}.page h2{margin-top:40px}.page ol li,.page ul li{margin-bottom:10px}
 @media (max-width:760px){.hero{padding:48px 0 28px}.hero h1{font-size:34px}.conflict{grid-template-columns:1fr;padding:20px}
   .explore{grid-template-columns:1fr}}
 """
 
-ICON = {  # Lucide (ISC) ; « orgs » : deux cercles qui se recoupent, dessiné pour le site
-    "orgs": '<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/>',
-    "map": '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
-    "graph": '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>',
-}
-svg = lambda k: (f'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" '
-                 f'stroke-linejoin="round" aria-hidden="true">{ICON[k]}</svg>')
+svg = lambda k: style.icon(k, 28)
 
 def page(title, body, current, desc=brand.BASELINE):
     return style.head(title, desc, f"<style>{CSS}</style>") + f"""<body><div class="wrap">{style.top(current)}
