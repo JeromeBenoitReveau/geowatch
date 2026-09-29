@@ -178,7 +178,7 @@ Exemple : les Houthis, soutenus uniquement par l'Iran.</li>
 La carte colore chaque pays selon son bloc, plus ou moins intensément selon le niveau.</p>
 <h3>Forums économiques et politiques</h3>
 <p>BRICS, OCS, G7… sont des cadres de coopération, pas des alliances (les BRICS réunissent l'Inde et la Chine). Ils sont
-affichés (calques « Organisations superposées » de la carte, fiches pays) mais <b>n'entrent pas dans le calcul des blocs</b>.</p>
+affichés (vue « Organisations » de l'explorateur, fiches pays) mais <b>n'entrent pas dans le calcul des blocs</b>.</p>
 <h3>Adhésions et départs datés</h3>
 <p>Chaque groupe peut dater ses adhésions (<code>joined</code>, ex. « FI +2023-04 ») et ses départs (<code>left</code>, anciens
 membres, ex. « GB −2020-01 ») depuis 2014, début du curseur « Année ». Un membre sans date l'était déjà en 2014. Chaque
@@ -203,9 +203,9 @@ Sud global (développement, décolonisation) coïncident avec ceux de la Chine :
 à l'axe. Les votes adoptés par consensus, sans scrutin, ne sont pas comptés.</p>
 
 <h2 id="taille">Taille des acteurs</h2>
-<p>Au choix : dépenses militaires en dollars (Banque mondiale <code>MS.MIL.XPND.CD</code>), PIB en dollars
+<p>Sur le graphe, au choix : dépenses militaires en dollars (Banque mondiale <code>MS.MIL.XPND.CD</code>), PIB en dollars
 (<code>NY.GDP.MKTP.CD</code>), ou nombre de soutiens accordés dans le graphe. Échelle en racine carrée ; l'UE utilise l'agrégat
-Banque mondiale « EUU ». Sans donnée (Taïwan, que la Banque mondiale ne couvre pas ; groupes armés) : taille minimale.</p>
+Banque mondiale « EUU ». Sur la carte : dépenses militaires. Sans donnée (Taïwan, que la Banque mondiale ne couvre pas ; groupes armés) : taille minimale.</p>
 
 <h2 id="profils">Profils pays</h2>
 <p>Banque mondiale (dernière année disponible, souvent avec 1 à 2 ans de retard) : {", ".join(f"<code>{c}</code>" for c in INDICATORS.values())}.

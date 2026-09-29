@@ -30,7 +30,6 @@ a:focus-visible,summary:focus-visible,button:focus-visible,input:focus-visible,s
 .menu summary::after{content:"";width:6px;height:6px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:translateY(-2px) rotate(45deg);opacity:.7}
 .menu[open] summary::after{transform:translateY(1px) rotate(-135deg)}
 .menu summary:hover,.menu[open] summary,.menu[data-active] summary{color:var(--ink)}.menu[data-active] summary{border-bottom-color:var(--peach)}
-.menu-link{color:var(--ink);padding:4px 0;border-bottom:2px solid var(--peach)}
 .dd{position:absolute;right:0;top:calc(100% + 10px);z-index:2000;min-width:230px;background:var(--land);border:1px solid var(--mist);
   border-radius:6px;padding:6px;box-shadow:0 8px 24px #0000001a;display:flex;flex-direction:column}
 .dd a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;color:var(--ink);white-space:nowrap}
@@ -55,7 +54,7 @@ abbr{text-decoration:underline dotted var(--graphite);text-underline-offset:3px;
 .notes h2{font-size:21px;color:var(--ink)}.notes ol{margin:0;padding-left:22px;columns:2;column-gap:48px}
 .notes li{break-inside:avoid;margin:0 0 6px}.notes li:target{color:var(--ink)}
 footer{border-top:1px solid var(--mist);margin-top:64px;padding:20px 0 40px;font-size:13.5px;color:var(--graphite)}
-@media (max-width:760px){h1{font-size:34px}.lede{font-size:19px}.notes ol{columns:1}.menus{gap:18px}.menu .dd{left:0;right:auto}.menu:last-child .dd{left:auto;right:0}}
+@media (max-width:760px){h1{font-size:34px}.lede{font-size:19px}.notes ol{columns:1}.menus{gap:18px}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 """
 
@@ -99,17 +98,21 @@ def top(current=""):
     def menu(label, items, active):
         links = "".join(f'<a href="{h}"{here(h)}>{t}</a>' for h, t in items)
         return f'<details class="menu"{" data-active" if active else ""}><summary>{label}</summary><div class="dd">{links}</div></details>'
-    # sur l'explorateur lui-même, pas de liste : les onglets du panneau de gauche choisissent la vue
-    explore = "".join(f'<a href="explorer.html#{a}">{icon(k)}{t}</a>' for a, k, t in VIEWS)
+    explore = "".join(f'<a href="explorer.html#{a}" data-view="{a}">{icon(k)}{t}</a>' for a, k, t in VIEWS)
     return f"""<div class="top"><a class="brand" href="index.html">{LOGO}{e(brand.NAME)}</a><nav class="menus">
 {menu("Conflits", conflicts, current in dict(conflicts))}
-{'<a class="menu-link" href="explorer.html" aria-current="page">Explorer</a>' if current == "explorer.html" else f'<details class="menu"><summary>Explorer</summary><div class="dd">{explore}</div></details>'}
+<details class="menu"{" data-active" if current == "explorer.html" else ""}><summary>Explorer</summary><div class="dd">{explore}</div></details>
 {menu("À propos", about, current in dict(about))}</nav></div>
 <script>
 // un seul menu ouvert à la fois ; un clic ailleurs ou Échap les ferme
 document.addEventListener("click", ev => document.querySelectorAll("details.menu[open]").forEach(d => {{ if(!d.contains(ev.target) || ev.target.closest(".dd a")) d.open = false; }}));
 document.addEventListener("keydown", ev => {{ if(ev.key === "Escape") document.querySelectorAll("details.menu[open]").forEach(d => d.open = false); }});
-document.querySelectorAll("details.menu").forEach(d => d.addEventListener("toggle", () => {{ if(d.open) document.querySelectorAll("details.menu[open]").forEach(o => {{ if(o !== d) o.open = false; }}); }}));
+// à l'ouverture : on ferme les autres menus et on garde la liste dans l'écran, quelle que soit sa largeur
+document.querySelectorAll("details.menu").forEach(d => d.addEventListener("toggle", () => {{ if(!d.open) return;
+  document.querySelectorAll("details.menu[open]").forEach(o => {{ if(o !== d) o.open = false; }});
+  const dd = d.querySelector(".dd"); dd.style.left = "auto"; dd.style.right = "0";
+  if(dd.getBoundingClientRect().left < 8){{ dd.style.left = "0"; dd.style.right = "auto"; }}
+  const r = dd.getBoundingClientRect(); if(r.right > innerWidth - 8) dd.style.left = (innerWidth - 8 - r.width - d.getBoundingClientRect().left) + "px"; }}));
 </script>"""
 
 def foot(extra=""):
