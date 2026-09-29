@@ -1,46 +1,13 @@
 """
-python ingest.py             # cotes des marchés → data/ (GitHub Actions toutes les 6 h)
-python ingest.py --profiles  # profils pays (cron hebdo — données annuelles)
+python ingest.py  # profils pays, votes à l'ONU, coordonnées et photos → data/ (GitHub Actions, le 1er du mois)
 """
 from dotenv import load_dotenv; load_dotenv()
-import argparse
-import db, history, network
-from config import DYADS
-from sources import markets, profiles, unga
-
-def run_markets():
-    kalshi_evs = markets.kalshi_events()  # gère ses erreurs, garde un scan partiel
-    fetched_at, batch = db.now(), []
-    for name, d in DYADS.items():
-        found = markets.fetch(d["keywords"], kalshi_evs)
-        batch += [(name, m) for m in found]
-        n_k = sum(m["source"] == "kalshi" for m in found)
-        print(f"→ {name} : {len(found) - n_k} Polymarket, {n_k} Kalshi")
-    history.record(fetched_at, batch)
-    check_resolutions({(m["source"], m["id"]) for _, m in batch})
-
-def check_resolutions(seen):
-    """Marchés suivis absents de ce relevé (clos ou plus trouvés) et pas encore résolus : on demande leur issue."""
-    done, new = history.resolutions(), []
-    for r in history.markets():
-        key = (r["source"], r["market_id"])
-        if key in seen or key in done:
-            continue
-        try:
-            res = markets.resolve(*key)
-        except markets.httpx.HTTPError as e:
-            print(f"  [résolution] {key} → {e}")
-            continue
-        if res:
-            new.append((*key, res["resolved_at"], res["outcome"]))
-    history.record_resolutions(new)
-    if new:
-        print(f"→ {len(new)} marché(s) résolu(s)")
+import db, network
+from sources import profiles, unga
 
 def run_profiles(c):
     actors, _ = network.load()
-    isos = {iso for d in DYADS.values() for iso in d["countries"]}
-    isos |= {a for a, v in actors.items() if v["kind"] == "state"}
+    isos = {a for a, v in actors.items() if v["kind"] == "state"}
     isos |= {v["base"] for v in actors.values() if v.get("base")}  # pays hôtes des proxies
     isos |= {a for a, v in actors.items() if v["kind"] == "bloc" and a in profiles.WB_CODES}
     print(f"→ profils : {', '.join(sorted(isos))}")
@@ -65,7 +32,5 @@ def run_profiles(c):
     db.save_people(profiles.people(qids))
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--profiles", action="store_true")
-    a = ap.parse_args()
-    run_profiles(db.conn()) if a.profiles else run_markets()
+    c = db.conn()
+    run_profiles(c)

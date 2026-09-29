@@ -37,13 +37,12 @@ def page(title, body, current, desc=brand.BASELINE):
 
 def conflict_row(x, d):
     names = [s["name"] for s in x["sides"]]
-    ms = [m for m in (d["markets"].get(x.get("dyad"), {}) or {}).get("markets", []) if not m["stale"]]
-    labels = x.get("market_labels") or {}
-    if labels:
-        by_q = {m["question"]: m for m in ms}
-        ms = [by_q[q] for q in labels if q in by_q] or ms
-    odds = (f'<div class="odds tint"><b>{round(ms[0]["prob"] * 100)} %</b><span>{e(labels.get(ms[0]["question"], ms[0]["question"]))}</span>'
-            f'<small>Cote des parieurs sur {e(ms[0]["source"].capitalize())}</small></div>') if ms else ""
+    # encart : les soutiens étrangers de chaque camp, lus dans le graphe (pas de cote ni de probabilité)
+    ids = [set(sd["actors"]) for sd in x["sides"]]
+    per_side = [len({ed["from"] for ed in d["edges"] if ed["to"] in i and ed["from"] not in i and ed["status"] != "ended"}) for i in ids]
+    short = lambda n: n[:1].lower() + n[1:]
+    odds = (f'<div class="odds tint"><b>{sum(per_side)}</b><span>puissances étrangères impliquées</span>'
+            f'<small>{per_side[0]} {"soutient" if per_side[0] == 1 else "soutiennent"} {e(short(names[0]))}, {per_side[1]} {e(short(names[1]))}</small></div>')
     first = " ".join(x["lede"].split()).split(". ")[0].rstrip(".") + "."
     return f"""<a class="card conflict" href="{e(x['id'])}.html"><div><h3>{e(x['title'])}</h3>
 <p class="vs"><span style="background:var(--a)"></span>{e(names[0])} contre <span style="background:var(--b);margin-left:4px"></span>{e(names[1][:1].lower() + names[1][1:])}</p>
@@ -101,8 +100,8 @@ internationales, centres de recherche, presse de référence. Aujourd'hui : {len
 analyses divergent, on le dit plutôt que de trancher.</li>
 <li><b>Montrer le doute.</b> Un soutien démenti ou non prouvé est marqué « allégué », avec un niveau de confiance.
 Une relation sans date connue le reste, plutôt que de lui en inventer une.</li>
-<li><b>Aucune probabilité inventée.</b> Le site ne prédit rien. Les seuls pourcentages de probabilité affichés sont
-des cotes de marchés de prédiction réels, avec leur source : ce qu'anticipent des parieurs, pas une vérité.</li>
+<li><b>Aucune prédiction.</b> Le site explique ce qui se passe et pourquoi ; il ne dit pas ce qui va arriver.
+Aucune probabilité, aucune cote de paris : les seuls chiffres sont des mesures sourcées.</li>
 <li><b>Tous les camps, avec la même exigence.</b> On montre les soutiens de chaque côté, qu'ils viennent de
 démocraties ou de dictatures, d'alliés ou de rivaux de la France.</li>
 <li><b>Relu par un humain.</b> Des outils automatiques peuvent proposer des mises à jour, mais rien n'entre dans le
@@ -116,13 +115,12 @@ correction <a href="{brand.REPO}">sur GitHub</a>.</li>
 <li><b>Pas un fil d'actualité.</b> Les dossiers sont revus régulièrement, pas en temps réel. Pour suivre les événements
 heure par heure, les médias et les tableaux de bord spécialisés restent indispensables.</li>
 <li><b>Pas exhaustif.</b> Un conflit n'est ajouté que lorsque ses relations peuvent être sourcées sérieusement.</li>
-<li><b>Pas un outil de prédiction.</b> Les cotes des marchés sont montrées pour ce qu'elles sont, et leur fiabilité
-passée est mesurée publiquement (voir la <a href="methode.html#marches">méthode</a>).</li>
+<li><b>Pas un outil de pronostic.</b> On ne parie pas sur l'issue d'une guerre, et on n'affiche pas les paris des autres.</li>
 </ul>
 
 <h2>Comment c'est fait</h2>
 <p>Un graphe de relations tenu à la main, des alliances formelles datées, les votes à l'Assemblée générale de l'ONU, des
-données de la Banque mondiale et de Wikidata, et les cotes de Polymarket et Kalshi relevées toutes les six heures.
+données de la Banque mondiale et de Wikidata.
 Le détail, source par source et règle par règle : <a href="methode.html">méthode et sources</a>.</p>
 </article>"""
     return page(f"Manifeste — {brand.NAME}", body, "manifeste.html", "Pourquoi ce site existe, et comment il est fait.")

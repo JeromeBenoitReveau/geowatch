@@ -3,7 +3,6 @@ Tourne aussi en CI (.github/workflows/validate.yml) sur chaque changement du gra
 import re, sys
 from datetime import date
 import network
-from config import DYADS
 
 KINDS = {"state", "non_state", "bloc", "party", "person"}
 TYPES = {"arms", "financial", "training", "troops", "intelligence", "political", "economic", "dual_use"}
@@ -140,10 +139,6 @@ def check(actors, edges, today=None, aligns=None):
         if not re.fullmatch(r"#[0-9a-fA-F]{6}", str(v.get("color", ""))):
             errors.append(f"bloc {b} : color doit être #rrggbb")
 
-    for name, d in DYADS.items():
-        for aid in d["countries"]:
-            if aid not in actors:
-                errors.append(f"config.DYADS[{name}] : {aid} absent de actors")
     return errors, warnings
 
 def check_tensions(tensions, actors, today=None):
@@ -184,8 +179,6 @@ def check_dossiers(dossiers, actors, edges):
         for f in ("title", "since", "verified", "lede", "sides"):
             if not x.get(f):
                 errors.append(f"dossier {k} : champ {f} manquant")
-        if x.get("dyad") and x["dyad"] not in DYADS:
-            errors.append(f"dossier {k} : dyad « {x['dyad']} » absente de config.DYADS")
         if len(x.get("sides") or []) != 2:
             errors.append(f"dossier {k} : il faut exactement deux camps (sides)")
         if not has_url(x.get("lede_sources")):

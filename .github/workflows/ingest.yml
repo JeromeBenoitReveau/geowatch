@@ -1,23 +1,17 @@
-name: market odds
+name: data refresh
 
-# Toutes les 6 h : cotes Polymarket/Kalshi → data/odds.csv.
-# Le 1er du mois : profils pays Banque mondiale + Wikidata → data/profiles.json.
+# Le 1er du mois : profils pays Banque mondiale + Wikidata, votes à l'ONU, coordonnées et photos → data/.
+# (Les cotes des marchés de prédiction ne sont plus relevées depuis le 2026-09-29 : site d'information, sans pronostic.)
 on:
   schedule:
-    - cron: "17 */6 * * *"   # minute décalée : les créneaux pile sont les plus retardés par GitHub
     - cron: "40 3 1 * *"
   workflow_dispatch:
-    inputs:
-      profiles:
-        description: "Rafraîchir les profils pays au lieu des cotes"
-        type: boolean
-        default: false
 
 permissions:
   contents: write
 
 concurrency:
-  group: market-odds
+  group: data-refresh
   cancel-in-progress: false
 
 jobs:
@@ -31,18 +25,13 @@ jobs:
           python-version: "3.12"
       - run: pip install httpx pyyaml python-dotenv
       - name: Relevé
-        run: |
-          if [ "${{ github.event.schedule }}" = "40 3 1 * *" ] || [ "${{ inputs.profiles }}" = "true" ]; then
-            python ingest.py --profiles; echo "WHAT=country profiles" >> "$GITHUB_ENV"
-          else
-            python ingest.py; echo "WHAT=market odds" >> "$GITHUB_ENV"
-          fi
+        run: python ingest.py
       - name: Commit des nouvelles données
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/
           git diff --cached --quiet && exit 0
-          git commit -m "data: $WHAT $(date -u +%Y-%m-%dT%H:%MZ)"
+          git commit -m "data: country profiles $(date -u +%Y-%m-%dT%H:%MZ)"
           git pull --rebase
           git push

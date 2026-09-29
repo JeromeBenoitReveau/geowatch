@@ -1,5 +1,5 @@
 """Profils pays, en JSON versionné (data/profiles.json) : GitHub Actions les rafraîchit chaque mois
-et le site est construit à partir du dépôt seul. L'historique des cotes est dans history.py."""
+et le site est construit à partir du dépôt seul."""
 import json, os
 from datetime import datetime, timezone
 from pathlib import Path

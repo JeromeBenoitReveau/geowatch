@@ -1,6 +1,6 @@
 """Pages « dossier » (site/<id>.html) : un conflit expliqué à quelqu'un qui n'y connaît rien.
 Le récit vient de dossiers.yaml ; les camps, leurs soutiens et le « pourquoi » de chaque soutien viennent de
-network.yaml, pour qu'un dossier ne puisse pas contredire le graphe. Seuls pourcentages : les cotes des marchés."""
+network.yaml, pour qu'un dossier ne puisse pas contredire le graphe. Le site n'affiche aucune probabilité."""
 from html import escape as e
 from pathlib import Path
 from urllib.parse import urlparse
@@ -50,8 +50,6 @@ header.doc{padding:72px 0 28px;max-width:760px}.doc .meta{margin:0 0 26px}
 .tl{list-style:none;margin:18px 0 0;padding:16px 0 0;border-top:1px solid var(--mist)}
 .tl li{display:grid;grid-template-columns:104px 1fr;gap:16px;padding:7px 0}
 .tl time{white-space:nowrap;color:var(--graphite);font-variant-numeric:tabular-nums;font-size:15px}
-.odds{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:16px}
-.odd{padding:16px 18px}.odd b{display:block;font:400 36px/1 var(--serif);font-variant-numeric:tabular-nums;margin-bottom:8px}.odd div{font-size:15px;line-height:1.45}.odd small{display:block;color:var(--graphite);font-size:13.5px;margin-top:2px}
 @media (max-width:760px){header.doc{padding:44px 0 22px}.camps,.pair{grid-template-columns:1fr}.card{padding:18px}
   .tl li{grid-template-columns:88px 1fr;gap:10px}#dmap{height:62vh}}
 """
@@ -286,14 +284,6 @@ def page(dos, d):
             events.append((dt, f"{who} : {what} à {e(s['name'][:1].lower() + s['name'][1:])}" + cite([xs[0]["sources"][0]])))
     events.sort(key=lambda ev: ev[0])
 
-    ms = [m for m in (d["markets"].get(dos.get("dyad"), {}) or {}).get("markets", []) if not m["stale"]]
-    labels = dos.get("market_labels") or {}
-    if labels:
-        by_q = {m["question"]: m for m in ms}
-        ms = [by_q[q] for q in labels if q in by_q]
-    odds = "".join(f"""<div class="odd tint"><b>{round(m["prob"] * 100)} %</b><div>{e(labels.get(m["question"], m["question"]))}
-  <small>Question posée sur <a href="{e(m["url"])}" target="_blank" rel="noopener">{e(m["source"].capitalize())}</a> : « {e(m["question"])} »</small></div></div>""" for m in ms[:4])
-
     frac = fractures(dos, d, g, cite)
     credits = [d["people"][ld["photo_key"]] for s in dos["sides"] for a in s["actors"]
                if (ld := network.leader(d["actors"], a)) and ld["photo_key"] in d["people"]]
@@ -325,11 +315,6 @@ def page(dos, d):
 <ol class="tl">{"".join(f"<li><time>{e(fr_date(dt))}</time><span>{txt}</span></li>" for dt, txt in events)}</ol></div></section>
 
 {f'<section class="s"><h2>Ce que l’histoire éclaire, et ses limites</h2><div class="card block"><p>{glossed(dos["history"]["text"], g)}{cite(dos["history"].get("sources"))}</p></div></section>' if dos.get("history") else ""}
-
-<section class="s"><h2>Ce qu'anticipent les parieurs</h2>
-<div class="card block"><p>Sur les marchés de prédiction, des gens parient de l'argent sur ce qui va se passer. Le prix d'un pari se lit
-comme une probabilité : c'est l'avis de la foule des parieurs, pas une certitude. {e(brand.NAME)} ne calcule aucune probabilité.</p>
-<div class="odds">{odds or '<p>Aucun marché ne porte aujourd’hui sur ce conflit.</p>'}</div></div></section>
 
 <section class="notes"><h2>Sources</h2><ol>{cite.html()}</ol></section>
 </div>

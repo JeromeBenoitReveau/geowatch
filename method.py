@@ -4,8 +4,7 @@ from collections import Counter
 from html import escape as e
 from urllib.parse import urlparse
 import re
-import brand, history, style
-from config import DYADS, MOVE_ALERT_PTS
+import brand, style
 from sources.profiles import INDICATORS
 
 URL = re.compile(r"https?://\S+")
@@ -26,9 +25,6 @@ def page(d):
     kinds = Counter(a["kind"] for a in actors.values())
     urls = [u for x in edges for s in x["sources"] for u in URL.findall(s)]
     domains = Counter(urlparse(u).netloc for u in urls)
-    odds = history._read("odds.csv")
-    readings = sorted({r["fetched_at"] for r in odds})
-    n_markets = len(history._read("markets.csv"))
     prof_dates = sorted(p["fetched_at"] for p in d["profiles"].values() if p.get("fetched_at"))
     roles = Counter(v["role"] for k, v in d["influence"].items() if k in actors)
     src = unga.get("source", {})
@@ -72,7 +68,7 @@ nav.toc{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px;color:var(--grap
 <p class="meta">Page générée automatiquement le {_date(d["built"])} à partir des données publiées. Code sous licence MIT,
 données du graphe sous CC BY 4.0 — <a href="{brand.REPO}">dépôt GitHub</a>.</p>
 <nav class="toc"><a href="#principe">Principe</a><a href="#chaine">Chaîne de données</a><a href="#graphe">Graphe</a>
-<a href="#dossiers">Dossiers</a><a href="#tensions">Tensions</a><a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a><a href="#marches">Marchés</a>
+<a href="#dossiers">Dossiers</a><a href="#tensions">Tensions</a><a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a>
 <a href="#profils">Profils</a><a href="#carte">Carte</a><a href="#limites">Limites</a><a href="#contribuer">Contribuer</a></nav>
 
 <div class="kpi">
@@ -81,16 +77,15 @@ données du graphe sous CC BY 4.0 — <a href="{brand.REPO}">dépôt GitHub</a>.
   <div><b>{len(urls)}</b><span class="mute">sources citées ({len(domains)} sites)</span></div>
   <div><b>{len(d["geo"])}</b><span class="mute">pays sur la carte</span></div>
   <div><b>{len(unga.get("countries", {}))}</b><span class="mute">pays avec votes ONU</span></div>
-  <div><b>{n_markets}</b><span class="mute">marchés suivis</span></div>
 </div>
 
 <h2 id="principe">Principe</h2>
 <p>{e(brand.NAME)} montre <b>qui soutient qui</b> dans les conflits en cours, sous forme d'un graphe dont chaque relation est
 sourcée, datée et relue à la main, et le relie à ce qui se mesure : liens formels entre États, votes à l'ONU,
-dépenses militaires, cotes des marchés de prédiction.</p>
-<p><b>Règle non négociable : aucun pourcentage sans cote de marché réelle derrière.</b> {e(brand.NAME)} ne calcule ni n'estime
-aucune probabilité. Les seuls pourcentages de probabilité affichés sont des prix de marchés (Polymarket, Kalshi), avec leur
-source. Les autres pourcentages sont des mesures (part des votes identiques à l'ONU, part du PIB…).</p>
+dépenses militaires.</p>
+<p><b>Règle non négociable : aucune probabilité.</b> {e(brand.NAME)} ne prédit rien et n'affiche aucune cote de paris ni
+de marché de prédiction : c'est un site d'information, pas de pronostic. Les pourcentages affichés sont des mesures
+(part des votes identiques à l'ONU, part du territoire occupé, part du PIB…), avec leur source.</p>
 <p>Deux règles de conception : rien n'est pondéré à la main (tailles, couleurs et classements découlent de données
 publiées ou de règles écrites ici) ; rien n'entre dans le graphe sans source et sans relecture humaine.</p>
 
@@ -98,12 +93,11 @@ publiées ou de règles écrites ici) ; rien n'entre dans le graphe sans source 
 <div class="flow">
   <div><b>1. Curation</b><code>network.yaml</code> (relations de soutien) et <code>alignments.yaml</code> (traités, adhésions,
   forums), édités à la main, contrôlés par <code>validate.py</code> à chaque changement.</div>
-  <div><b>2. Collecte automatique</b>GitHub Actions : cotes des marchés toutes les 6 h ; profils pays, coordonnées, photos
-  et votes ONU le 1er du mois.</div>
+  <div><b>2. Collecte automatique</b>GitHub Actions : profils pays, coordonnées, photos et votes ONU le 1er du mois.</div>
   <div><b>3. Stockage ouvert</b>Tout est versionné dans le dépôt, dossier <code>data/</code> : CSV et JSON lisibles,
   historique complet dans git.</div>
-  <div><b>4. Calculs</b><code>network.influence()</code> (blocs), <code>sources/unga.py</code> (votes),
-  <code>track.py</code> (variations de cotes) — règles détaillées ci-dessous.</div>
+  <div><b>4. Calculs</b><code>network.influence()</code> (blocs), et <code>sources/unga.py</code> (votes) —
+  règles détaillées ci-dessous.</div>
   <div><b>5. Publication</b><code>build.py</code> génère ce site statique et les exports
   <a href="network.json">network.json</a> / <a href="network.csv">network.csv</a> ; GitHub Pages le publie.</div>
 </div>
@@ -111,8 +105,6 @@ publiées ou de règles écrites ici) ; rien n'entre dans le graphe sans source 
 <tr><th>Source</th><th>Ce qu'on en tire</th><th>Fréquence</th><th>Dernière mise à jour</th><th>Licence</th></tr>
 <tr><td>Relecture humaine, {len(domains)} sites cités (ONU, Trésor américain, Conseil de l'UE, SIPRI, Kremlin, presse…)</td>
   <td>Relations de soutien</td><td>à la main</td><td>vérifications de {min((x["verified"] for x in edges), default="n/d")} à {max((x["verified"] for x in edges), default="n/d")}</td><td>CC BY 4.0 (notre travail)</td></tr>
-<tr><td><a href="https://polymarket.com">Polymarket</a>, <a href="https://kalshi.com">Kalshi</a></td><td>Cotes des marchés de prédiction</td>
-  <td>6 h</td><td>{_date(readings[-1] if readings else None)} ({len(readings)} relevés)</td><td>données publiques des API</td></tr>
 <tr><td><a href="https://data.worldbank.org">Banque mondiale</a> (WDI)</td><td>Démographie, économie, ressources, défense</td>
   <td>mensuelle</td><td>{_date(prof_dates[-1] if prof_dates else None)}</td><td>CC BY 4.0</td></tr>
 <tr><td><a href="https://www.wikidata.org">Wikidata</a></td><td>Régime, chef d'État, coordonnées, codes pays</td>
@@ -152,7 +144,7 @@ les dossiers, pour ne pas dédoubler l'acteur. {sum(1 for a in actors.values() i
 
 <h2 id="dossiers">Dossiers et « pourquoi »</h2>
 <p>Un dossier (<code>dossiers.yaml</code>) explique un conflit à quelqu'un qui n'y connaît rien : les deux camps, leurs
-soutiens étrangers, les enjeux, le coût humain, la chronologie, la situation actuelle et les cotes des marchés liés.
+soutiens étrangers, les enjeux, le coût humain, la chronologie et la situation actuelle.
 Les camps et les soutiens sont <b>lus dans le graphe</b> : un dossier ne peut pas contredire <code>network.yaml</code>.</p>
 <p>Chaque soutien peut porter un <b>« pourquoi »</b> (champ <code>why</code>) : la motivation de l'acteur en une phrase.
 C'est une <b>analyse, pas un fait</b> : elle est attribuée à qui la formule (« selon Crisis Group… ») et couverte par une
@@ -215,20 +207,6 @@ Sud global (développement, décolonisation) coïncident avec ceux de la Chine :
 (<code>NY.GDP.MKTP.CD</code>), ou nombre de soutiens accordés dans le graphe. Échelle en racine carrée ; l'UE utilise l'agrégat
 Banque mondiale « EUU ». Sans donnée (Taïwan, que la Banque mondiale ne couvre pas ; groupes armés) : taille minimale.</p>
 
-<h2 id="marches">Marchés de prédiction</h2>
-<p>{len(DYADS)} paires suivies ({", ".join(e(k) for k in DYADS)}). Un marché est retenu si tous les mots-clés de la paire
-apparaissent dans son titre. Polymarket : recherche publique ; Kalshi : événements ouverts des catégories World et Politics.
-Chaque relevé est ajouté à <code>data/odds.csv</code> ; la variation affichée compare la cote actuelle au dernier relevé
-d'il y a 7 jours, signalée au-delà de {MOVE_ALERT_PTS} points. Le prix d'un marché reflète les paris de ses participants,
-pas une probabilité objective.</p>
-<h3>Bilan des marchés</h3>
-<p>À chaque relevé, les marchés suivis qui ont disparu (clos) sont interrogés : l'issue est enregistrée dans
-<code>data/resolutions.csv</code> (Polymarket : prix final de 1 ou 0 après résolution ; Kalshi : champ <code>result</code>).
-Les marchés annulés ou réglés à 50/50 sont écartés. Pour chaque marché résolu, on retient la dernière cote relevée
-1, 7 et 30 jours avant l'issue, et on calcule le <b>score de Brier</b> : moyenne de (cote − issue)², où l'issue vaut
-1 (Oui) ou 0 (Non). 0 est parfait ; 0,25 correspond à une cote de 50 % à chaque fois. Tant que moins de 30 marchés
-sont résolus, le score est indicatif. Ce bilan juge les marchés, pas {e(brand.NAME)}, qui ne produit aucune probabilité.</p>
-
 <h2 id="profils">Profils pays</h2>
 <p>Banque mondiale (dernière année disponible, souvent avec 1 à 2 ans de retard) : {", ".join(f"<code>{c}</code>" for c in INDICATORS.values())}.
 Wikidata : forme de gouvernement (P122), chef d'État (P35), coordonnées (P625), codes ISO (P297, P298, P299).
@@ -252,7 +230,7 @@ s'appuie autant que possible sur des sources officielles.</li>
 <h2 id="contribuer">Contribuer</h2>
 <p>Modifier <code>network.yaml</code> ou <code>alignments.yaml</code>, lancer <code>python validate.py</code>, puis ouvrir une
 pull request avec les sources. Les données brutes sont réutilisables : <a href="network.json">network.json</a>,
-<a href="network.csv">network.csv</a> (CC BY 4.0), historique des cotes et profils dans le dossier
+<a href="network.csv">network.csv</a> (CC BY 4.0), profils pays dans le dossier
 <a href="{brand.REPO}/tree/main/data">data/</a> du dépôt.</p>
 </main></div>{style.foot()}</body></html>"""
 

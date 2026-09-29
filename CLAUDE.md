@@ -1,12 +1,13 @@
-# geowatch — contexte pour Claude Code
+# Lignes de force (dépôt « geowatch ») — contexte pour Claude Code
 
-Outil perso (futur open source) : graphe sourcé « qui soutient qui » dans les conflits, publié en
-données ouvertes, relié aux cotes des marchés de prédiction historisées. En Python.
+Site d'information open source : les conflits expliqués aux néophytes, à partir d'un graphe sourcé
+« qui soutient qui, et pourquoi », publié en données ouvertes. En Python.
 Auteur : Jérôme. Style attendu : direct, concret, pas de sur-ingénierie.
 
 ## Principe non négociable
-Aucun pourcentage affiché sans cote de marché de prédiction réelle derrière (Polymarket, Kalshi).
-geowatch ne calcule ni n'estime de probabilité.
+Aucune prédiction : le site n'affiche aucune probabilité ni cote de paris (décision du 2026-09-29 : site d'information ;
+et en France, l'ANJ a fait bloquer Polymarket le 16 juillet 2026 — diffuser ses cotes au public peut constituer une
+publicité illégale pour des paris non autorisés). Les seuls chiffres sont des mesures sourcées.
 
 ## Architecture
 - `network.yaml` — graphe (États, non étatiques, blocs), curé à la main, chaque arête sourcée et datée. Source de vérité.
@@ -19,21 +20,16 @@ geowatch ne calcule ni n'estime de probabilité.
 - Tensions (2026-09-29) : clé `tensions:` de network.yaml (war | sanctions | claims | rivalry ; status active | reduced | ended), SÉPARÉES des soutiens : hors calcul des blocs et hors soutiens des dossiers ; graphe (physics:false), carte, fiches, section « Les autres lignes de fracture » des dossiers.
 - Dossiers : champ `history` = parallèles historiques ET leurs limites, attribués à des historiens. Page « Revivons-nous les années 30 ? » prévue (débat entre historiens, pas une thèse).
 - `network.py` — requêtes sur le graphe ; `validate.py` — contrôle du schéma (CI : `.github/workflows/validate.yml`)
-- `config.py` — paires suivies (`countries` = ids du graphe, `keywords` pour matcher les titres de marchés)
-- `sources/markets.py` — Polymarket (gamma-api public-search) + Kalshi (trade-api v2)
 - `sources/profiles.py` — Banque mondiale WDI + Wikidata SPARQL (régime, chef d'État)
-- `history.py` — historique des cotes en CSV versionné : `data/markets.csv` + `data/odds.csv`
 - `db.py` — profils pays en JSON versionné : `data/profiles.json` (rafraîchi le 1er du mois par ingest.yml)
-- `ingest.py` : GitHub Actions toutes les 6 h (`.github/workflows/ingest.yml`), commite `data/` / `ingest.py --profiles` (GitHub Actions, mensuel)
-- `.github/workflows/pages.yml` — construit et publie site/ sur GitHub Pages (inactif tant que le dépôt est privé)
-- `track.py` — cotes actuelles, variation 7 j, marchés disparus du relevé
+- `ingest.py` — profils, votes ONU, coordonnées, photos ; GitHub Actions le 1er du mois (`.github/workflows/ingest.yml`, « data refresh »), commite `data/`
+- `.github/workflows/pages.yml` — construit et publie site/ sur GitHub Pages
 - `build.py` — site statique `site/` (vis-network, Leaflet) + exports `network.json` / `network.csv` ; `method.py` — page `methode.html` (méthode et sources) générée à partir des mêmes données, à tenir à jour quand une règle de calcul change
 - `country.py` — fiche pays en terminal ; `update_network.py` — Claude + web search propose des MAJ dans network.pending.yaml (relecture humaine obligatoire)
 
 ## Décisions prises
 - 2026-09-29 : réorientation vers les néophytes — l'entrée principale devient les dossiers (qui s'affronte, qui soutient, POURQUOI, enjeux) ; graphe, carte et vue Organisations = mode « Explorer ». World Monitor = stats froides, geowatch = relations expliquées.
-- 2026-09-26 : historique des cotes en CSV dans le dépôt (et non SQLite) pour que GitHub Actions l'alimente ; c'est aussi une donnée ouverte.
-- Kalshi : scan unique des événements World/Politics par run ; très peu de marchés sur nos paires (surtout US-centrés), Polymarket fournit l'essentiel.
+- 2026-09-29 : cotes des marchés de prédiction (Polymarket, Kalshi) retirées du site ET de la collecte (code, workflow 6 h, data/odds.csv…) — voir le principe ci-dessus. L'ancien code et les relevés restent dans l'historique git (avant le commit « remove prediction-market odds »).
 - 2026-09-26 : recentrage. Le Q&A (ask.py) faisait doublon avec WM Analyst de World Monitor → retiré,
   avec GDELT, UCDP et l'indice de tension (visibles dans l'historique git si besoin).
 - World Monitor : API payante (Pro 39,99 $/mois = MCP/SDK 50 appels/j ; REST = API Starter 99,99 $/mois).
@@ -56,7 +52,6 @@ geowatch ne calcule ni n'estime de probabilité.
 2. Lancer `python ingest.py --profiles` puis `python build.py`
 
 ## Backlog
-- Bilan de calibration : récupérer l'issue des marchés résolus et la comparer aux cotes passées
 - Historique des arêtes (depuis quand, fin) pour voir l'évolution des alliances
 - Import SIPRI (transferts d'armes, inclut acteurs non étatiques) pour enrichir network.yaml
 - Classification de régime via V-Dem au lieu de la forme officielle Wikidata

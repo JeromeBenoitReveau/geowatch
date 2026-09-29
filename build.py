@@ -1,10 +1,9 @@
-"""python build.py → site/ : graphe interactif + fiches pays + cotes de marché (index.html),
+"""python build.py → site/ : accueil, dossiers, explorateur (graphe, carte, organisations), méthode, manifeste,
 et le graphe en données ouvertes (network.json, network.csv — CC BY 4.0). Publiable tel quel."""
 from dotenv import load_dotenv; load_dotenv()
 import csv, json
 from pathlib import Path
-import brand, db, dossier, method, network, pages, style, track
-from config import DYADS, MOVE_ALERT_PTS
+import brand, db, dossier, method, network, pages, style
 
 OUT = Path("site")
 DATA_LICENSE = "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/ — geowatch network.yaml"
@@ -35,8 +34,6 @@ def build():
             p, fetched = db.get_profile(c, iso)
             if p:
                 profiles[iso] = {**p, "fetched_at": fetched}
-    markets = {name: {"countries": d["countries"], "markets": track.summary(name)}
-               for name, d in DYADS.items()}
     OUT.mkdir(exist_ok=True)
     aligns = network.alignments()
     geo, unga = db.load_geo(), db.load_unga()
@@ -46,8 +43,7 @@ def build():
         unga["by_year"] = {y: {by3[c]: v for c, v in d.items() if c in by3} for y, d in unga.get("by_year", {}).items()}
     data = {"actors": actors, "edges": edges, "profiles": profiles, "colors": TYPE_COLORS,
             "tensions": network.tensions(), "align": aligns, "influence": network.influence(actors, edges, aligns), "geo": geo, "people": db.load_people(), "unga": unga,
-            "markets": markets, "calibration": track.calibration(),
-            "dossiers": [{"id": x["id"], "title": x["title"]} for x in dossier.load()], "alert": MOVE_ALERT_PTS, "built": db.now()}
+            "dossiers": [{"id": x["id"], "title": x["title"]} for x in dossier.load()], "built": db.now()}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
                             .replace("</", "<\\/"))
     (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS), encoding="utf-8")
@@ -112,13 +108,10 @@ aside p{margin:0 0 10px}.keys{display:grid;grid-template-columns:78px 1fr;gap:6p
 .rel{padding:10px 0;border-bottom:1px solid var(--mist)}.rel b{cursor:pointer}.rel .mute{margin-top:2px}
 .tag{display:inline-block;font-size:11px;padding:1px 6px;border-radius:9px;color:#fff;margin:2px 2px 0 0}
 .mute{color:var(--mute);font-size:13px}.legend .tag{margin-right:4px}
-.mkt{padding:6px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:52px 1fr 80px;gap:8px;align-items:center}
-.mkt .p{font-weight:600;font-variant-numeric:tabular-nums}.mkt a{color:inherit}.up{color:#c0392b}.down{color:#2f8f5b}
 #orgs summary{cursor:pointer}#orgs .list{max-height:40vh;overflow:auto;margin-top:4px;padding-right:4px}
 #orgs .og{font-weight:600;color:var(--mute);margin-top:6px}#orgs label{display:flex;align-items:center;gap:6px}
 #orgs i,.sw{display:inline-block;width:11px;height:11px;border-radius:3px;flex:none;border:1px solid var(--line);vertical-align:-1px}
 .future{opacity:.45}
-.spark{width:80px;height:22px}.spark polyline{fill:none;stroke:currentColor;stroke-width:1.5}
 </style></head><body>
 <div id="stage"><div id="graph"></div><div id="map"></div><div id="venn"></div>
 <div id="bar"><a class="brand" href="index.html">__NAME__</a>
@@ -260,25 +253,6 @@ function showGroup(gid){ const g = GROUPS[gid]; if(!g) return;
 document.addEventListener("click", ev => {
   const gl = ev.target.closest("[data-group]"); if(gl){ ev.preventDefault(); showGroup(gl.dataset.group); }
   const cl = ev.target.closest("[data-country]"); if(cl){ ev.preventDefault(); D.actors[cl.dataset.country] ? show(cl.dataset.country) : showCountry(cl.dataset.country); } });
-
-// ---------- Bilan des marchés : cotes passées face à l'issue réelle ----------
-function calibrationBlock(){ const C = D.calibration || {}, ms = C.markets || [], B = C.brier || {};
-  const day = t => esc((t||"").slice(0,10)), odd = p => p == null ? "n/d" : (p < .01 ? "&lt;1" : Math.round(p*100)) + " %";
-  let h = `<h2>Bilan des marchés</h2>`;
-  if(!ms.length){
-    h += `<p class="mute">Aucun marché suivi n'est encore résolu : le bilan se remplira à chaque échéance.</p>`;
-  } else {
-    const n = Math.max(...Object.values(B).map(b => b.n));
-    h += `<p class="mute">${ms.length} marché(s) résolu(s). Score de Brier (0 = parfait, 0,25 = une cote de 50 % à chaque fois) :
-      ${Object.entries(B).filter(([,b]) => b.n).map(([k,b]) => `<b>${String(b.score).replace(".", ",")}</b> ${esc(k)} avant (${b.n})`).join(" · ")}
-      ${n < 30 ? " — trop peu de marchés pour conclure, indicatif seulement." : ""}</p>` +
-      ms.slice(0, 8).map(m => `<div class="rel"><a href="${safeUrl(m.url)}" target="_blank" rel="noopener">${esc(m.question)}</a>
-        <span class="mute"><br>Issue : <b>${m.outcome ? "Oui" : "Non"}</b> le ${day(m.resolved_at)} · cote 7 j avant ${odd(m.odds["7 j"])},
-        1 j avant ${odd(m.odds["1 j"])} · ${esc(m.source)}</span></div>`).join("");
-  }
-  if((C.overdue||[]).length) h += `<p class="mute">En attente de résolution : ${C.overdue.map(u => esc(u.question)).join(" ; ")}.</p>`;
-  if((C.upcoming||[]).length) h += `<p class="mute">Prochaines échéances : ${C.upcoming.map(u => `${esc(u.question)} (${day(u.end_date)})`).join(" ; ")}.</p>`;
-  return h; }
 
 // ---------- Votes à l'ONU (Voeten) ----------
 const U = D.unga || {}, UC = U.countries || {};
@@ -633,15 +607,6 @@ const rel = (e, other) => `<div class="rel"><b data-id="${esc(other)}">${nm(othe
   <div class="mute">${esc(STATUS_FR[e.status] || e.status)}, ${esc(CONF_FR[e.confidence] || e.confidence)}, ${esc(dated(e))}. ${e.note ? esc(e.note) + ". " : ""}Sources : ${(e.sources||[]).map(src).join(", ")}</div></div>`;
 document.addEventListener("click", ev => { const b = ev.target.closest("[data-id]"); if(b) show(b.dataset.id); });
 
-function spark(daily){ if(!daily || daily.length<2) return "";
-  const n=daily.length, pts=daily.map(([_,p],i)=>`${(i/(n-1)*78+1).toFixed(1)},${(21-p*20).toFixed(1)}`).join(" ");
-  return `<svg class="spark" viewBox="0 0 80 22" aria-hidden="true"><polyline points="${pts}"/></svg>`; }
-function mkt(m){ const d=m.delta_pts, cls = d==null?"":d>0?"up":d<0?"down":"";
-  return `<div class="mkt"><span class="p">${m.prob<0.01?"&lt;1":(m.prob*100).toFixed(0)} %</span>
-    <span><a href="${safeUrl(m.url)}" target="_blank" rel="noopener">${esc(m.question)}</a>
-    <span class="mute"><br>${esc(m.source)} · ${d==null?"variation 7 j n/d":`<span class="${cls}">${d>0?"+":""}${d} pts</span> sur 7 j`}${m.stale?" · absent du dernier relevé":""}</span></span>
-    ${spark(m.daily)}</div>`; }
-function marketsFor(id){ return Object.entries(D.markets).filter(([_,v])=>v.countries.includes(id)); }
 
 function show(id){
   const a = D.actors[id]||{};
@@ -674,9 +639,6 @@ function show(id){
     const verb = t.type==="sanctions" ? (t.from===id ? "sanctionne" : "sanctionné par") : t.type==="claims" ? (t.from===id ? "revendique un territoire de" : "territoire revendiqué par") : s.label + " avec";
     return `<div class="rel"><b style="color:${s.color}">■</b> ${esc(verb[0].toUpperCase() + verb.slice(1))} <b data-id="${esc(other)}">${nm(other)}</b>
       <div class="mute">${t.status==="reduced" ? "trêve ou cessez-le-feu · " : ""}${esc(dated(t))} · ${(t.sources||[]).map(src).join(", ")}${t.note ? "<br>"+esc(t.note) : ""}</div></div>`; }).join("");
-  for(const [pair, v] of marketsFor(id)){
-    h += `<h2>Marchés · ${esc(pair)}</h2>` + (v.markets.length ? v.markets.map(mkt).join("")
-      : `<p class="mute">Aucun marché ouvert trouvé.</p>`); }
   if(p){ const g=p.government||{}, t=p.population_trend, wb=!!p.population;
     if(a.kind!=="state" && a.kind!=="bloc") h += `<h2>Pays d'ancrage : ${nm(iso)}</h2>`;
     if(a.kind!=="bloc") h += `<h2>Régime</h2><div class="kv"><span>Forme</span><span>${esc((g.forms||[]).join(", "))||"n/d"}</span>
@@ -713,9 +675,6 @@ function showCountry(iso){
     + `<p class="mute">Ce pays n'a ${i.ties.some(t => GROUPS[t].kind!=="forum") ? "encore" : "ni lien formel dans alignments.yaml, ni"} aucune relation de soutien sourcée dans network.yaml.</p>`; }
 function legend(){
   if(map) highlightLinks(null);
-  const all = Object.values(D.markets).flatMap(v=>v.markets).filter(m=>!m.stale);
-  const moves = all.filter(m=>m.delta_pts!=null && Math.abs(m.delta_pts)>=D.alert)
-                   .sort((a,b)=>Math.abs(b.delta_pts)-Math.abs(a.delta_pts));
   const key = (color, label) => `<span class="key"><i style="background:${color}"></i>${esc(label)}</span>`;
   const TYPES_FR = {arms:"armes", troops:"troupes", financial:"argent", training:"entraînement", intelligence:"renseignement",
     political:"politique", economic:"économique", dual_use:"double usage"};
@@ -731,9 +690,6 @@ function legend(){
     <dt>Blocs</dt><dd>${Object.values(BLOCS).map(b => key(b.color, b.name)).join("")}${key(CONTESTED, "disputé")}</dd>
     <dt>Taille</dt><dd>Dépenses militaires, PIB ou nombre de soutiens, selon les réglages.</dd>
   </dl>
-  ${calibrationBlock()}
-  <h2>Mouvements des marchés</h2>${moves.length ? `<p class="mute">Cotes qui ont bougé d'au moins ${D.alert} points en 7 jours.</p>` + moves.map(mkt).join("")
-    : `<p class="mute">Aucune cote n'a bougé de plus de ${D.alert} points cette semaine.</p>`}
   <p class="mute" style="margin-top:26px">Blocs, votes à l'ONU, curseur Année, organisations : tout est expliqué dans la
   <a href="methode.html">méthode</a>. Données réutilisables : <a href="network.json">JSON</a>, <a href="network.csv">CSV</a>
   (CC BY 4.0). Mis à jour le ${esc(D.built.slice(0,10).split("-").reverse().join("/"))}.</p>`; }

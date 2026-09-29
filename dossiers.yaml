@@ -3,10 +3,8 @@
 # Chaque paragraphe cite ses sources ; une interprétation (« pourquoi ») est attribuée à qui la formule.
 #
 # id        : nom de la page (site/<id>.html)
-# dyad      : paire suivie sur les marchés (config.DYADS) — seules cotes affichées en pourcentage
 # sides     : les camps ; actors = ids de network.yaml. Soutiens ET dirigeant (champ leader) lus dans le graphe.
 # stakes    : les enjeux concrets ; timeline : dates AAAA ou AAAA-MM
-# market_labels : traduction française des questions de marché (affichées aussi en version originale)
 # history   : parallèles historiques ET leurs limites, attribués à des historiens (facultatif)
 # glossary  : termes expliqués au survol partout où ils apparaissent dans la page
 
@@ -15,7 +13,6 @@ dossiers:
     title: La guerre au Soudan
     since: "2023-04"
     verified: 2026-09
-    dyad: sudan-war
 
     # Carte d'ouverture. Coordonnées des villes : Wikidata (P625). Contours des États : geoBoundaries / OCHA (CC BY 3.0 IGO).
     map:
@@ -60,8 +57,6 @@ dossiers:
         - {label: "L'or vers les Émirats", from: [15.603, 32.527], to_actor: AE,
            text: "La plus grande partie de l'or soudanais, première source d'argent des deux camps, finit aux Émirats.",
            source: "Chatham House, « Gold and the war in Sudan » (mars 2025, mis à jour mars 2026) — https://www.chathamhouse.org/2025/03/gold-and-war-sudan"}
-    market_labels:
-      "Sudan civil war ceasefire by December 31, 2026?": Un cessez-le-feu dans la guerre au Soudan d'ici le 31 décembre 2026 ?
     lede: >-
       Depuis avril 2023, l'armée soudanaise et les Forces de soutien rapide, deux anciens alliés qui avaient pris
       le pouvoir ensemble, se font la guerre pour le contrôle du pays. Des puissances étrangères arment chacun des
@@ -194,7 +189,6 @@ dossiers:
     title: La guerre en Ukraine
     since: "2022-02"
     verified: 2026-09
-    dyad: russia-ukraine
 
     # Carte d'ouverture. Coordonnées des villes : Wikidata (P625). Contours des oblasts : geoBoundaries / OpenStreetMap (ODbL).
     map:
@@ -226,10 +220,6 @@ dossiers:
            source: "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"}
         - {label: Zaporijia, at: [47.85, 35.117], text: "Région où l'Ukraine a repris environ 260 km² en février 2026, son premier gain mensuel depuis 2023.",
            source: "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine", dir: left}
-    market_labels:
-      "Russia x Ukraine ceasefire agreement by December 31, 2026?": Un accord de cessez-le-feu entre la Russie et l'Ukraine d'ici le 31 décembre 2026 ?
-      "Russia x Ukraine ceasefire agreement by June 30, 2027?": Un accord de cessez-le-feu d'ici le 30 juin 2027 ?
-      "Russia-Ukraine peace talks by December 31, 2026?": Des pourparlers de paix entre les deux pays d'ici le 31 décembre 2026 ?
     lede: >-
       Depuis février 2022, la Russie mène une invasion à grande échelle de l'Ukraine, son voisin. Elle occupe environ
       20 % du territoire ukrainien. L'Europe et, de moins en moins, les États-Unis soutiennent Kyiv ; la Corée du Nord,

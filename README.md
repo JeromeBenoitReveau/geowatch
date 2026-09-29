@@ -1,14 +1,14 @@
-# geowatch
+# Lignes de force
 
-Qui soutient qui dans les conflits en cours — États, acteurs non étatiques, blocs — sous forme
-de graphe **sourcé, daté et relu à la main**, publié en données ouvertes. Chaque paire suivie est
-reliée aux cotes des marchés de prédiction (Polymarket, Kalshi), historisées pour voir ce qui bouge.
+**Qui soutient qui dans les conflits, et pourquoi.** Un site d'information qui explique les conflits à quelqu'un
+qui n'y connaît rien : les camps, leurs soutiens étrangers, ce qu'ils y cherchent et ce qui est en jeu. Chaque relation
+est **sourcée, datée et relue à la main**, et publiée en données ouvertes.
 
-Règle non négociable : **aucun pourcentage sans cote de marché réelle derrière**. geowatch ne produit
-pas de probabilités ; il affiche celles des marchés, avec leur source.
+Site : https://jeromebenoitreveau.github.io/geowatch/ (le dépôt garde son ancien nom, `geowatch`).
 
-Pour le suivi en temps réel (événements, instabilité), le tableau de bord gratuit
-[World Monitor](https://www.worldmonitor.app) fait très bien le travail ; geowatch est complémentaire.
+Règle non négociable : **aucune prédiction**. Le site n'affiche aucune probabilité ni cote de paris ; les seuls
+chiffres sont des mesures sourcées. Pour le suivi en temps réel, le tableau de bord gratuit
+[World Monitor](https://www.worldmonitor.app) fait très bien le travail ; Lignes de force est complémentaire.
 
 ## Setup
 ```bash
@@ -16,26 +16,22 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env   # clé Anthropic, seulement pour update_network.py
 ```
-Aucune clé n'est nécessaire pour les marchés, les profils pays ou le site.
 
 ## Usage
 ```bash
-python ingest.py              # relève les cotes → data/ (tourne déjà toutes les 6 h via GitHub Actions)
-python ingest.py --profiles   # profils pays → data/profiles.json (GitHub Actions, le 1er du mois)
-python track.py               # cotes actuelles + variation 7 j, ⚡ si ≥ 10 pts
-python track.py israel-iran
+python ingest.py              # profils pays, votes ONU, coordonnées, photos → data/ (GitHub Actions, le 1er du mois)
 python country.py IR          # fiche pays + soutiens en terminal (marche aussi : houthis)
-python build.py               # → site/ : graphe interactif, fiches, marchés + network.json/.csv
-python validate.py            # contrôle network.yaml (tourne aussi en CI)
+python build.py               # → site/ : accueil, dossiers, explorateur, méthode, manifeste + network.json/.csv
+python validate.py            # contrôle network.yaml, alignments.yaml et dossiers.yaml (tourne aussi en CI)
 python update_network.py IR   # Claude + web propose des MAJ → network.pending.yaml, à relire
 ```
-L'historique des cotes est relevé par GitHub Actions (`.github/workflows/ingest.yml`, toutes les 6 h,
-déclenchable à la main depuis l'onglet Actions) et commité dans `data/` : `markets.csv` (un marché par
-ligne) et `odds.csv` (un relevé par ligne). En local, faire `git pull` avant `track.py` / `build.py`,
-et éviter de commiter des relevés locaux (conflits avec ceux de la CI).
+`site/` est statique ; `.github/workflows/pages.yml` le reconstruit et le publie sur GitHub Pages à chaque
+changement des données ou du code du site.
 
-`site/` est statique. Une fois le dépôt public, `.github/workflows/pages.yml` le reconstruit et le publie
-sur GitHub Pages à chaque changement du graphe et après chaque relevé.
+## Les dossiers (`dossiers.yaml`)
+Un dossier raconte un conflit : résumé, carte d'ouverture, les deux camps et leurs soutiens (lus dans
+`network.yaml`, avec le « pourquoi » de chacun), enjeux, coût humain, chronologie, parallèles historiques et situation
+actuelle. Chaque phrase cite ses sources ; une analyse est toujours attribuée à qui la formule.
 
 ## Le graphe (`network.yaml`)
 Source de vérité, curé à la main. Chaque arête a des types (armes, financement, troupes…), un statut,
@@ -72,12 +68,12 @@ Contribuer : modifier `network.yaml`, lancer `python validate.py`, ouvrir une PR
 `update_network.py` aide à repérer les changements, mais rien n'entre sans relecture humaine.
 
 ## Structure
-- `network.yaml` / `network.py` — le graphe et ses requêtes ; `validate.py` — son contrôle
-- `config.py` — paires suivies sur les marchés (acteurs + mots-clés)
-- `sources/markets.py` — Polymarket (gamma-api) + Kalshi (trade-api v2), sans clé
-- `sources/profiles.py` — Banque mondiale WDI + Wikidata (régime, chef d'État)
-- `history.py` — historique des cotes en CSV (`data/`) ; `db.py` — profils pays en JSON (`data/profiles.json`)
-- `track.py` — lecture de l'historique des cotes ; `build.py` — site statique + exports
+- `network.yaml` / `network.py` — le graphe (soutiens, tensions, dirigeants) et ses requêtes ; `validate.py` — son contrôle
+- `alignments.yaml` — alliances et organisations, adhésions datées
+- `dossiers.yaml` / `dossier.py` — les dossiers ; `data/maps/` — contours régionaux des cartes
+- `pages.py` — accueil et manifeste ; `method.py` — page méthode ; `style.py` — feuille de style commune ; `brand.py` — nom
+- `sources/profiles.py` — Banque mondiale WDI + Wikidata ; `sources/unga.py` — votes à l'ONU (Voeten)
+- `db.py` — données en JSON (`data/`) ; `build.py` — site statique + exports
 
 Limites des profils : données Banque mondiale annuelles avec 1-2 ans de retard ; « forme de
 gouvernement » Wikidata = forme officielle, pas le fonctionnement réel (V-Dem serait mieux).
