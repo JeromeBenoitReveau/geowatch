@@ -22,6 +22,7 @@ dossiers:
       bounds: [[-3, 12], [40, 58]]
       regions:
         file: sdn_adm1
+        credit: limites des États geoBoundaries / OCHA (CC BY 3.0 IGO)
         sides:
           - [Khartoum, Northern, River Nile, Red Sea, Kassala, Gedaref, Gezira, Sennar, White Nile]
           - [North Darfur, South Darfur, West Darfur, Central Darfur, East Darfur]
@@ -194,6 +195,37 @@ dossiers:
     since: "2022-02"
     verified: 2026-09
     dyad: russia-ukraine
+
+    # Carte d'ouverture. Coordonnées des villes : Wikidata (P625). Contours des oblasts : geoBoundaries / OpenStreetMap (ODbL).
+    map:
+      bounds: [[41, 2], [59, 48]]
+      regions:
+        file: ukr_adm1
+        credit: limites des oblasts geoBoundaries / © contributeurs OpenStreetMap (ODbL)
+        sides:
+          - [Cherkasy Oblast, Chernihiv Oblast, Chernivtsi Oblast, Dnipropetrovsk Oblast, Ivano-Frankivsk Oblast, Kharkiv Oblast, Khmelnytskyi Oblast, Kirovohrad Oblast, Kyiv, Kyiv Oblast, Lviv Oblast, Mykolaiv Oblast, Odessa Oblast, Poltava Oblast, Rivne Oblast, Sumy Oblast, Ternopil Oblast, Vinnytsia Oblast, Volyn Oblast, Zakarpattia Oblast, Zhytomyr Oblast]
+          - [Autonomous Republic of Crimea, Sevastopol, Luhansk Oblast, Donetsk Oblast]
+        contested: [Zaporizhia Oblast, Kherson Oblast]
+        contested_label: Occupé en partie / ligne de front
+        note: >-
+          Contrôle approximatif, oblast par oblast : la Russie occupe la Crimée depuis 2014, toute la région de Louhansk et
+          environ 81 % de celle de Donetsk ; elle tient une large partie des régions de Zaporijia et de Kherson. Les petites
+          incursions dans d'autres régions n'apparaissent pas à cette échelle.
+        sources:
+          - "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
+          - "Freedom House, « Russian-occupied territories of Ukraine », Freedom in the World 2026 — https://freedomhouse.org/country/russian-occupied-territories-ukraine/freedom-world/2026"
+      anchors: [[50.45, 30.524], [55.751, 37.617]]   # Kyiv, Moscou
+      pins:
+        - {label: Kyiv, at: [50.45, 30.524], text: "La capitale ukrainienne. En septembre 2026, les deux camps s'engagent à ne pas frapper les capitales pendant trois jours.",
+           source: "Al Jazeera (sept. 2026) — https://www.aljazeera.com/news/2026/9/5/russias-putin-meets-us-envoys-to-discuss-trump-proposal-to-end-ukraine-war"}
+        - {label: Moscou, at: [55.751, 37.617], text: "Le pouvoir russe y a reçu les émissaires américains le 5 septembre 2026, sans rien céder sur ses exigences territoriales.",
+           source: "Al Jazeera (sept. 2026) — https://www.aljazeera.com/news/2026/9/5/russias-putin-meets-us-envoys-to-discuss-trump-proposal-to-end-ukraine-war"}
+        - {label: Crimée, at: [44.948, 34.1], text: "Péninsule dont la Russie s'est emparée et qu'elle a annexée en 2014.",
+           source: "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"}
+        - {label: Donetsk, at: [48.016, 37.803], text: "L'Ukraine ne tient plus qu'environ 19 % de cette région, principal enjeu territorial des négociations.",
+           source: "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"}
+        - {label: Zaporijia, at: [47.85, 35.117], text: "Région où l'Ukraine a repris environ 260 km² en février 2026, son premier gain mensuel depuis 2023.",
+           source: "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine", dir: left}
     market_labels:
       "Russia x Ukraine ceasefire agreement by December 31, 2026?": Un accord de cessez-le-feu entre la Russie et l'Ukraine d'ici le 31 décembre 2026 ?
       "Russia x Ukraine ceasefire agreement by June 30, 2027?": Un accord de cessez-le-feu d'ici le 30 juin 2027 ?

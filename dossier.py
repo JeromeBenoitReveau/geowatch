@@ -111,14 +111,30 @@ def hero_map(dos, d, backers):
     if not m:
         return ""
     geo = d["geo"]
-    arrows = []
+    (s_lat, w_lon), (n_lat, e_lon) = m["bounds"]
+    def place(aid):
+        """Position d'un soutien : son pays (Wikidata) ou les coords d'un bloc ; ramenée au bord du cadre si elle en sort,
+        pour garder la région du conflit lisible (le nom le signale alors « hors carte »)."""
+        g = geo.get(aid) or {}
+        lat, lon = (g.get("lat"), g.get("lon")) if g.get("lat") else (d["actors"][aid].get("coords") or [None, None])
+        if lat is None:
+            return None, False
+        inset = 1.5
+        c = [min(max(lat, s_lat + inset), n_lat - inset), min(max(lon, w_lon + inset), e_lon - inset)]
+        return c, c != [lat, lon]
+    arrows, taken = [], []
     for side, bs in enumerate(backers):
         for x in bs:
-            g = geo.get(x["from"])
-            if not g or not g.get("lat"):
+            at, off = place(x["from"])
+            if not at:
                 continue
-            arrows.append({"side": side, "at": [g["lat"], g["lon"]], "iso": x["from"].lower(),
-                           "name": d["actors"][x["from"]]["name"], "alleged": x["status"] == "alleged",
+            # deux drapeaux ramenés au même endroit du bord : on décale le second le long du bord
+            while off and any(abs(at[0] - t[0]) < 2 and abs(at[1] - t[1]) < 3 for t in taken):
+                at = [at[0], at[1] - 3.5] if at[0] <= s_lat + 1.6 or at[0] >= n_lat - 1.6 else [at[0] - 2.5, at[1]]
+            taken.append(at)
+            flag = x["from"].lower() if d["actors"][x["from"]]["kind"] == "state" else ("eu" if x["from"] == "EU" else "")
+            arrows.append({"side": side, "at": at, "iso": flag,
+                           "name": d["actors"][x["from"]]["name"] + (" (hors carte)" if off else ""), "alleged": x["status"] == "alleged",
                            "types": ", ".join(TYPES_FR.get(t, t) for t in x["types"]), "why": x.get("why", ""),
                            "source": x["sources"]})
     flows = [{**f, "to": [geo[f["to_actor"]]["lat"], geo[f["to_actor"]]["lon"]]} for f in m.get("flows", [])
@@ -132,13 +148,13 @@ def hero_map(dos, d, backers):
     return f"""<section class="hero-map"><div id="dmap" role="img" aria-label="Carte du conflit : zones de contrôle, soutiens étrangers et lieux clés"></div>
 <div class="legend-map">
   <span><i style="background:{SIDE_COLORS[0]}"></i>{names[0]}</span><span><i style="background:{SIDE_COLORS[1]}"></i>{names[1]}</span>
-  <span><i style="background:{CONTESTED}"></i>Disputé / ligne de front</span>
+  {f'<span><i style="background:{CONTESTED}"></i>{e(reg.get("contested_label", "Disputé / ligne de front"))}</span>' if reg.get("contested") else ""}
   <span><b class="ln" style="border-color:{SIDE_COLORS[0]}"></b>Soutien étranger (pointillé : allégué)</span>
-  <span><b class="ln dot" style="border-color:{SIDE_COLORS[1]}"></b>Route d'approvisionnement</span>
-  <span><b class="ln" style="border-color:#b7791f"></b>Flux (or)</span>
+  {f'<span><b class="ln dot" style="border-color:{SIDE_COLORS[1]}"></b>Route d\'approvisionnement</span>' if m.get("routes") else ""}
+  {'<span><b class="ln" style="border-color:#b7791f"></b>Flux (or)</span>' if m.get("flows") else ""}
 </div>
 <p class="src">Cliquer un élément pour son explication et sa source. {glossed(reg.get("note", ""), dos.get("glossary") or {})}</p>{sources(reg.get("sources"))}
-<p class="src">Fond : Natural Earth via world-atlas ; limites des États : geoBoundaries / OCHA (CC BY 3.0 IGO) ; villes : Wikidata.</p>
+<p class="src">Fond : Natural Earth via world-atlas ; {e(reg.get("credit", ""))} ; villes : Wikidata.</p>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
@@ -167,7 +183,7 @@ if(M.regions){{
   L.geoJSON(reg, {{style: f => {{ const c = control(f.properties.name);
       return {{color: css("--card"), weight:1, fillOpacity: c < 0 ? 0 : .55, fillColor: c === 2 ? M.contested : M.colors[c] || "transparent"}}; }},
     onEachFeature: (f, l) => {{ const c = control(f.properties.name);
-      if(c >= 0) l.bindTooltip(f.properties.name + " — " + (c === 2 ? "disputé" : "tenu par " + M.sides[c].toLowerCase()), {{sticky:true}}); }}
+      if(c >= 0) l.bindTooltip(f.properties.name + " — " + (c === 2 ? (M.regions.contested_label || "disputé").toLowerCase() : "tenu par " + M.sides[c].toLowerCase()), {{sticky:true}}); }}
   }}).addTo(map); }}
 const curve = (a, b, k = .2) => {{ const mx = (a[0]+b[0])/2, my = (a[1]+b[1])/2, dx = b[0]-a[0], dy = b[1]-a[1], c = [mx - dy*k, my + dx*k];
   return Array.from({{length:30}}, (_, i) => {{ const t = i/29, u = 1-t; return [u*u*a[0]+2*u*t*c[0]+t*t*b[0], u*u*a[1]+2*u*t*c[1]+t*t*b[1]]; }}); }};
