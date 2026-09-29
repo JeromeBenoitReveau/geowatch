@@ -46,7 +46,7 @@ def build():
             "dossiers": [{"id": x["id"], "title": x["title"]} for x in dossier.load()], "built": db.now()}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
                             .replace("</", "<\\/"))
-    (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS), encoding="utf-8")
+    (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS).replace("__LOGO__", style.LOGO), encoding="utf-8")
     export_data(actors, edges)
     method.write(OUT, data)
     style.write(OUT)
@@ -63,20 +63,20 @@ TEMPLATE = r"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="__FONTS__">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
 /* explorateur : mêmes jetons que style.css ; l'interface reste discrète, la couleur sert aux données */
 :root{--land-hl:#e9ecef}
-@media (prefers-color-scheme:dark){:root{--land-hl:#2b3036}}
+@media (prefers-color-scheme:dark){:root{--land-hl:#28303b}}
 body{font:14.5px/1.5 var(--sans);display:grid;grid-template-columns:1fr 380px;height:100vh}
 @media (max-width:800px){body{grid-template-columns:1fr;grid-template-rows:60vh auto;height:auto}}
 #stage{position:relative;min-height:60vh}#graph{position:absolute;inset:0}
-#bar{position:absolute;top:0;left:0;right:0;z-index:1001;display:flex;align-items:baseline;gap:28px;padding:14px 18px;
+#bar{position:absolute;top:0;left:0;right:0;z-index:1001;display:flex;align-items:center;gap:28px;padding:14px 18px;
 background:linear-gradient(var(--paper) 60%,transparent);pointer-events:none}#bar>*{pointer-events:auto}
 #bar .brand{text-decoration:none;margin-right:auto}
 #views{display:flex;gap:18px}#views button{font:inherit;font-size:15px;padding:2px 0;border:0;border-bottom:1.5px solid transparent;
 background:none;color:var(--graphite);cursor:pointer}#views button:hover{color:var(--ink)}
-#views button[aria-pressed=true]{color:var(--ink);border-bottom-color:var(--ink)}
+#views button[aria-pressed=true]{color:var(--ink);border-bottom-color:var(--peach)}
 #bar .method{font-size:15px;color:var(--graphite);text-decoration:none}#bar .method:hover{color:var(--ink)}
 #controls{position:absolute;top:56px;left:14px;z-index:1000;background:color-mix(in srgb,var(--paper) 94%,transparent);
 border:1px solid var(--mist);border-radius:3px;padding:10px 12px;font-size:13.5px;display:flex;flex-direction:column;gap:6px;
@@ -84,7 +84,7 @@ max-width:calc(100% - 28px);width:300px}
 #controls select{font:inherit;background:var(--paper);color:var(--ink);border:1px solid var(--mist);border-radius:3px;padding:1px 2px;max-width:100%}
 #controls summary{cursor:pointer;color:var(--graphite)}#controls summary:hover{color:var(--ink)}
 #controls details[open] summary{color:var(--ink);margin-bottom:4px}#settings label{display:block;margin:4px 0}
-#year{accent-color:var(--ink)}
+#year{accent-color:var(--peach)}
 #map{position:absolute;inset:0;display:none;background:var(--ocean)}
 body.map #map{display:block}body.map #graph,body.map .graph-only{display:none}
 .map-only{display:none}body.map label.map-only{display:block}
@@ -114,7 +114,7 @@ aside p{margin:0 0 10px}.keys{display:grid;grid-template-columns:78px 1fr;gap:6p
 .future{opacity:.45}
 </style></head><body>
 <div id="stage"><div id="graph"></div><div id="map"></div><div id="venn"></div>
-<div id="bar"><a class="brand" href="index.html">__NAME__</a>
+<div id="bar"><a class="brand" href="index.html">__LOGO____NAME__</a>
 <div id="views" role="tablist"><button id="v-graph" aria-pressed="true">Graphe</button><button id="v-map" aria-pressed="false">Carte</button><button id="v-venn" aria-pressed="false">Organisations</button></div>
 <a class="method" href="methode.html">Méthode</a></div>
 <div id="controls">

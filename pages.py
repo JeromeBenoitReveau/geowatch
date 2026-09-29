@@ -11,7 +11,7 @@ CSS = """
 .conflict{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:24px;padding:24px}
 .conflict h3{font-size:25px;margin:0 0 6px}
 .conflict .vs{margin:0 0 10px;font-size:15px}.conflict .vs span{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 6px 0 0}
-.conflict p{margin:0;max-width:40em}.conflict .go{margin-top:14px;font-size:15px;color:var(--graphite)}
+.conflict p{margin:0;max-width:40em}.conflict .go{margin-top:14px;font-size:15px;text-decoration:underline;text-decoration-color:var(--peach);text-decoration-thickness:1.5px;text-underline-offset:3px;width:max-content}
 .odds{padding:18px 18px 16px;align-self:stretch;display:flex;flex-direction:column;justify-content:center}
 .odds b{font:400 44px/1 var(--serif);font-variant-numeric:tabular-nums;margin-bottom:8px}
 .odds span{font-size:14.5px;line-height:1.4}.odds small{margin-top:8px;font-size:13px;color:var(--graphite)}
