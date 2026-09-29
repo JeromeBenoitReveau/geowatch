@@ -3,7 +3,7 @@ et le graphe en données ouvertes (network.json, network.csv — CC BY 4.0). Pub
 from dotenv import load_dotenv; load_dotenv()
 import csv, json
 from pathlib import Path
-import brand, db, dossier, method, network, pages, track
+import brand, db, dossier, method, network, pages, style, track
 from config import DYADS, MOVE_ALERT_PTS
 
 OUT = Path("site")
@@ -50,12 +50,14 @@ def build():
             "dossiers": [{"id": x["id"], "title": x["title"]} for x in dossier.load()], "alert": MOVE_ALERT_PTS, "built": db.now()}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
                             .replace("</", "<\\/"))
-    (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME), encoding="utf-8")
+    (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS), encoding="utf-8")
     export_data(actors, edges)
     method.write(OUT, data)
+    style.write(OUT)
     dossier.write(OUT, data)
     pages.write(OUT, data)
     print(f"→ {OUT}/ : index.html (accueil), explorer.html, manifeste.html, methode.html, dossiers, network.json, network.csv")
+    return data
 
 TEMPLATE = r"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -64,23 +66,32 @@ TEMPLATE = r"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="__FONTS__">
+<link rel="stylesheet" href="style.css">
 <style>
-:root{--bg:#fafaf8;--fg:#1c1c1c;--mute:#6b6b6b;--line:#e3e3df;--card:#fff;--ocean:#dde6ec;--land:#f4f2ec;--land-hl:#e2dccb}
-@media (prefers-color-scheme:dark){:root{--bg:#141414;--fg:#eee;--mute:#9a9a9a;--line:#2c2c2c;--card:#1d1d1d;--ocean:#10171c;--land:#262626;--land-hl:#3a3528}}
-*{box-sizing:border-box}body{margin:0;font:14px/1.45 system-ui,sans-serif;background:var(--bg);color:var(--fg);
-display:grid;grid-template-columns:1fr 380px;height:100vh}
+/* explorateur : mêmes jetons que style.css ; l'interface reste discrète, la couleur sert aux données */
+:root{--land-hl:#e9ecef}
+@media (prefers-color-scheme:dark){:root{--land-hl:#2b3036}}
+body{font:14.5px/1.5 var(--sans);display:grid;grid-template-columns:1fr 380px;height:100vh}
 @media (max-width:800px){body{grid-template-columns:1fr;grid-template-rows:60vh auto;height:auto}}
-#stage{position:relative;border-right:1px solid var(--line);min-height:60vh}#graph{position:absolute;inset:0}
-#controls{position:absolute;top:52px;left:10px;z-index:1000;background:var(--card);border:1px solid var(--line);
-border-radius:8px;padding:8px 10px;font-size:12px;display:flex;flex-direction:column;gap:4px;max-width:calc(100% - 20px)}
-#controls select{font:inherit;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:4px}
-#views{position:absolute;top:10px;right:10px;z-index:1000;display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-#views button{font:inherit;font-size:12px;padding:6px 12px;border:0;background:var(--card);color:var(--fg);cursor:pointer}
-#views button[aria-pressed=true]{background:var(--fg);color:var(--bg)}
-#views a{font-size:12px;padding:6px 12px;background:var(--card);color:var(--fg);text-decoration:none;border-left:1px solid var(--line)}
+#stage{position:relative;min-height:60vh}#graph{position:absolute;inset:0}
+#bar{position:absolute;top:0;left:0;right:0;z-index:1001;display:flex;align-items:baseline;gap:28px;padding:14px 18px;
+background:linear-gradient(var(--paper) 60%,transparent);pointer-events:none}#bar>*{pointer-events:auto}
+#bar .brand{text-decoration:none;margin-right:auto}
+#views{display:flex;gap:18px}#views button{font:inherit;font-size:15px;padding:2px 0;border:0;border-bottom:1.5px solid transparent;
+background:none;color:var(--graphite);cursor:pointer}#views button:hover{color:var(--ink)}
+#views button[aria-pressed=true]{color:var(--ink);border-bottom-color:var(--ink)}
+#bar .method{font-size:15px;color:var(--graphite);text-decoration:none}#bar .method:hover{color:var(--ink)}
+#controls{position:absolute;top:56px;left:14px;z-index:1000;background:color-mix(in srgb,var(--paper) 94%,transparent);
+border:1px solid var(--mist);border-radius:3px;padding:10px 12px;font-size:13.5px;display:flex;flex-direction:column;gap:6px;
+max-width:calc(100% - 28px);width:300px}
+#controls select{font:inherit;background:var(--paper);color:var(--ink);border:1px solid var(--mist);border-radius:3px;padding:1px 2px;max-width:100%}
+#controls summary{cursor:pointer;color:var(--graphite)}#controls summary:hover{color:var(--ink)}
+#controls details[open] summary{color:var(--ink);margin-bottom:4px}#settings label{display:block;margin:4px 0}
+#year{accent-color:var(--ink)}
 #map{position:absolute;inset:0;display:none;background:var(--ocean)}
 body.map #map{display:block}body.map #graph,body.map .graph-only{display:none}
-.map-only{display:none}body.map .map-only{display:block}
+.map-only{display:none}body.map label.map-only{display:block}
 #venn{position:absolute;inset:0;display:none;padding:130px 12px 12px}body.venn #venn{display:block}
 body.venn #graph,body.venn .graph-only{display:none}#venn svg{width:100%;height:100%;overflow:visible}
 #venn text{font-family:system-ui,sans-serif}.vc{cursor:pointer}.vc:hover circle{stroke:var(--fg)}
@@ -92,12 +103,15 @@ body.venn #graph,body.venn .graph-only{display:none}#venn svg{width:100%;height:
 .mk i{display:block;width:12px;height:12px;background:#6b4fbb;box-shadow:0 0 0 1.5px var(--card)}
 .mk.non_state i{background:#d64545;transform:rotate(45deg)}.mk.party i{background:#6b4fbb}
 .mk.person i{background:#6b4fbb;clip-path:polygon(50% 0,100% 100%,0 100%);box-shadow:none;width:14px;height:13px}
-aside{padding:20px;overflow:auto}aside a{color:inherit}
-h1{font-size:20px;margin:0 0 4px}h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin:20px 0 6px}
+aside{padding:24px 24px 40px;overflow:auto;border-left:1px solid var(--mist)}aside a{color:inherit}
+aside h1{font:400 26px/1.2 var(--serif);margin:0 0 6px}aside h2{font:400 18px/1.3 var(--serif);color:var(--ink);margin:26px 0 8px}
+aside p{margin:0 0 10px}.keys{display:grid;grid-template-columns:78px 1fr;gap:6px 12px;margin:0;font-size:13.5px}
+.keys dt{color:var(--graphite)}.keys dd{margin:0}.key{display:inline-flex;align-items:center;gap:5px;margin:0 10px 2px 0;white-space:nowrap}
+.key i{width:9px;height:9px;border-radius:50%;display:inline-block}
 .kv{display:grid;grid-template-columns:140px 1fr;gap:3px 10px}.kv span:nth-child(odd){color:var(--mute)}
-.rel{padding:6px 0;border-bottom:1px solid var(--line)}.rel b{cursor:pointer}
+.rel{padding:10px 0;border-bottom:1px solid var(--mist)}.rel b{cursor:pointer}.rel .mute{margin-top:2px}
 .tag{display:inline-block;font-size:11px;padding:1px 6px;border-radius:9px;color:#fff;margin:2px 2px 0 0}
-.mute{color:var(--mute);font-size:12px}.legend .tag{margin-right:4px}
+.mute{color:var(--mute);font-size:13px}.legend .tag{margin-right:4px}
 .mkt{padding:6px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:52px 1fr 80px;gap:8px;align-items:center}
 .mkt .p{font-weight:600;font-variant-numeric:tabular-nums}.mkt a{color:inherit}.up{color:#c0392b}.down{color:#2f8f5b}
 #orgs summary{cursor:pointer}#orgs .list{max-height:40vh;overflow:auto;margin-top:4px;padding-right:4px}
@@ -107,18 +121,22 @@ h1{font-size:20px;margin:0 0 4px}h2{font-size:12px;text-transform:uppercase;lett
 .spark{width:80px;height:22px}.spark polyline{fill:none;stroke:currentColor;stroke-width:1.5}
 </style></head><body>
 <div id="stage"><div id="graph"></div><div id="map"></div><div id="venn"></div>
-<div id="views"><button id="v-graph" aria-pressed="true">Graphe</button><button id="v-map" aria-pressed="false">Carte</button><button id="v-venn" aria-pressed="false">Organisations</button><a href="index.html">Accueil</a><a href="methode.html">Méthode</a></div>
+<div id="bar"><a class="brand" href="index.html">__NAME__</a>
+<div id="views" role="tablist"><button id="v-graph" aria-pressed="true">Graphe</button><button id="v-map" aria-pressed="false">Carte</button><button id="v-venn" aria-pressed="false">Organisations</button></div>
+<a class="method" href="methode.html">Méthode</a></div>
 <div id="controls">
-  <label>Taille des acteurs : <select id="metric">
+  <label>Année <input type="range" id="year" min="2014" step="1" style="vertical-align:middle;width:140px"> <b id="year-label"></b></label>
+  <details id="orgs"><summary>Organisations <b id="orgs-n"></b></summary><div class="list"></div></details>
+  <details id="settings"><summary>Réglages</summary>
+  <label>Taille des acteurs <select id="metric">
     <option value="military">dépenses militaires ($)</option><option value="gdp">PIB ($)</option>
     <option value="supports">nombre de soutiens accordés</option></select></label>
-  <label class="map-only">Couleur des pays : <select id="colormode">
+  <label class="map-only">Couleur des pays <select id="colormode">
     <option value="formal">liens formels (traités, adhésions)</option><option value="votes">votes à l'ONU</option></select></label>
-  <details id="orgs"><summary>Organisations superposées <b id="orgs-n"></b></summary><div class="list"></div></details>
-  <label>Année : <input type="range" id="year" min="2014" step="1" style="vertical-align:middle;width:130px"> <b id="year-label"></b></label>
   <label class="graph-only"><input type="checkbox" id="lyr-armed" checked> Groupes armés non étatiques</label>
-  <label class="graph-only"><input type="checkbox" id="lyr-detail"> Partis & personnalités</label>
+  <label class="graph-only"><input type="checkbox" id="lyr-detail"> Partis et personnalités</label>
   <label class="graph-only"><input type="checkbox" id="lyr-tensions" checked> Tensions (guerres, sanctions…)</label>
+  </details>
 </div></div>
 <aside id="panel"></aside>
 <script>
@@ -238,7 +256,7 @@ function showGroup(gid){ const g = GROUPS[gid]; if(!g) return;
     ${Object.keys(g.left||{}).length ? `<p class="mute">Anciens membres : ${Object.entries(g.left).map(([m,d]) =>
       `<a href="#" data-country="${esc(m)}">${cname(m)}</a> (jusqu'en ${esc(d)})`).join(", ")}</p>` : ""}
     ${g.since ? `<p class="mute">Créée en ${esc(g.since)}.</p>` : ""}
-    ${g.note ? `<p class="mute">${esc(g.note)}</p>` : ""}<p class="mute">${g.sources.map(src).join(" ; ")}</p>`; }
+    ${g.note ? `<p class="mute">${esc(g.note)}</p>` : ""}<p class="mute">${g.sources.map(src).join(", ")}</p>`; }
 document.addEventListener("click", ev => {
   const gl = ev.target.closest("[data-group]"); if(gl){ ev.preventDefault(); showGroup(gl.dataset.group); }
   const cl = ev.target.closest("[data-country]"); if(cl){ ev.preventDefault(); D.actors[cl.dataset.country] ? show(cl.dataset.country) : showCountry(cl.dataset.country); } });
@@ -296,7 +314,7 @@ function euCohesion(id){ const g = D.align.groups.find(x => x.entity===id && x.l
 function tiers(id){ const gs = D.align.groups.filter(g => g.entity===id);
   return gs.length ? `<h2>Niveaux</h2>` + gs.map(g => `<div class="rel"><b>${esc(g.name)}</b>
     <span class="mute">(${g.members.length}${g.level ? ` · niveau ${g.level}/3` : " · sans effet sur l'alignement"})</span><br>
-    <span class="mute">${g.members.map(cname).join(", ")}${g.note ? "<br>"+esc(g.note) : ""}<br>${g.sources.map(src).join(" ; ")}</span></div>`).join("") : ""; }
+    <span class="mute">${g.members.map(cname).join(", ")}${g.note ? "<br>"+esc(g.note) : ""}<br>${g.sources.map(src).join(", ")}</span></div>`).join("") : ""; }
 const fg = getComputedStyle(document.body).color;
 const outCount = id => D.edges.filter(e=>e.from===id && e.status!=="ended").length;
 const layer = id => { const k = D.actors[id].kind; return DETAIL.has(k) ? "detail" : k==="non_state" ? "armed" : "core"; };
@@ -456,7 +474,7 @@ function refresh(){
 ["metric","lyr-armed","lyr-detail"].forEach(i => $("#"+i).addEventListener("change", refresh));
 $("#lyr-tensions").addEventListener("change", () => edgesDS.update(tensionsVisible()));
 function onYear(){ const Y = YEAR();
-  $("#year-label").textContent = Y === NOW ? `${Y} (aujourd'hui)` : String(Y);
+  $("#year-label").textContent = String(Y);
   edgesDS.update([...D.edges.map((e,i) => ({id:"e"+i, hidden: !activeAt(e, Y)})), ...tensionsVisible()]);
   drawVenn();
   if($("#layers-panel")) showLayers(); }
@@ -604,10 +622,15 @@ function f(v, unit="", d=1){ if(!v) return "n/d"; let x=v.value, s;
   s = Math.abs(x)>=1e9 ? (x/1e9).toFixed(d)+" Md" : Math.abs(x)>=1e6 ? (x/1e6).toFixed(d)+" M" : x.toLocaleString("fr-FR",{maximumFractionDigits:d});
   return `${s}${unit} <span class="mute">(${v.year})</span>`; }
 const tags = t => t.map(x=>`<span class="tag" style="background:${D.colors[x]||'#888'}">${esc(x)}</span>`).join("");
-const src = s => esc(s).replace(/https?:\/\/[^\s<]+/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
-const rel = (e, other) => `<div class="rel"><b data-id="${esc(other)}">${nm(other)}</b> ${tags(e.types)}
-  ${e.why ? `<div><b>Pourquoi ?</b> ${esc(e.why)}</div>` : ""}
-  <div class="mute">${esc(e.status)} · confiance ${esc(e.confidence)} · ${esc(dated(e))} · vérifié ${esc(e.verified)} · ${(e.sources||[]).map(src).join(" ; ")}${e.note?"<br>"+esc(e.note):""}</div></div>`;
+// source → lien court vers le site (texte complet au survol) ; sans URL, le texte tel quel
+const src = s => { const m = String(s).match(/https?:\/\/[^\s<]+/); if(!m) return esc(s);
+  let host = m[0]; try { host = new URL(m[0]).hostname.replace(/^www\./, ""); } catch(_) {}
+  return `<a href="${esc(m[0])}" target="_blank" rel="noopener" title="${esc(String(s).slice(0, m.index).replace(/[\s—]+$/, ""))}">${esc(host)}</a>`; };
+const STATUS_FR = {active:"actif", reduced:"en baisse", ended:"terminé", alleged:"allégué"};
+const CONF_FR = {high:"documenté officiellement", medium:"sources concordantes", low:"allégations"};
+const rel = (e, other) => `<div class="rel"><b data-id="${esc(other)}">${nm(other)}</b> <span class="mute">${esc(e.types.map(t => ({arms:"armes", troops:"troupes", financial:"argent", training:"entraînement", intelligence:"renseignement", political:"politique", economic:"économique", dual_use:"double usage"})[t] || t).join(", "))}</span>
+  ${e.why ? `<div>${esc(e.why)}</div>` : ""}
+  <div class="mute">${esc(STATUS_FR[e.status] || e.status)}, ${esc(CONF_FR[e.confidence] || e.confidence)}, ${esc(dated(e))}. ${e.note ? esc(e.note) + ". " : ""}Sources : ${(e.sources||[]).map(src).join(", ")}</div></div>`;
 document.addEventListener("click", ev => { const b = ev.target.closest("[data-id]"); if(b) show(b.dataset.id); });
 
 function spark(daily){ if(!daily || daily.length<2) return "";
@@ -635,7 +658,7 @@ function show(id){
   if(ungaLine(id)) h += `<p class="mute">${ungaLine(id)}</p>`;
   if(forumLine(id)) h += `<p class="mute">${forumLine(id)}</p>`;
   h += tiers(id) + euCohesion(id) + (id==="US" || id==="EU" ? driftBlock() : "");
-  if(a.note) h += `<p>${esc(a.note)}${(a.sources||[]).length?`<br><span class="mute">${a.sources.map(src).join(" ; ")}</span>`:""}</p>`;
+  if(a.note) h += `<p>${esc(a.note)}${(a.sources||[]).length?`<br><span class="mute">${a.sources.map(src).join(", ")}</span>`:""}</p>`;
   h += credit(id) + credit(leaderKey(id));
   if(members.length){
     h += `<h2>Membres suivis (${members.length})</h2><p class="mute">Surlignés sur le graphe.</p>` + members.map(m => {
@@ -650,7 +673,7 @@ function show(id){
   if(tens.length) h += `<h2>Tensions</h2>` + tens.map(t => { const other = t.from===id ? t.to : t.from, s = TENSION[t.type];
     const verb = t.type==="sanctions" ? (t.from===id ? "sanctionne" : "sanctionné par") : t.type==="claims" ? (t.from===id ? "revendique un territoire de" : "territoire revendiqué par") : s.label + " avec";
     return `<div class="rel"><b style="color:${s.color}">■</b> ${esc(verb[0].toUpperCase() + verb.slice(1))} <b data-id="${esc(other)}">${nm(other)}</b>
-      <div class="mute">${t.status==="reduced" ? "trêve ou cessez-le-feu · " : ""}${esc(dated(t))} · ${(t.sources||[]).map(src).join(" ; ")}${t.note ? "<br>"+esc(t.note) : ""}</div></div>`; }).join("");
+      <div class="mute">${t.status==="reduced" ? "trêve ou cessez-le-feu · " : ""}${esc(dated(t))} · ${(t.sources||[]).map(src).join(", ")}${t.note ? "<br>"+esc(t.note) : ""}</div></div>`; }).join("");
   for(const [pair, v] of marketsFor(id)){
     h += `<h2>Marchés · ${esc(pair)}</h2>` + (v.markets.length ? v.markets.map(mkt).join("")
       : `<p class="mute">Aucun marché ouvert trouvé.</p>`); }
@@ -686,55 +709,34 @@ function showCountry(iso){
     ${forumLine(iso) ? `<p class="mute">${forumLine(iso)}</p>` : ""}
     ${i.ties.some(t => GROUPS[t].kind!=="forum") ? "<h2>Liens formels</h2>" : ""}` + i.ties.filter(t => GROUPS[t].kind!=="forum").map(t => { const g = GROUPS[t];
       return `<div class="rel"><b>${esc(g.name)}</b> <span class="mute">${g.level ? `niveau ${g.level}/3` : "sans effet sur l'alignement"}
-        ${g.note ? "<br>"+esc(g.note) : ""}<br>${g.sources.map(src).join(" ; ")}</span></div>`; }).join("")
+        ${g.note ? "<br>"+esc(g.note) : ""}<br>${g.sources.map(src).join(", ")}</span></div>`; }).join("")
     + `<p class="mute">Ce pays n'a ${i.ties.some(t => GROUPS[t].kind!=="forum") ? "encore" : "ni lien formel dans alignments.yaml, ni"} aucune relation de soutien sourcée dans network.yaml.</p>`; }
 function legend(){
   if(map) highlightLinks(null);
   const all = Object.values(D.markets).flatMap(v=>v.markets).filter(m=>!m.stale);
   const moves = all.filter(m=>m.delta_pts!=null && Math.abs(m.delta_pts)>=D.alert)
                    .sort((a,b)=>Math.abs(b.delta_pts)-Math.abs(a.delta_pts));
-  $("#panel").innerHTML = `<h1>Réseau de soutiens</h1>
-  <p class="box-link">Nouveau venu ? Commence par un dossier expliqué simplement :
-  ${(D.dossiers||[]).map(x => `<a href="${esc(x.id)}.html"><b>${esc(x.title)}</b></a>`).join(" · ")}</p><p><a href="methode.html">Comment ces données sont construites, et d'où elles viennent →</a></p><p class="mute">Clique un acteur ; clique un bloc (UE) pour voir ses membres.
-  Drapeau = État ou bloc · épées = groupe armé · urne = parti · photo = personnalité. Trait plein = actif & confirmé,
-  pointillé = réduit / allégué ; pointillé gris = rattachement d'un parti ou d'une personne à son pays.</p>
-  <p class="mute">Vue « Carte » : chaque acteur dans son pays d'ancrage (coordonnées Wikidata), une couche par type
-  d'acteur (panneau en bas à gauche) ; cliquer un acteur ou un pays surligne ses liens.</p>
-  <p class="mute">Taille = dépenses militaires ou PIB en dollars (Banque mondiale, dernière année disponible)
-  ou nombre de soutiens accordés — voir le sélecteur. Sans donnée (Taïwan, groupes armés…) : taille minimale.</p>
-  <h2>Blocs d'influence</h2>${Object.entries(BLOCS).map(([k,b]) => `<div class="rel">
-    <b style="color:${b.color}">■ ${esc(b.name)}</b><br><span class="mute">${D.align.groups.filter(g=>g.bloc===k && g.level>0)
-      .map(g => `${esc(g.name)} (niveau ${g.level}, ${g.members.length} pays)`).join(" · ")}</span></div>`).join("")}
-  <div class="rel"><b style="color:${CONTESTED}">■ Disputé</b> <span class="mute">— liens ou soutiens venant des deux blocs</span></div>
-  <p class="mute">Intensité = niveau du lien formel le plus fort : 3 défense mutuelle, 2 partenariat stratégique,
-  1 candidature ou participation gelée (sources : alignments.yaml, cliquer un pays). Sans lien formel, un acteur
-  dont tous les soutiens actifs viennent d'un même bloc en est « satellite » (niveau 1, déduit du graphe).
-  Partis et personnalités ne sont pas classés.</p>
+  const key = (color, label) => `<span class="key"><i style="background:${color}"></i>${esc(label)}</span>`;
+  const TYPES_FR = {arms:"armes", troops:"troupes", financial:"argent", training:"entraînement", intelligence:"renseignement",
+    political:"politique", economic:"économique", dual_use:"double usage"};
+  $("#panel").innerHTML = `<h1>Explorer</h1>
+  <p>Cliquez sur un acteur, un pays ou un lien pour voir ce qui les relie, avec les sources.</p>
+  <p class="mute">Pour commencer simplement, lisez un dossier : ${(D.dossiers||[]).map(x => `<a href="${esc(x.id)}.html">${esc(x.title.replace(/^La guerre /, "la guerre "))}</a>`).join(", ")}.</p>
+  <h2>Lire le graphe</h2>
+  <dl class="keys">
+    <dt>Formes</dt><dd>Drapeau : un État ou un bloc. Épées : un groupe armé. Urne : un parti. Photo : une personnalité.</dd>
+    <dt>Traits</dt><dd>Plein : soutien actif et confirmé. Pointillé : en baisse ou allégué.</dd>
+    <dt>Soutiens</dt><dd>${Object.keys(D.colors).map(k => key(D.colors[k], TYPES_FR[k] || k)).join("")}</dd>
+    <dt>Tensions</dt><dd>${Object.values(TENSION).map(t => key(t.color, t.label)).join("")}</dd>
+    <dt>Blocs</dt><dd>${Object.values(BLOCS).map(b => key(b.color, b.name)).join("")}${key(CONTESTED, "disputé")}</dd>
+    <dt>Taille</dt><dd>Dépenses militaires, PIB ou nombre de soutiens, selon les réglages.</dd>
+  </dl>
   ${calibrationBlock()}
-  <h2>Curseur « Année »</h2><p class="mute">Il n'affiche que les relations actives l'année choisie (dates <code>since</code>/<code>until</code>
-  des sources) ; ${D.edges.filter(e => !e.since).length} relation(s) sans date de début restent affichées toutes les années.
-  En vue carte, « votes à l'ONU » suit aussi l'année (données ${Math.min(...Object.keys(U.by_year||{}).map(Number))}–${U.agreement_year}).</p>
-  <h2>Forums économiques et politiques</h2><p class="mute">${D.align.groups.filter(g => g.kind==="forum").map(g =>
-    `<a href="#" data-group="${esc(g.id)}">${esc(g.name)}</a>`).join(" · ")}. Ce sont des cadres de coopération, pas des alliances :
-  les BRICS réunissent l'Inde et la Chine, l'OCS l'Inde et le Pakistan. Ils n'entrent donc pas dans le calcul des blocs ;
-  en vue carte, « Organisations superposées » les affiche en calques transparents (jusqu'à 6), qu'on peut combiner
-  avec les alliances formelles et faire défiler dans le temps.</p>
-  <h2>Votes à l'ONU</h2><p class="mute">Sur la carte, « Couleur des pays : votes à l'ONU » place chaque pays selon la fréquence
-  à laquelle il vote comme France/Allemagne ou comme Russie/Chine (Assemblée générale, votes enregistrés, ${U.agreement_year}).
-  Beaucoup de votes du Sud global (développement, décolonisation) coïncident avec ceux de la Chine : pencher vers
-  Russie/Chine ne veut pas dire appartenir à l'axe. Source : <a href="${safeUrl((U.source||{}).url)}" target="_blank" rel="noopener">Voeten,
-  UNGA Ideal Points</a> v${esc((U.source||{}).version)} (CC0) — ${esc((U.source||{}).cite)}.</p>
-  ${driftBlock()}
-  <h2>Types de soutien</h2><div class="legend">${tags(Object.keys(D.colors))}</div>
-  <h2>Tensions</h2><div class="legend">${Object.values(TENSION).map(s => `<span class="tag" style="background:${s.color}">${esc(s.label)}</span>`).join("")}</div>
-  <p class="mute">Guerres, sanctions, revendications territoriales et rivalités, sourcées comme les soutiens mais tracées à part :
-  elles n'entrent pas dans le calcul des blocs. Trait atténué = trêve ou cessez-le-feu.</p>
-  <h2>Mouvements de marché ≥ ${D.alert} pts sur 7 j</h2>${moves.length ? moves.map(mkt).join("")
-    : `<p class="mute">Aucun${all.length?"":" — pas encore de cotes relevées"}.</p>`}
-  <p class="mute">Les seuls pourcentages affichés sont des cotes de marchés de prédiction (Polymarket, Kalshi).
-  Icônes <a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a> (ISC) ; photos Wikimedia Commons, crédits dans chaque fiche.
-  Données du graphe : <a href="network.json">JSON</a> · <a href="network.csv">CSV</a>, licence CC BY 4.0.
-  Généré le ${esc(D.built.slice(0,16).replace("T"," "))} UTC.</p>`; }
+  <h2>Mouvements des marchés</h2>${moves.length ? `<p class="mute">Cotes qui ont bougé d'au moins ${D.alert} points en 7 jours.</p>` + moves.map(mkt).join("")
+    : `<p class="mute">Aucune cote n'a bougé de plus de ${D.alert} points cette semaine.</p>`}
+  <p class="mute" style="margin-top:26px">Blocs, votes à l'ONU, curseur Année, organisations : tout est expliqué dans la
+  <a href="methode.html">méthode</a>. Données réutilisables : <a href="network.json">JSON</a>, <a href="network.csv">CSV</a>
+  (CC BY 4.0). Mis à jour le ${esc(D.built.slice(0,10).split("-").reverse().join("/"))}.</p>`; }
 legend();
 // Lien direct depuis l'accueil : #graphe, #carte, #organisations, #graphe:<id acteur>
 (() => { const [v, id] = decodeURIComponent(location.hash.slice(1)).split(":");

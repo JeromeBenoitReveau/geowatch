@@ -348,12 +348,3 @@ dossiers:
       Crimée: péninsule ukrainienne sur la mer Noire, annexée par la Russie en 2014
       cessez-le-feu: arrêt des combats convenu entre les belligérants, sans être encore un accord de paix
       CSIS: Center for Strategic and International Studies, centre de recherche américain
-
-# Conflits suivis dans le graphe mais pas encore racontés : cartes « en préparation » sur l'accueil.
-# actors = acteurs de network.yaml concernés ; le premier est ouvert dans l'explorateur.
-upcoming:
-  - {title: "Iran, Israël et États-Unis", actors: [IR, IL, US]}
-  - {title: Chine et Taïwan, actors: [TW, CN]}
-  - {title: L'est de la RD Congo, actors: [m23, CD]}
-  - {title: Le Sahel, actors: [ML, BF, NE]}
-  - {title: La Birmanie, actors: [MM]}

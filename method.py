@@ -4,7 +4,7 @@ from collections import Counter
 from html import escape as e
 from urllib.parse import urlparse
 import re
-import brand, history
+import brand, history, style
 from config import DYADS, MOVE_ALERT_PTS
 from sources.profiles import INDICATORS
 
@@ -56,29 +56,22 @@ def page(d):
     role_fr = {"member": ("membre", "membres"), "satellite": ("satellite", "satellites"),
                "contested": ("disputé", "disputés"), "none": ("non classé", "non classés")}
     fr = lambda table, k, n: table.get(k, (k, k))[n > 1]
-    return f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Méthode et sources — {e(brand.NAME)}</title>
-<style>
-:root{{--bg:#fafaf8;--fg:#1c1c1c;--mute:#6b6b6b;--line:#e3e3df;--card:#fff;--accent:#2b6cb0}}
-@media (prefers-color-scheme:dark){{:root{{--bg:#141414;--fg:#eee;--mute:#9a9a9a;--line:#2c2c2c;--card:#1d1d1d;--accent:#7aa7e0}}}}
-*{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 system-ui,sans-serif}}
-main{{max-width:860px;margin:0 auto;padding:24px 16px 64px}}
-h1{{font-size:26px;margin:8px 0 4px}}h2{{font-size:19px;margin:36px 0 8px;padding-top:8px;border-top:1px solid var(--line)}}
-h3{{font-size:15px;margin:20px 0 6px}}a{{color:var(--accent)}}.mute{{color:var(--mute);font-size:13px}}
-table{{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}}th,td{{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}}
-th{{color:var(--mute);font-weight:600}}.wrap{{overflow-x:auto}}code{{font-size:13px;background:var(--card);padding:1px 4px;border-radius:4px}}
-.flow{{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0}}
-.flow div{{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px}}
-.flow b{{display:block;margin-bottom:4px}}nav a{{margin-right:12px;white-space:nowrap}}
-.kpi{{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:12px 0}}
-.kpi div{{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px}}.kpi b{{display:block;font-size:22px}}
-</style></head><body><main>
-<p><a href="index.html">← {e(brand.NAME)}</a> · <a href="explorer.html">Explorer</a> · <a href="manifeste.html">Manifeste</a></p>
+    extra = """<style>
+main.m{max-width:820px;padding:56px 0 0}main.m h2{margin:52px 0 12px}main.m h3{font:500 18px/1.3 var(--serif);margin:24px 0 6px}
+main.m p,main.m li{max-width:44em}.mute{color:var(--graphite);font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}th,td{text-align:left;padding:8px 10px 8px 0;border-bottom:1px solid var(--mist);vertical-align:top}
+th{color:var(--graphite);font-weight:500}.scroll{overflow-x:auto}code{font-size:13.5px}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px 28px;margin:16px 0}
+.flow div{font-size:14.5px}.flow b{display:block;font-family:var(--serif);font-weight:500;font-size:17px;margin-bottom:2px}
+nav.toc{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px;color:var(--graphite);margin:18px 0 0}nav.toc a{text-decoration:none}nav.toc a:hover{text-decoration:underline}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:20px;margin:28px 0 0}
+.kpi b{display:block;font:400 32px/1 var(--serif);font-variant-numeric:tabular-nums;margin-bottom:4px}.kpi span{font-size:14px;color:var(--graphite)}
+</style>"""
+    return style.head(f"Méthode et sources — {brand.NAME}", "Comment les données sont construites, et d'où elles viennent.", extra) + f"""<body><div class="wrap">{style.top("methode.html")}<main class="m">
 <h1>Méthode et sources</h1>
-<p class="mute">Page générée automatiquement le {_date(d["built"])} à partir des données publiées. Code sous licence MIT,
+<p class="meta">Page générée automatiquement le {_date(d["built"])} à partir des données publiées. Code sous licence MIT,
 données du graphe sous CC BY 4.0 — <a href="{brand.REPO}">dépôt GitHub</a>.</p>
-<nav class="mute"><a href="#principe">Principe</a><a href="#chaine">Chaîne de données</a><a href="#graphe">Graphe</a>
+<nav class="toc"><a href="#principe">Principe</a><a href="#chaine">Chaîne de données</a><a href="#graphe">Graphe</a>
 <a href="#dossiers">Dossiers</a><a href="#tensions">Tensions</a><a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a><a href="#marches">Marchés</a>
 <a href="#profils">Profils</a><a href="#carte">Carte</a><a href="#limites">Limites</a><a href="#contribuer">Contribuer</a></nav>
 
@@ -114,7 +107,7 @@ publiées ou de règles écrites ici) ; rien n'entre dans le graphe sans source 
   <div><b>5. Publication</b><code>build.py</code> génère ce site statique et les exports
   <a href="network.json">network.json</a> / <a href="network.csv">network.csv</a> ; GitHub Pages le publie.</div>
 </div>
-<div class="wrap"><table>
+<div class="scroll"><table>
 <tr><th>Source</th><th>Ce qu'on en tire</th><th>Fréquence</th><th>Dernière mise à jour</th><th>Licence</th></tr>
 <tr><td>Relecture humaine, {len(domains)} sites cités (ONU, Trésor américain, Conseil de l'UE, SIPRI, Kremlin, presse…)</td>
   <td>Relations de soutien</td><td>à la main</td><td>vérifications de {min((x["verified"] for x in edges), default="n/d")} à {max((x["verified"] for x in edges), default="n/d")}</td><td>CC BY 4.0 (notre travail)</td></tr>
@@ -180,7 +173,7 @@ est affichée atténuée. {len(d.get("tensions", []))} tension(s) recensée(s).<
 Seuls les <b>liens formels</b> (traités, adhésions) sont déclarés, avec un niveau :</p>
 <ul><li><b>3</b> défense mutuelle · <b>2</b> partenariat stratégique sans défense mutuelle · <b>1</b> candidature ou
 participation gelée · <b>0</b> intégration sans effet sur l'alignement (zone euro, Schengen).</li></ul>
-<div class="wrap"><table><tr><th>Groupe</th><th>Bloc</th><th>Niveau</th><th>Pays</th><th>Depuis 2014</th><th>Sources</th></tr>{group_rows(formal)}</table></div>
+<div class="scroll"><table><tr><th>Groupe</th><th>Bloc</th><th>Niveau</th><th>Pays</th><th>Depuis 2014</th><th>Sources</th></tr>{group_rows(formal)}</table></div>
 <h3>Règles de calcul (<code>network.influence()</code>)</h3>
 <ol>
 <li><b>Membre</b> : un pays reçoit le niveau le plus élevé de ses liens formels. À niveau égal avec les deux blocs, il est « disputé ».</li>
@@ -200,7 +193,7 @@ membres, ex. « GB −2020-01 ») depuis 2014, début du curseur « Année ». U
 date est couverte par une source du groupe. Un pays compte comme membre une année donnée s'il y est entré cette année-là
 ou avant, et n'en est pas sorti cette année-là ou avant. Ces dates animent les calques de la carte ; le calcul des blocs
 d'influence, lui, reste fondé sur la composition actuelle.</p>
-<div class="wrap"><table><tr><th>Forum</th><th></th><th></th><th>Pays</th><th>Depuis 2014</th><th>Sources</th></tr>{group_rows(forums)}</table></div>
+<div class="scroll"><table><tr><th>Forum</th><th></th><th></th><th>Pays</th><th>Depuis 2014</th><th>Sources</th></tr>{group_rows(forums)}</table></div>
 
 <h2 id="onu">Votes à l'Assemblée générale de l'ONU</h2>
 <p>Source : {e(src.get("name", ""))}, version {e(src.get("version", "n/d"))} — {e(src.get("cite", ""))}.</p>
@@ -261,7 +254,7 @@ s'appuie autant que possible sur des sources officielles.</li>
 pull request avec les sources. Les données brutes sont réutilisables : <a href="network.json">network.json</a>,
 <a href="network.csv">network.csv</a> (CC BY 4.0), historique des cotes et profils dans le dossier
 <a href="{brand.REPO}/tree/main/data">data/</a> du dépôt.</p>
-</main></body></html>"""
+</main></div>{style.foot()}</body></html>"""
 
 def write(out, data):
     (out / "methode.html").write_text(page(data), encoding="utf-8")

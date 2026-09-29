@@ -6,7 +6,7 @@ name: site
 on:
   push:
     branches: [main]
-    paths: [.github/workflows/pages.yml, network.yaml, alignments.yaml, network.py, build.py, method.py, dossiers.yaml, dossier.py, pages.py, brand.py, sources/**, track.py, history.py, db.py, config.py, "data/**"]
+    paths: [.github/workflows/pages.yml, network.yaml, alignments.yaml, network.py, build.py, method.py, dossiers.yaml, dossier.py, pages.py, brand.py, style.py, sources/**, track.py, history.py, db.py, config.py, "data/**"]
   workflow_run:
     workflows: ["market odds"]
     types: [completed]

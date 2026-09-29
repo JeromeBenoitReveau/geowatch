@@ -6,24 +6,55 @@ from pathlib import Path
 from urllib.parse import urlparse
 import json, re, shutil
 import yaml
-import brand, network
+import brand, network, style
 
 PATH = Path(__file__).with_name("dossiers.yaml")
 URL = re.compile(r"https?://\S+")
 TYPES_FR = {"arms": "armes", "financial": "argent", "training": "entraînement", "troops": "troupes",
             "intelligence": "renseignement", "political": "soutien politique", "economic": "soutien économique",
             "dual_use": "matériel à double usage"}
-STATUS_FR = {"alleged": "allégué — démenti ou non prouvé", "reduced": "en baisse", "ended": "terminé"}
-CONF_FR = {"high": "documenté officiellement", "medium": "sources concordantes", "low": "allégations"}
-# Icônes Lucide (ISC), comme build.py
-ICONS = {
-    "gem": '<path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>',
-    "anchor": '<path d="M12 22V8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/><circle cx="12" cy="5" r="3"/>',
-    "waves": '<path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>',
-    "wheat": '<path d="M2 22 16 8"/><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/><path d="M7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/><path d="M11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/><path d="M20 2h2v2a4 4 0 0 1-4 4h-2V6a4 4 0 0 1 4-4Z"/>',
-    "route": '<circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/>',
-}
 MONTHS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juill.", "août", "sept.", "oct.", "nov.", "déc."]
+
+
+CSS = """
+header.doc{padding:72px 0 28px;max-width:760px}.doc .meta{margin:0 0 26px}
+.hero-map{margin:8px 0 0}#dmap{height:min(68vh,620px);border-radius:3px;background:var(--ocean)}
+.legend-map{display:flex;flex-wrap:wrap;gap:4px 22px;font-size:14px;color:var(--graphite);margin:14px 0 6px}
+.legend-map span{display:inline-flex;align-items:center;gap:7px}.legend-map i{width:12px;height:12px;border-radius:2px;opacity:.8}
+.legend-map .ln{width:20px;border-top:2px solid}.legend-map .ln.dot{border-top-style:dotted}
+.map-note{font-size:14px;color:var(--graphite);margin:0 0 4px;max-width:64em}
+.flag{width:22px;height:22px;border-radius:50%;box-shadow:0 0 0 2px var(--land)}
+.leaflet-container{font:inherit;background:var(--ocean)}
+.leaflet-popup-content-wrapper{border-radius:3px;box-shadow:0 2px 10px #0002}.leaflet-popup-content{font-size:14px;line-height:1.5;max-width:280px}
+.leaflet-tooltip.pin-label{background:transparent;border:0;box-shadow:none;font:500 13px var(--sans);color:var(--ink);
+  text-shadow:0 0 3px var(--land),0 0 3px var(--land),0 0 3px var(--land)}.leaflet-tooltip.pin-label::before{display:none}
+.camps{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.camp{border-top:3px solid var(--c);border-radius:4px 4px 6px 6px}
+.camp .who{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+.camp .who img{width:52px;height:52px;border-radius:50%;object-fit:cover}
+.camp h3{font-size:21px;margin:0}.camp .lead{color:var(--graphite);font-size:15px}
+.camp > p{margin:0 0 20px;font-size:16px}
+.backers-title{font-size:15px;color:var(--graphite);margin:0 0 4px}
+.backer{display:grid;grid-template-columns:22px 1fr;gap:4px 12px;padding:12px 0;border-top:1px solid var(--mist)}
+.backer img{width:22px;height:22px;border-radius:50%;margin-top:2px}
+.backer .name{font-weight:600}.backer .kind{color:var(--graphite);font-size:14px;margin-left:6px}
+.backer .why{grid-column:2;font-size:15.5px;line-height:1.55}
+.backer details{grid-column:2;font-size:14px;color:var(--graphite)}.backer summary{cursor:pointer;width:max-content}
+.backer details p{margin:6px 0 0}
+.alleged{font-size:13px;color:var(--c);border:1px solid currentColor;border-radius:9px;padding:0 6px;margin-left:6px}
+.frac .intro{margin:-8px 0 14px}.frac .card{padding:6px 24px}.frac .row{padding:14px 0;border-top:1px solid var(--mist)}.frac .row:first-child{border-top:0}
+.frac .row p{margin:4px 0 0;color:var(--graphite);font-size:15px}
+.stakes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.stake h3{font-size:19px;margin-bottom:6px}.stake p{margin:0;font-size:16px}
+.block p{margin:0;max-width:44em}.block p + p{margin-top:12px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}.pair>div{display:flex;flex-direction:column}.pair .card{flex:1}
+.tl{list-style:none;margin:18px 0 0;padding:16px 0 0;border-top:1px solid var(--mist)}
+.tl li{display:grid;grid-template-columns:104px 1fr;gap:16px;padding:7px 0}
+.tl time{white-space:nowrap;color:var(--graphite);font-variant-numeric:tabular-nums;font-size:15px}
+.odds{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:16px}
+.odd{padding:16px 18px}.odd b{display:block;font:400 36px/1 var(--serif);font-variant-numeric:tabular-nums;margin-bottom:8px}.odd div{font-size:15px;line-height:1.45}.odd small{display:block;color:var(--graphite);font-size:13.5px;margin-top:2px}
+@media (max-width:760px){header.doc{padding:44px 0 22px}.camps,.pair{grid-template-columns:1fr}.card{padding:18px}
+  .tl li{grid-template-columns:88px 1fr;gap:10px}#dmap{height:62vh}}
+"""
 
 def load():
     return (yaml.safe_load(PATH.read_text(encoding="utf-8")) or {}).get("dossiers", [])
@@ -31,19 +62,6 @@ def load():
 def fr_date(d):
     d = str(d)
     return f"{MONTHS[int(d[5:7]) - 1]} {d[:4]}" if len(d) >= 7 else d[:4]
-
-def sources(items):
-    """Liste de sources → « Sources : site1, site2 » cliquables, texte complet au survol."""
-    links, seen = [], {}
-    for s in items or []:
-        m = URL.search(s)
-        if m:
-            host = urlparse(m.group()).netloc.removeprefix("www.")
-            seen[host] = seen.get(host, 0) + 1
-            label = host if seen[host] == 1 else f"{host} ({seen[host]})"
-            links.append(f'<a href="{e(m.group())}" title="{e(s[:m.start()].rstrip(" —"))}" target="_blank" '
-                         f'rel="noopener">{e(label)}</a>')
-    return f'<p class="src">Sources : {", ".join(links)}</p>' if links else ""
 
 def glossed(text, glossary):
     """Texte échappé, chaque terme du glossaire expliqué au survol (première occurrence). Une seule passe sur le
@@ -62,28 +80,56 @@ def glossed(text, glossary):
         return f'<abbr title="{e(glossary[t])}" tabindex="0">{m.group()}</abbr>'
     return pattern.sub(tag, h)
 
-def portrait(aid, d):
-    """Photo (personne), drapeau (État) ou pastille (groupe armé)."""
-    a = d["actors"].get(aid, {})
-    if aid in d["people"]:
-        return f'<img class="pic" src="{e(d["people"][aid]["thumb"])}" alt="">'
-    if a.get("kind") in ("state", "bloc"):
-        return f'<img class="pic" src="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/{e(aid.lower())}.svg" alt="">'
-    return '<span class="pic dot"></span>'
+class Notes:
+    """Sources → appels de note numérotés (dédoublonnés par URL), listés en bas de page."""
+    def __init__(self):
+        self.items, self.index = [], {}
+    def __call__(self, srcs):
+        marks = []
+        for s in srcs or []:
+            m = URL.search(s)
+            key = m.group() if m else s
+            if key not in self.index:
+                self.items.append(s)
+                self.index[key] = len(self.items)
+            n = self.index[key]
+            title = s[:m.start()].rstrip(" —") if m else s
+            if not any(f'href="#n{n}"' in x for x in marks):
+                marks.append(f'<a href="#n{n}" title="{e(title)}">{n}</a>')
+        return f'<sup class="fns">{",".join(marks)}</sup>' if marks else ""
+    def html(self):
+        def item(i, s):
+            m = URL.search(s)
+            if not m:
+                return f'<li id="n{i}">{e(s)}</li>'
+            label = s[:m.start()].rstrip(" —")
+            return f'<li id="n{i}">{e(label)}, <a href="{e(m.group())}" target="_blank" rel="noopener">{e(urlparse(m.group()).netloc.removeprefix("www."))}</a></li>'
+        return "".join(item(i, s) for i, s in enumerate(self.items, 1))
 
-def supporter(edge, d, g):
-    a = d["actors"][edge["from"]]
-    types = ", ".join(TYPES_FR.get(t, t) for t in edge["types"])
-    flag = STATUS_FR.get(edge["status"])
-    why = f'<p class="why"><b>Pourquoi ?</b> {glossed(edge["why"], g)}</p>' if edge.get("why") else \
-          '<p class="why mute">Motivation non encore documentée.</p>'
-    return f"""<div class="sup{" alleged" if edge["status"] == "alleged" else ""}">
-  <div class="who">{portrait(edge["from"], d)}<div><b>{e(a["name"])}</b>
-    <div class="mute">{e(types)}{f" · {e(flag)}" if flag else ""}{f" · depuis {e(fr_date(edge['since']))}" if edge.get("since") else ""}
-    · {e(CONF_FR.get(edge["confidence"], ""))}</div></div></div>
-  {why}{f'<p class="mute">{glossed(edge["note"], g)}</p>' if edge.get("note") else ""}{sources(edge["sources"])}</div>"""
+def flag(aid, d):
+    kind = d["actors"][aid]["kind"]
+    code = aid.lower() if kind == "state" else "eu" if aid == "EU" else None
+    return f'<img src="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/{code}.svg" alt="">' if code else '<span></span>'
 
-def fractures(dos, d, g):
+def backers_block(bs, d, g, cite):
+    """Une ligne par soutien ; ceux qui partagent le même « pourquoi » sont regroupés sur une ligne."""
+    groups = {}
+    for x in bs:
+        groups.setdefault(x.get("why") or x["from"], []).append(x)
+    rows = []
+    for why, xs in groups.items():
+        names = [e(d["actors"][x["from"]]["name"]) for x in xs]
+        kinds = sorted({TYPES_FR.get(t, t) for x in xs for t in x["types"]})
+        alleged = any(x["status"] == "alleged" for x in xs)
+        notes = [x for x in xs if x.get("note")]
+        srcs = [s for x in xs for s in x["sources"]]
+        rows.append(f"""<div class="backer">{flag(xs[0]["from"], d) if len(xs) == 1 else flag("EU", d) if any(x["from"] == "EU" for x in xs) else flag(xs[0]["from"], d)}
+  <div><span class="name">{", ".join(names)}</span><span class="kind">{e(", ".join(kinds))}</span>{'<span class="alleged">allégué</span>' if alleged else ""}</div>
+  <div class="why">{glossed(xs[0]["why"], g) if xs[0].get("why") else '<span style="color:var(--graphite)">Motivation pas encore documentée.</span>'}{cite(srcs)}</div>
+  {f'<details><summary>Détails</summary>{"".join(f"<p>{glossed(x['note'], g)}</p>" for x in notes)}</details>' if notes else ""}</div>""")
+    return "".join(rows)
+
+def fractures(dos, d, g, cite):
     """Tensions (network.yaml) qui touchent un camp, hors la guerre entre les deux camps : sanctions, autres fronts…"""
     sides = [set(s["actors"]) for s in dos["sides"]]
     main = lambda t: t["type"] == "war" and any(t["from"] in a and t["to"] in b for a in sides for b in sides if a is not b)
@@ -93,18 +139,19 @@ def fractures(dos, d, g):
         return ""
     name = lambda a: e(d["actors"][a]["name"])
     label = {"war": "Guerre", "sanctions": "Sanctions", "claims": "Revendication territoriale", "rivalry": "Rivalité"}
-    arrow = lambda t: "→" if t["type"] in ("sanctions", "claims") else "⟷"
-    rows = "".join(f"""<div class="sup">{label[t["type"]]} : <b>{name(t["from"])}</b> {arrow(t)} <b>{name(t["to"])}</b>
-  <span class="mute">{" · trêve ou cessez-le-feu" if t["status"] == "reduced" else ""}{f" · depuis {e(fr_date(t['since']))}" if t.get("since") else ""}</span>
-  {f'<p class="mute">{glossed(t["note"], g)}</p>' if t.get("note") else ""}{sources(t["sources"])}</div>""" for t in ts)
+    link = lambda t: f"{name(t['from'])} {'→' if t['type'] in ('sanctions', 'claims') else 'et'} {name(t['to'])}"
+    when = lambda t: ", ".join(x for x in (f"depuis {fr_date(t['since'])}" if t.get("since") else "",
+                                            "trêve ou cessez-le-feu" if t["status"] == "reduced" else "") if x)
+    rows = "".join(f"""<div class="row"><div><b>{label[t["type"]]}</b> {link(t)}{f'<span class="quiet">, {e(when(t))}</span>' if when(t) else ""}</div>
+  {f'<p>{glossed(t["note"], g)}{cite(t["sources"])}</p>' if t.get("note") else cite(t["sources"])}</div>""" for t in ts)
     return f"""<h2>Les autres lignes de fracture</h2>
-<p class="mute">Guerres, sanctions, revendications et rivalités qui touchent aussi les deux camps.</p>{rows}"""
+<p class="quiet intro">Guerres, sanctions, revendications et rivalités qui touchent aussi les deux camps.</p><div class="card">{rows}</div>"""
 
 SIDE_COLORS = ["#2a78d6", "#eb6834"]   # camp 1, camp 2 (palette catégorielle du site)
 CONTESTED = "#9ca3af"
 MAPS = Path(__file__).with_name("data") / "maps"
 
-def hero_map(dos, d, backers):
+def hero_map(dos, d, backers, cite):
     """Carte d'ouverture : zones de contrôle par région, soutiens étrangers en flèches vers chaque camp, lieux clés,
     routes d'approvisionnement et flux. Tout est sourcé ; les textes sont insérés côté navigateur sans HTML."""
     m = dos.get("map")
@@ -153,8 +200,8 @@ def hero_map(dos, d, backers):
   {f'<span><b class="ln dot" style="border-color:{SIDE_COLORS[1]}"></b>Route d\'approvisionnement</span>' if m.get("routes") else ""}
   {'<span><b class="ln" style="border-color:#b7791f"></b>Flux (or)</span>' if m.get("flows") else ""}
 </div>
-<p class="src">Cliquer un élément pour son explication et sa source. {glossed(reg.get("note", ""), dos.get("glossary") or {})}</p>{sources(reg.get("sources"))}
-<p class="src">Fond : Natural Earth via world-atlas ; {e(reg.get("credit", ""))} ; villes : Wikidata.</p>
+<p class="map-note">Cliquez sur un élément pour son explication et ses sources. {glossed(reg.get("note", ""), dos.get("glossary") or {})}{cite(reg.get("sources"))}</p>
+<p class="map-note">Fond de carte Natural Earth ; {e(reg.get("credit", ""))} ; villes : Wikidata.</p>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
@@ -209,140 +256,86 @@ for(const p of M.pins){{
 }})();
 </script>"""
 
-def markets_block(dos, d):
-    """Cotes des marchés liés au dossier ; market_labels (dossiers.yaml) traduit les questions en français."""
-    ms = [m for m in (d["markets"].get(dos.get("dyad"), {}) or {}).get("markets", []) if not m["stale"]]
-    labels = dos.get("market_labels") or {}
-    if labels:  # questions choisies dans dossiers.yaml, dans leur ordre (certaines paires ont des dizaines de marchés)
-        by_q = {m["question"]: m for m in ms}
-        ms = [by_q[q] for q in labels if q in by_q]
-    if not ms:
-        return '<p class="mute">Aucun marché de prédiction ne porte aujourd\'hui sur ce conflit.</p>'
-    rows = "".join(
-        f'<div class="mkt"><b>{round(m["prob"] * 100)} %</b><div>{e(labels.get(m["question"], m["question"]))}'
-        f'<div class="mute">Question d\'origine : « {e(m["question"])} »</div>'
-        f'<div class="mute">{e(m["source"].capitalize())}'
-        f'{f", {m["delta_pts"]:+.0f} pts en 7 jours" if m.get("delta_pts") is not None else ""}'
-        f' — <a href="{e(m["url"])}" target="_blank" rel="noopener">voir le marché</a></div></div></div>' for m in ms[:4])
-    return f"""<p>Sur les marchés de prédiction, des parieurs misent de l'argent sur ce qui va se passer. Le prix d'une
-mise se lit comme une probabilité : c'est ce que <i>la foule des parieurs</i> anticipe, pas une certitude, et {e(brand.NAME)}
-ne calcule rien lui-même.</p>{rows}"""
-
 def page(dos, d):
-    g = dos.get("glossary") or {}
-    edges = d["edges"]
-    side_ids = [set(s["actors"]) for s in dos["sides"]]
-    backers = [[x for x in edges if x["to"] in ids and x["from"] not in ids and x["status"] != "ended"]
-               for ids in side_ids]
+    g, cite = dos.get("glossary") or {}, Notes()
+    sides = [set(s["actors"]) for s in dos["sides"]]
+    backers = [[x for x in d["edges"] if x["to"] in ids and x["from"] not in ids and x["status"] != "ended"] for ids in sides]
     for bs in backers:
         bs.sort(key=lambda x: ({"high": 0, "medium": 1, "low": 2}[x["confidence"]], d["actors"][x["from"]]["name"]))
 
-    def side_card(s, bs):
+    def camp(i, s, bs):
         lead = next((ld for a in s["actors"] if (ld := network.leader(d["actors"], a))), None)
         pic = d["people"].get(lead["photo_key"]) if lead else None
-        return f"""<div class="side">
-  <div class="who big">{f'<img class="pic" src="{e(pic["thumb"])}" alt="">' if pic else portrait(s["actors"][0], d)}
-  <div><h3>{glossed(s["name"], g)}</h3>
-  {f'<div class="mute">Dirigeant : {e(lead["name"])}</div>' if lead else ""}</div></div>
-  <p>{glossed(s["text"], g)}</p>{sources(s.get("sources"))}
-  <h4>Ses soutiens étrangers ({len(bs)})</h4>{"".join(supporter(x, d, g) for x in bs) or '<p class="mute">Aucun soutien documenté.</p>'}</div>"""
+        return f"""<div class="card camp" style="--c:var(--{'ab'[i]})">
+  <div class="who">{f'<img src="{e(pic["thumb"])}" alt="">' if pic else ""}<div><h3>{glossed(s["name"], g)}</h3>
+  {f'<div class="lead">{e(lead["name"])}</div>' if lead else ""}</div></div>
+  <p>{glossed(s["text"], g)}{cite(s.get("sources"))}</p>
+  <p class="backers-title">{len(bs)} soutien{"s" if len(bs) > 1 else ""} étranger{"s" if len(bs) > 1 else ""}</p>
+  {backers_block(bs, d, g, cite) or '<p style="color:var(--graphite)">Aucun soutien documenté.</p>'}</div>"""
 
-    # frise : événements du dossier + débuts de soutien datés dans le graphe
-    events = [(str(t["date"]), glossed(t["text"], g), sources([t["source"]])) for t in dos.get("timeline", [])]
+    events = [(str(t["date"]), glossed(t["text"], g) + cite([t["source"]])) for t in dos.get("timeline", [])]
     for bs, s in zip(backers, dos["sides"]):
-        # since = plus ancienne date documentée par les sources, pas forcément le vrai début ; une ligne par date et par camp
         by_date = {}
         for x in bs:
             if x.get("since"):
                 by_date.setdefault(str(x["since"]), []).append(x)
-        side = e(s["name"][:1].lower() + s["name"][1:])
         for dt, xs in by_date.items():
             names = [e(d["actors"][x["from"]]["name"]) for x in xs]
             who = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " et " + names[-1]
-            what = f"premier soutien documenté à {side}" if len(xs) == 1 else f"premiers soutiens documentés à {side}"
-            events.append((dt, f"{who} : {what}", sources([x["sources"][0] for x in xs])))
+            what = "premier soutien documenté" if len(xs) == 1 else "premiers soutiens documentés"
+            events.append((dt, f"{who} : {what} à {e(s['name'][:1].lower() + s['name'][1:])}" + cite([xs[0]["sources"][0]])))
     events.sort(key=lambda ev: ev[0])
-    keys = [ld["photo_key"] for s in dos["sides"] for a in s["actors"] if (ld := network.leader(d["actors"], a))]
-    credits = [d["people"][k] for k in keys if k in d["people"]]
 
-    return f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{e(dos["title"])} — {e(brand.NAME)}</title>
-<style>
-:root{{--bg:#fafaf8;--fg:#1c1c1c;--mute:#6b6b6b;--line:#e3e3df;--card:#fff;--accent:#2b6cb0;--warn:#b7791f;--ocean:#dde6ec;--land:#f4f2ec}}
-@media (prefers-color-scheme:dark){{:root{{--bg:#141414;--fg:#eee;--mute:#9a9a9a;--line:#2c2c2c;--card:#1d1d1d;--accent:#7aa7e0;--warn:#d69e2e;--ocean:#10171c;--land:#262626}}}}
-*{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,sans-serif}}
-main{{max-width:980px;margin:0 auto;padding:20px 16px 64px}}a{{color:var(--accent)}}
-h1{{font-size:30px;line-height:1.2;margin:12px 0 8px}}h2{{font-size:20px;margin:40px 0 12px;padding-top:12px;border-top:1px solid var(--line)}}
-h3{{font-size:18px;margin:0}}h4{{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute);margin:18px 0 8px}}
-.lede{{font-size:19px;line-height:1.55;max-width:760px}}.mute{{color:var(--mute);font-size:13px}}
-.src{{color:var(--mute);font-size:12px;margin:4px 0 0}}.src a{{color:inherit}}
-abbr{{text-decoration:underline dotted;cursor:help}}
-.sides{{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start}}
-.vs{{align-self:center;font-weight:700;color:var(--mute);font-size:14px;padding-top:40px}}
-@media (max-width:760px){{.sides{{grid-template-columns:1fr}}.vs{{padding:0;text-align:center}}}}
-.side{{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}}
-.who{{display:flex;gap:10px;align-items:center}}.pic{{width:36px;height:36px;border-radius:50%;object-fit:cover;flex:none;background:var(--line)}}
-.big .pic{{width:56px;height:56px}}.dot{{display:inline-block;background:#d64545}}
-.sup{{border-top:1px solid var(--line);padding:10px 0}}.sup.alleged .who b::after{{content:" *";color:var(--warn)}}
-.why{{margin:6px 0 2px;font-size:15px}}
-.stakes{{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}}
-.stake{{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}}
-.stake svg{{width:24px;height:24px;stroke:var(--accent)}}.stake b{{display:block;margin:4px 0}}
-.tl{{list-style:none;padding:0;margin:0;border-left:2px solid var(--line)}}.tl li{{position:relative;padding:0 0 14px 18px}}
-.tl li::before{{content:"";position:absolute;left:-6px;top:7px;width:10px;height:10px;border-radius:50%;background:var(--accent)}}
-.tl time{{font-weight:600;font-variant-numeric:tabular-nums;margin-right:6px}}.tl .src{{display:inline;margin-left:6px}}
-.mkt{{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line)}}
-.mkt>b{{font-size:24px;font-variant-numeric:tabular-nums}}
-.box{{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}}
-.hero-map{{margin:24px 0 8px}}#dmap{{height:min(62vh,560px);border:1px solid var(--line);border-radius:12px;background:var(--ocean)}}
-.legend-map{{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;margin:10px 0 2px}}.legend-map span{{display:inline-flex;align-items:center;gap:6px}}
-.legend-map i{{width:14px;height:14px;border-radius:3px;opacity:.75}}.legend-map .ln{{width:22px;border-top:3px solid}}.legend-map .ln.dot{{border-top-style:dotted}}
-.flag{{width:24px;height:24px;border-radius:50%;box-shadow:0 0 0 2px var(--card),0 1px 4px #0006}}
-.leaflet-container{{font:inherit;background:var(--ocean)}}.leaflet-popup-content{{font-size:14px;line-height:1.45;max-width:280px}}
-.leaflet-tooltip.pin-label{{background:transparent;border:0;box-shadow:none;font-weight:600;color:var(--fg);text-shadow:0 0 3px var(--bg),0 0 3px var(--bg)}}
-.leaflet-tooltip.pin-label::before{{display:none}}
-</style>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
-</head><body><main>
-<p class="mute"><a href="index.html">← {e(brand.NAME)}</a> · <a href="index.html#conflits">Tous les conflits</a> · <a href="explorer.html">Explorer le graphe et la carte</a></p>
-<h1>{e(dos["title"])}</h1>
-<p class="mute">Depuis {e(fr_date(dos["since"]))} · dossier vérifié en {e(fr_date(dos["verified"]))} · termes soulignés en pointillés : survoler pour une définition</p>
-<p class="lede">{glossed(dos["lede"], g)}</p>{sources(dos.get("lede_sources"))}
-{hero_map(dos, d, backers)}
+    ms = [m for m in (d["markets"].get(dos.get("dyad"), {}) or {}).get("markets", []) if not m["stale"]]
+    labels = dos.get("market_labels") or {}
+    if labels:
+        by_q = {m["question"]: m for m in ms}
+        ms = [by_q[q] for q in labels if q in by_q]
+    odds = "".join(f"""<div class="odd tint"><b>{round(m["prob"] * 100)} %</b><div>{e(labels.get(m["question"], m["question"]))}
+  <small>Question posée sur <a href="{e(m["url"])}" target="_blank" rel="noopener">{e(m["source"].capitalize())}</a> : « {e(m["question"])} »</small></div></div>""" for m in ms[:4])
 
-<h2>Qui s'affronte, et qui les soutient</h2>
-<div class="sides">{side_card(dos["sides"][0], backers[0])}<div class="vs">contre</div>{side_card(dos["sides"][1], backers[1])}</div>
-<p class="mute">* soutien allégué : démenti par l'intéressé ou pas encore prouvé. Le « pourquoi » est une analyse,
-attribuée à qui la formule (think tank, ONU, presse). Détail des types de preuve : <a href="methode.html">méthode et sources</a>.</p>
+    frac = fractures(dos, d, g, cite)
+    credits = [d["people"][ld["photo_key"]] for s in dos["sides"] for a in s["actors"]
+               if (ld := network.leader(d["actors"], a)) and ld["photo_key"] in d["people"]]
 
-{fractures(dos, d, g)}
+    body = f"""<div class="wrap">
+{style.top("index.html")}
 
-<h2>Ce qui est en jeu</h2>
-<div class="stakes">{"".join(f'''<div class="stake"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-  stroke-linejoin="round" aria-hidden="true">{ICONS.get(s.get("icon"), "")}</svg><b>{e(s["label"])}</b>
-  <div>{glossed(s["text"], g)}</div>{sources(s.get("sources"))}</div>''' for s in dos.get("stakes", []))}</div>
+<header class="doc"><h1>{e(dos["title"])}</h1>
+<p class="meta">Depuis {e(fr_date(dos["since"]))}. Dossier vérifié en {e(fr_date(dos["verified"]))}. Les mots soulignés en pointillés ont une définition au survol.</p>
+<p class="lede">{glossed(dos["lede"], g)}{cite(dos.get("lede_sources"))}</p></header>
 
-<h2>Le coût humain</h2>
-<div class="box"><p>{glossed(dos["toll"]["text"], g)}</p>{sources(dos["toll"].get("sources"))}</div>
+{hero_map(dos, d, backers, cite)}
 
-<h2>Comment on en est arrivé là</h2>
-<p>{glossed(dos["origins"]["text"], g)}</p>{sources(dos["origins"].get("sources"))}
-<ul class="tl">{"".join(f'<li><time>{e(fr_date(dt))}</time>{txt}{src}</li>' for dt, txt, src in events)}</ul>
+<section class="s"><h2>Qui s'affronte, et qui les soutient</h2>
+<div class="camps">{camp(0, dos["sides"][0], backers[0])}{camp(1, dos["sides"][1], backers[1])}</div></section>
 
-{f"""<h2>Ce que l'histoire éclaire, et ses limites</h2>
-<div class="box"><p>{glossed(dos["history"]["text"], g)}</p>{sources(dos["history"].get("sources"))}</div>""" if dos.get("history") else ""}
+{f'<section class="s frac">{frac}</section>' if frac else ""}
 
-<h2>Où en est-on</h2>
-<p>{glossed(dos["now"]["text"], g)}</p>{sources(dos["now"].get("sources"))}
+<section class="s"><h2>Ce qui est en jeu</h2><div class="stakes">{"".join(
+  f'<div class="card stake"><h3>{e(s["label"])}</h3><p>{glossed(s["text"], g)}{cite(s.get("sources"))}</p></div>' for s in dos.get("stakes", []))}</div></section>
 
-<h2>Ce qu'anticipent les parieurs</h2>
-{markets_block(dos, d)}
+<section class="s pair">
+<div><h2>Le coût humain</h2><div class="card block"><p>{glossed(dos["toll"]["text"], g)}{cite(dos["toll"].get("sources"))}</p></div></div>
+<div><h2>Où en est-on</h2><div class="card block"><p>{glossed(dos["now"]["text"], g)}{cite(dos["now"].get("sources"))}</p></div></div>
+</section>
 
-<p class="mute" style="margin-top:40px">Photos : {"; ".join(f'<a href="{e(c["page"])}">{e(c["artist"] or "auteur inconnu")}</a> ({e(c["license"])})' for c in credits) or "—"},
-via Wikimedia Commons. Icônes <a href="https://lucide.dev">Lucide</a> (ISC). Texte et données CC BY 4.0 —
-<a href="{brand.REPO}">corriger ou compléter sur GitHub</a>.</p>
-</main></body></html>"""
+<section class="s"><h2>Comment on en est arrivé là</h2>
+<div class="card block"><p>{glossed(dos["origins"]["text"], g)}{cite(dos["origins"].get("sources"))}</p>
+<ol class="tl">{"".join(f"<li><time>{e(fr_date(dt))}</time><span>{txt}</span></li>" for dt, txt in events)}</ol></div></section>
+
+{f'<section class="s"><h2>Ce que l’histoire éclaire, et ses limites</h2><div class="card block"><p>{glossed(dos["history"]["text"], g)}{cite(dos["history"].get("sources"))}</p></div></section>' if dos.get("history") else ""}
+
+<section class="s"><h2>Ce qu'anticipent les parieurs</h2>
+<div class="card block"><p>Sur les marchés de prédiction, des gens parient de l'argent sur ce qui va se passer. Le prix d'un pari se lit
+comme une probabilité : c'est l'avis de la foule des parieurs, pas une certitude. {e(brand.NAME)} ne calcule aucune probabilité.</p>
+<div class="odds">{odds or '<p>Aucun marché ne porte aujourd’hui sur ce conflit.</p>'}</div></div></section>
+
+<section class="notes"><h2>Sources</h2><ol>{cite.html()}</ol></section>
+</div>
+{style.foot(f'Photos {"; ".join(f"""<a href="{e(c['page'])}">{e(c['artist'] or 'auteur inconnu')}</a>, {e(c['license'])}""" for c in credits)}, via Wikimedia Commons. ' if credits else "")}"""
+    extra = f'<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><style>{CSS}</style>'
+    return style.head(f"{dos['title']} — {brand.NAME}", " ".join(dos["lede"].split())[:180], extra) + f"<body>{body}</body></html>"
 
 def write(out, data):
     dossiers = load()

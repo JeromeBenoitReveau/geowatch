@@ -238,9 +238,6 @@ if __name__ == "__main__":
     de, dw = check_dossiers(dossier.load(), actors, edges)
     te, tw = check_tensions(network.tensions(), actors)
     de, dw = de + te, dw + tw
-    import pages
-    de += [f"dossier en préparation « {u.get('title')} » : acteur « {a} » absent de network.yaml"
-           for u in pages.upcoming() for a in (u.get("actors") or ["?"]) if a not in actors]
     errors, warnings = errors + de, warnings + dw
     for w in warnings:
         print(f"⚠️  {w}")

@@ -1,37 +1,26 @@
 """Pages éditoriales : accueil (site/index.html) et manifeste (site/manifeste.html).
-Chiffres et cartes de conflits calculés à partir des mêmes données que le reste du site."""
+Chiffres et liste des conflits calculés à partir des mêmes données que le reste du site ; mise en forme commune
+dans style.py (style.css)."""
 from html import escape as e
-import yaml
-import brand, dossier
+import brand, dossier, style
 
 CSS = """
-:root{--bg:#fafaf8;--fg:#1c1c1c;--mute:#6b6b6b;--line:#e3e3df;--card:#fff;--accent:#2b6cb0;--hover:#f1f0ea}
-@media (prefers-color-scheme:dark){:root{--bg:#141414;--fg:#eee;--mute:#9a9a9a;--line:#2c2c2c;--card:#1d1d1d;--accent:#7aa7e0;--hover:#242424}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,sans-serif}
-a{color:var(--accent)}main{max-width:1040px;margin:0 auto;padding:0 16px 64px}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:18px 0;border-bottom:1px solid var(--line)}
-.logo{font-weight:700;font-size:18px;color:var(--fg);text-decoration:none;letter-spacing:-.01em}
-nav a{color:var(--fg);text-decoration:none;margin-left:18px;font-size:14px}nav a:hover{color:var(--accent)}
-.hero{padding:56px 0 40px;max-width:760px}.hero h1{font-size:40px;line-height:1.15;margin:0 0 14px;letter-spacing:-.02em}
-.hero p{font-size:19px;color:var(--mute);margin:0}
-h2{font-size:22px;margin:40px 0 6px}.sub{color:var(--mute);margin:0 0 16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
-.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;color:var(--fg);text-decoration:none}
-a.card:hover{border-color:var(--accent)}.card h3{font-size:19px;margin:0 0 6px}.card p{margin:0 0 10px}
-.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:10px;border:1px solid var(--line);color:var(--mute)}
-.tag.live{border-color:var(--accent);color:var(--accent)}
-.vs{font-weight:600;margin:8px 0}.odds{font-size:14px;color:var(--mute);border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
-.odds b{color:var(--fg);font-variant-numeric:tabular-nums}
-.soon{background:transparent;padding:14px}.soon h3{font-size:16px;margin:0 0 4px}.soon .more{font-size:13px}
-.grid.featured{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.featured .card p,.featured .card .vs{max-width:640px}
-.grid.small{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));align-items:start}.soon-title{font-size:16px;margin:28px 0 2px}
-.explore{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
-.explore .card svg{width:40px;height:40px;stroke:var(--accent);margin-bottom:8px}
-.explore .go{font-size:14px;color:var(--accent)}
-.mute{color:var(--mute);font-size:14px}footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line)}
-.prose{max-width:720px}.prose h1{font-size:34px;line-height:1.2;margin:40px 0 10px}.prose h2{font-size:21px}
-.prose ol li,.prose ul li{margin-bottom:8px}
-@media (max-width:600px){.hero h1{font-size:30px}.hero{padding:32px 0 24px}nav a{margin:0 14px 0 0}}
+.hero{padding:88px 0 40px;max-width:780px}.hero h1{font-size:48px;line-height:1.08}
+.hero p{font-size:19px;color:var(--graphite);margin:0;max-width:34em}
+.conflicts{display:grid;gap:16px}
+.conflict{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:24px;padding:24px}
+.conflict h3{font-size:25px;margin:0 0 6px}
+.conflict .vs{margin:0 0 10px;font-size:15px}.conflict .vs span{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 6px 0 0}
+.conflict p{margin:0;max-width:40em}.conflict .go{margin-top:14px;font-size:15px;color:var(--graphite)}
+.odds{padding:18px 18px 16px;align-self:stretch;display:flex;flex-direction:column;justify-content:center}
+.odds b{font:400 44px/1 var(--serif);font-variant-numeric:tabular-nums;margin-bottom:8px}
+.odds span{font-size:14.5px;line-height:1.4}.odds small{margin-top:8px;font-size:13px;color:var(--graphite)}
+.explore{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.explore .card{padding:22px}.explore svg{width:28px;height:28px;stroke:var(--ink);margin-bottom:12px}
+.explore p{margin:0 0 14px;font-size:15.5px;color:var(--graphite)}.explore .count{font-size:14px;color:var(--ink)}
+.page{padding:64px 0 0}.page h2{margin-top:40px}.page ol li,.page ul li{margin-bottom:10px}
+@media (max-width:760px){.hero{padding:48px 0 28px}.hero h1{font-size:34px}.conflict{grid-template-columns:1fr;padding:20px}
+  .explore{grid-template-columns:1fr}}
 """
 
 ICON = {  # Lucide (ISC) ; « orgs » : deux cercles qui se recoupent, dessiné pour le site
@@ -39,42 +28,26 @@ ICON = {  # Lucide (ISC) ; « orgs » : deux cercles qui se recoupent, dessiné 
     "map": '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
     "graph": '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>',
 }
-svg = lambda k: (f'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" '
+svg = lambda k: (f'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" '
                  f'stroke-linejoin="round" aria-hidden="true">{ICON[k]}</svg>')
 
-def shell(title, body, desc=brand.BASELINE):
-    return f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{e(title)}</title><meta name="description" content="{e(desc)}"><style>{CSS}</style></head><body><main>
-<header><a class="logo" href="index.html">{e(brand.NAME)}</a>
-<nav><a href="index.html#conflits">Conflits</a><a href="explorer.html">Explorer</a><a href="manifeste.html">Manifeste</a><a href="methode.html">Méthode</a></nav></header>
-{body}
-<footer class="mute">{e(brand.NAME)} — projet indépendant et open source. Code MIT, données CC BY 4.0 ·
-<a href="{brand.REPO}">GitHub</a> · <a href="methode.html">méthode et sources</a></footer>
-</main></body></html>"""
+def page(title, body, current, desc=brand.BASELINE):
+    return style.head(title, desc, f"<style>{CSS}</style>") + f"""<body><div class="wrap">{style.top(current)}
+{body}</div>{style.foot()}</body></html>"""
 
-def upcoming():
-    return (yaml.safe_load(dossier.PATH.read_text(encoding="utf-8")) or {}).get("upcoming", [])
-
-def dossier_card(x, d):
+def conflict_row(x, d):
     names = [s["name"] for s in x["sides"]]
-    ids = [set(s["actors"]) for s in x["sides"]]
-    backers = {ed["from"] for ed in d["edges"] for i in ids
-               if ed["to"] in i and ed["from"] not in i and ed["status"] != "ended"}
     ms = [m for m in (d["markets"].get(x.get("dyad"), {}) or {}).get("markets", []) if not m["stale"]]
     labels = x.get("market_labels") or {}
-    odds = (f'<div class="odds">{e(labels.get(ms[0]["question"], ms[0]["question"]))} '
-            f'<b>{round(ms[0]["prob"] * 100)} %</b> selon les parieurs de {e(ms[0]["source"].capitalize())}</div>') if ms else ""
+    if labels:
+        by_q = {m["question"]: m for m in ms}
+        ms = [by_q[q] for q in labels if q in by_q] or ms
+    odds = (f'<div class="odds tint"><b>{round(ms[0]["prob"] * 100)} %</b><span>{e(labels.get(ms[0]["question"], ms[0]["question"]))}</span>'
+            f'<small>Cote des parieurs sur {e(ms[0]["source"].capitalize())}</small></div>') if ms else ""
     first = " ".join(x["lede"].split()).split(". ")[0].rstrip(".") + "."
-    return f"""<a class="card" href="{e(x['id'])}.html"><span class="tag live">Dossier · depuis {e(dossier.fr_date(x['since']))}</span>
-<h3 style="margin-top:10px">{e(x['title'])}</h3><div class="vs">{e(names[0])} contre {e(names[1][:1].lower() + names[1][1:])}</div>
-<p>{e(first)}</p><div class="mute">{len(backers)} puissances étrangères impliquées · lire le dossier →</div>{odds}</a>"""
-
-def soon_card(u, d):
-    ids = set(u["actors"])
-    n = sum(1 for ed in d["edges"] if ed["to"] in ids and ed["from"] not in ids and ed["status"] != "ended")  # soutiens reçus
-    return f"""<a class="card soon" href="explorer.html#graphe:{e(u['actors'][0])}">
-<h3>{e(u['title'])}</h3><div class="more mute">{n} soutien{"s" if n > 1 else ""} étranger{"s" if n > 1 else ""} documenté{"s" if n > 1 else ""} · explorer →</div></a>"""
+    return f"""<a class="card conflict" href="{e(x['id'])}.html"><div><h3>{e(x['title'])}</h3>
+<p class="vs"><span style="background:var(--a)"></span>{e(names[0])} contre <span style="background:var(--b);margin-left:4px"></span>{e(names[1][:1].lower() + names[1][1:])}</p>
+<p>{e(first)}</p><p class="go">Lire le dossier</p></div>{odds}</a>"""
 
 def home(d, dossiers):
     groups = d["align"]["groups"]
@@ -82,30 +55,29 @@ def home(d, dossiers):
 <p>Les conflits expliqués simplement : les camps, leurs soutiens étrangers, ce qu'ils y cherchent et ce qui est en jeu.
 Chaque affirmation est sourcée.</p></section>
 
-<h2 id="conflits">Les conflits en cours</h2><p class="sub">Un dossier se lit en quelques minutes, sans connaissance préalable.</p>
-<div class="grid featured">{"".join(dossier_card(x, d) for x in dossiers)}</div>
-<h3 class="soon-title">En préparation</h3><p class="sub">Déjà dans le graphe, bientôt racontés.</p>
-<div class="grid small">{"".join(soon_card(u, d) for u in upcoming())}</div>
+<section id="conflits"><h2>Les conflits en cours</h2>
+<div class="conflicts">{"".join(conflict_row(x, d) for x in dossiers)}</div>
+</section>
 
-<h2>Explorer par soi-même</h2><p class="sub">Pour aller plus loin que les dossiers.</p>
+<section class="s"><h2>Explorer par soi-même</h2>
 <div class="explore">
 <a class="card" href="explorer.html#organisations">{svg("orgs")}<h3>Comprendre les organisations</h3>
-<p>OTAN, BRICS, Union européenne, OCS… Qui appartient à quoi, et quels pays sont à la croisée de plusieurs camps.</p>
-<span class="go">{len(groups)} organisations et alliances →</span></a>
+<p>OTAN, BRICS, Union européenne, OCS : qui appartient à quoi, et quels pays sont à la croisée de plusieurs camps.</p>
+<span class="count">{len(groups)} organisations et alliances</span></a>
 <a class="card" href="explorer.html#carte">{svg("map")}<h3>La carte du monde</h3>
 <p>Les blocs d'influence, les votes à l'ONU et les organisations, pays par pays, avec leur évolution depuis 2014.</p>
-<span class="go">{len(d["geo"])} pays →</span></a>
+<span class="count">{len(d["geo"])} pays</span></a>
 <a class="card" href="explorer.html#graphe">{svg("graph")}<h3>Le graphe des soutiens</h3>
 <p>Qui arme, finance ou soutient qui : États, groupes armés, partis et personnalités, relation par relation.</p>
-<span class="go">{len(d["actors"])} acteurs, {len(d["edges"])} relations →</span></a>
-</div>
-<p class="mute" style="margin-top:28px">Pourquoi ce site, et comment il est fait : <a href="manifeste.html">le manifeste</a>.</p>"""
-    return shell(f"{brand.NAME} — {brand.BASELINE}", body)
+<span class="count">{len(d["actors"])} acteurs, {len(d["edges"])} relations</span></a>
+</div></section>
+<p class="quiet" style="margin-top:56px">Pourquoi ce site, et comment il est fait : <a href="manifeste.html">le manifeste</a>.</p>"""
+    return page(f"{brand.NAME} — {brand.BASELINE}", body, "")
 
 def manifesto(d):
-    body = f"""<article class="prose">
+    body = f"""<article class="prose page">
 <h1>Manifeste</h1>
-<p class="mute">Pourquoi {e(brand.NAME)} existe, et comment il est fait.</p>
+<p class="meta">Pourquoi {e(brand.NAME)} existe, et comment il est fait.</p>
 
 <h2>Le constat</h2>
 <p>On n'a jamais eu autant d'informations sur les conflits : dépêches en continu, tableaux de bord, cartes des combats,
@@ -153,7 +125,7 @@ passée est mesurée publiquement (voir la <a href="methode.html#marches">métho
 données de la Banque mondiale et de Wikidata, et les cotes de Polymarket et Kalshi relevées toutes les six heures.
 Le détail, source par source et règle par règle : <a href="methode.html">méthode et sources</a>.</p>
 </article>"""
-    return shell(f"Manifeste — {brand.NAME}", body, "Pourquoi ce site existe, et comment il est fait.")
+    return page(f"Manifeste — {brand.NAME}", body, "manifeste.html", "Pourquoi ce site existe, et comment il est fait.")
 
 def write(out, data):
     dossiers = dossier.load()
