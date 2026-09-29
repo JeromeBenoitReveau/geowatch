@@ -26,8 +26,8 @@ actors:
        sources: ["Bibliothèque de la Chambre des communes, guerre et cessez-le-feu États-Unis–Iran en 2026 (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"]}
   IL: {name: Israël, kind: state}
   US: {name: États-Unis, kind: state, leader: trump}
-  RU: {name: Russie, kind: state}
-  UA: {name: Ukraine, kind: state}
+  RU: {name: Russie, kind: state, leader: {name: Vladimir Poutine, wikidata: Q7747, role: "Président de la Russie"}}
+  UA: {name: Ukraine, kind: state, leader: {name: Volodymyr Zelensky, wikidata: Q3874799, role: "Président de l'Ukraine depuis 2019"}}
   CN: {name: Chine, kind: state}
   TW: {name: Taïwan, kind: state}
   KP: {name: Corée du Nord, kind: state}
@@ -115,18 +115,24 @@ edges:
   - {from: IR, to: RU, since: "2022-08", types: [arms], status: reduced, confidence: high,
      sources: ["Gouvernements UE/US/UK — drones Shahed",
                "Conseil de l'UE, sanctions pour transferts iraniens de drones et missiles à la Russie (oct. 2024) — https://www.consilium.europa.eu/en/press/press-releases/2024/10/14/iran-seven-individuals-and-seven-entities-sanctioned-in-response-to-iran-s-missile-transfer-to-russia/",
-               "CSIS, du Shahed au Geran : production russe à Alabuga et Izhevsk (sept. 2026) — https://www.csis.org/analysis/shahed-geran-how-russia-continues-reinvent-one-way-attack-drone"], verified: 2026-09,
-     note: "Production des drones transférée en Russie (Alabuga, Izhevsk), qui dépend de moins en moins de l'Iran ; en 2026 le flux s'inverse (voir Russie → Iran)"}
+               "CSIS, du Shahed au Geran : production russe à Alabuga et Izhevsk (sept. 2026) — https://www.csis.org/analysis/shahed-geran-how-russia-continues-reinvent-one-way-attack-drone",
+               "Atlantic Council, drones russes et imagerie satellite fournis à l'Iran pendant la guerre (mars 2026) — https://www.atlanticcouncil.org/dispatches/from-drones-to-rocket-fuel-china-and-russia-are-helping-iran-through-supply-chains/"], verified: 2026-09,
+     note: "Production des drones transférée en Russie (Alabuga, Izhevsk), qui dépend de moins en moins de l'Iran ; en 2026 le flux s'inverse (voir Russie → Iran)",
+     why: "Deux pays sous sanctions occidentales qui s'entraident : en 2026 le flux s'inverse, la Russie aidant l'Iran pendant sa guerre avec les États-Unis et Israël, selon l'Atlantic Council"}
   - {from: KP, to: RU, since: "2023", types: [arms, troops], status: active, confidence: high,
      sources: ["Renseignement sud-coréen ; confirmation nord-coréenne avril 2025",
                "MSMT (11 États), 1er rapport sur la coopération militaire RPDC-Russie (mai 2025) — https://www.mfat.govt.nz/en/media-and-resources/joint-statement-of-the-multilateral-sanctions-monitoring-team-msmt-on-the-first-report-covering-dprk-russia-military-cooperation",
                "RFA, la Corée du Nord confirme ses troupes à Koursk (avr. 2025) — https://www.rfa.org/english/korea/2025/04/28/north-korea-confirm-troop-russia/",
-               "Defense News, les forces nord-coréennes en appui de la guerre russe (août 2026) — https://www.defensenews.com/global/europe/2026/08/07/how-north-korean-forces-are-bolstering-russias-war-against-ukraine/"], verified: 2026-09,
-     note: "Unité de missiles balistiques déployée dans l'ouest de la Russie en 2026 (jusqu'à 120 missiles, 40 déjà livrés)"}
+               "Defense News, les forces nord-coréennes en appui de la guerre russe (août 2026) — https://www.defensenews.com/global/europe/2026/08/07/how-north-korean-forces-are-bolstering-russias-war-against-ukraine/",
+               "NK News, gains nord-coréens de 7,7 à 14,4 Md$ selon l'INSS de Séoul (mars 2026) — https://www.nknews.org/2026/03/north-korea-likely-earned-14-4b-from-military-deals-with-russia-report/"], verified: 2026-09,
+     note: "Unité de missiles balistiques déployée dans l'ouest de la Russie en 2026 (jusqu'à 120 missiles, 40 déjà livrés)",
+     why: "De l'argent (7,7 à 14,4 milliards de dollars selon un institut de recherche sud-coréen), une sortie de l'isolement et l'accès à la coopération militaire russe"}
   - {from: CN, to: RU, since: "2024", types: [economic, dual_use], status: active, confidence: high,
      sources: ["Paquets de sanctions UE / désignations US",
                "US Treasury, entités de la RPC fournissant la base militaro-industrielle russe (mai 2024) — https://home.treasury.gov/news/press-releases/jy2318",
-               "Conseil de l'UE, 20e paquet de sanctions : entités chinoises fournissant biens à double usage ou armes au complexe militaro-industriel russe (avr. 2026) — https://www.consilium.europa.eu/en/press/press-releases/2026/04/23/russia-s-war-of-aggression-against-ukraine-20th-round-of-stern-eu-sanctions-hits-energy-military-industrial-complex-trade-and-financial-services-including-crypto/"], verified: 2026-09}
+               "Conseil de l'UE, 20e paquet de sanctions : entités chinoises fournissant biens à double usage ou armes au complexe militaro-industriel russe (avr. 2026) — https://www.consilium.europa.eu/en/press/press-releases/2026/04/23/russia-s-war-of-aggression-against-ukraine-20th-round-of-stern-eu-sanctions-hits-energy-military-industrial-complex-trade-and-financial-services-including-crypto/",
+               "Commission du Congrès américain sur la Chine (USCC), fiche sur la relation Chine-Russie (août 2026) — https://www.uscc.gov/research/china-russia-fact-sheet-short-primer-relationship"], verified: 2026-09,
+     why: "Selon une commission du Congrès américain, Pékin ne peut pas accepter une défaite russe, qui laisserait Washington se concentrer sur la Chine ; il y gagne aussi de l'énergie et des technologies militaires"}
   - {from: CN, to: IR, types: [economic, dual_use], status: active, confidence: medium,
      sources: ["US Treasury, alerte sur les raffineries « teapot » : la Chine achète ~90 % des exportations de pétrole iranien (avr. 2026) — https://home.treasury.gov/news/press-releases/sb0476",
                "Atlantic Council, Chine et Russie aident l'Iran via leurs chaînes d'approvisionnement (mars 2026) — https://www.atlanticcouncil.org/dispatches/from-drones-to-rocket-fuel-china-and-russia-are-helping-iran-through-supply-chains/"],
@@ -140,12 +146,16 @@ edges:
   - {from: US, to: UA, since: "2022-02", types: [arms, intelligence], status: reduced, confidence: high,
      sources: ["Annonces DoD / Maison-Blanche",
                "Kiel Institute, Ukraine Support Tracker — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/",
-               "Bibliothèque de la Chambre des communes, aide militaire à l'Ukraine depuis janvier 2025 (mise à jour août 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10308/"], verified: 2026-09,
-     note: "Aucun nouveau financement demandé au Congrès depuis janvier 2025 ; armes américaines payées par les alliés via le mécanisme PURL ; partage de renseignement maintenu"}
+               "Bibliothèque de la Chambre des communes, aide militaire à l'Ukraine depuis janvier 2025 (mise à jour août 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10308/",
+               "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"], verified: 2026-09,
+     note: "Aucun nouveau financement demandé au Congrès depuis janvier 2025 ; armes américaines payées par les alliés via le mécanisme PURL ; partage de renseignement maintenu",
+     why: "Longtemps premier fournisseur d'aide militaire ; l'administration Trump se pose désormais en médiatrice et fait payer les armes américaines par les alliés européens"}
   - {from: EU, to: UA, since: "2022", types: [financial, arms], status: active, confidence: high,
      sources: ["Conseil de l'UE — Facilité pour l'Ukraine, Facilité européenne pour la paix",
                "Conseil de l'UE, soutien militaire à l'Ukraine — https://www.consilium.europa.eu/en/policies/military-support-ukraine/",
-               "Kiel Institute, près de 11 Md€ alloués par les institutions européennes via le prêt de soutien à l'Ukraine en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/"], verified: 2026-09}
+               "Kiel Institute, près de 11 Md€ alloués par les institutions européennes via le prêt de soutien à l'Ukraine en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
+               "Carnegie Europe, Erik Jones : la solidarité, condition de la sécurité de l'Europe (janv. 2026) — https://carnegieendowment.org/europe/strategic-europe/2026/01/solidarity-is-a-must-for-europe-to-ensure-its-own-security"], verified: 2026-09,
+     why: "Pour les Européens, l'agression russe est un « défi existentiel » : défendre l'Ukraine, c'est protéger le reste du continent, selon Carnegie Europe"}
 
   # --- Autres ---
   - {from: US, to: IL, since: "2015", types: [arms, financial], status: active, confidence: high,
@@ -196,28 +206,40 @@ edges:
   # --- Soutiens à l'Ukraine au sein de l'Europe (zoom UE) ---
   - {from: DE, to: UA, since: "2022", types: [arms, financial], status: active, confidence: high,
      sources: ["Kiel Institute, 700 M€ d'aide militaire allouée en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
-               "Kiel Institute, avec le Royaume-Uni, ~2/3 de l'aide militaire d'Europe de l'Ouest 2022-2025 — https://www.kielinstitut.de/publications/news/ukraine-support-after-4-years-of-war-europe-steps-up/"],
-     verified: 2026-09}
+               "Kiel Institute, avec le Royaume-Uni, ~2/3 de l'aide militaire d'Europe de l'Ouest 2022-2025 — https://www.kielinstitut.de/publications/news/ukraine-support-after-4-years-of-war-europe-steps-up/",
+               "Carnegie Europe, Erik Jones : la solidarité, condition de la sécurité de l'Europe (janv. 2026) — https://carnegieendowment.org/europe/strategic-europe/2026/01/solidarity-is-a-must-for-europe-to-ensure-its-own-security"],
+     verified: 2026-09,
+     why: "Comme l'UE : la sécurité de l'Ukraine est vue comme celle de l'Europe entière, selon Carnegie Europe"}
   - {from: DK, to: UA, since: "2022-02", types: [arms], status: active, confidence: high,
      sources: ["Kiel Institute, 600 M€ d'aide militaire allouée en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
-               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/"],
-     verified: 2026-09}
+               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/",
+               "Carnegie Europe, Erik Jones : la solidarité, condition de la sécurité de l'Europe (janv. 2026) — https://carnegieendowment.org/europe/strategic-europe/2026/01/solidarity-is-a-must-for-europe-to-ensure-its-own-security"],
+     verified: 2026-09,
+     why: "Comme l'UE : la sécurité de l'Ukraine est vue comme celle de l'Europe entière, selon Carnegie Europe"}
   - {from: NL, to: UA, since: "2022-02", types: [arms], status: active, confidence: high,
      sources: ["Kiel Institute, 500 M€ d'aide militaire allouée en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
-               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/"],
-     verified: 2026-09}
+               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/",
+               "Carnegie Europe, Erik Jones : la solidarité, condition de la sécurité de l'Europe (janv. 2026) — https://carnegieendowment.org/europe/strategic-europe/2026/01/solidarity-is-a-must-for-europe-to-ensure-its-own-security"],
+     verified: 2026-09,
+     why: "Comme l'UE : la sécurité de l'Ukraine est vue comme celle de l'Europe entière, selon Carnegie Europe"}
   - {from: SE, to: UA, since: "2022-02", types: [financial], status: active, confidence: high,
      sources: ["Kiel Institute, 360 M€ d'aide financière et humanitaire en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
-               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/"],
-     verified: 2026-09}
+               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/",
+               "Carnegie Europe, Erik Jones : la solidarité, condition de la sécurité de l'Europe (janv. 2026) — https://carnegieendowment.org/europe/strategic-europe/2026/01/solidarity-is-a-must-for-europe-to-ensure-its-own-security"],
+     verified: 2026-09,
+     why: "Comme l'UE : la sécurité de l'Ukraine est vue comme celle de l'Europe entière, selon Carnegie Europe"}
   - {from: FR, to: UA, since: "2022-02", types: [arms], status: active, confidence: high,
      sources: ["Kiel Institute, hausse nette des allocations militaires françaises en 2025 (déc. 2025) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-fails-to-offset-us-aid-drop/",
-               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/"],
-     verified: 2026-09}
+               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/",
+               "Carnegie Europe, Erik Jones : la solidarité, condition de la sécurité de l'Europe (janv. 2026) — https://carnegieendowment.org/europe/strategic-europe/2026/01/solidarity-is-a-must-for-europe-to-ensure-its-own-security"],
+     verified: 2026-09,
+     why: "Comme l'UE : la sécurité de l'Ukraine est vue comme celle de l'Europe entière, selon Carnegie Europe"}
   - {from: GB, to: UA, since: "2022", types: [arms, financial], status: active, confidence: high,
      sources: ["Kiel Institute, ~1,5 Md€ d'aide financière et humanitaire en mai-juin 2026 (août 2026) — https://www.kielinstitut.de/publications/news/ukraine-support-tracker-europe-leads-on-aid-us-weapons-remain-key/",
-               "Kiel Institute, avec l'Allemagne, ~2/3 de l'aide militaire d'Europe de l'Ouest 2022-2025 — https://www.kielinstitut.de/publications/news/ukraine-support-after-4-years-of-war-europe-steps-up/"],
-     verified: 2026-09}
+               "Kiel Institute, avec l'Allemagne, ~2/3 de l'aide militaire d'Europe de l'Ouest 2022-2025 — https://www.kielinstitut.de/publications/news/ukraine-support-after-4-years-of-war-europe-steps-up/",
+               "Carnegie Europe, Erik Jones : la solidarité, condition de la sécurité de l'Europe (janv. 2026) — https://carnegieendowment.org/europe/strategic-europe/2026/01/solidarity-is-a-must-for-europe-to-ensure-its-own-security"],
+     verified: 2026-09,
+     why: "Hors de l'UE mais même lecture : la sécurité de l'Ukraine est vue comme celle de l'Europe entière, selon Carnegie Europe"}
 
   # --- Soutiens politiques américains à des partis européens (calque « détail ») ---
   - {from: musk, to: afd, since: "2025-01", types: [political], status: active, confidence: high,
@@ -323,3 +345,52 @@ edges:
                "HCDH, bilan 2025 : l'armée reprend Lashio « à la suite d'interventions de la Chine » (févr. 2026) — https://bangkok.ohchr.org/sites/default/files/documents/2026-02/ohchr_myanmar_annual_update_2025.pdf"],
      verified: 2026-09}
 
+
+# Tensions : guerres, sanctions, revendications, rivalités — séparées des soutiens (n'entrent ni dans les blocs
+# d'influence ni dans les soutiens des dossiers). Même exigence : sourcées, datées quand les sources le permettent.
+# type   : war (conflit armé ouvert) | sanctions (from sanctionne to) | claims (from revendique un territoire de to)
+#          | rivalry (rivalité stratégique sans guerre ouverte)
+# status : active | reduced (cessez-le-feu, trêve) | ended
+tensions:
+  - {from: RU, to: UA, type: war, since: "2022-02", status: active, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"],
+     verified: 2026-09, note: "Invasion à grande échelle ; annexion de la Crimée et guerre dans le Donbass depuis 2014"}
+  - {from: SD, to: rsf, type: war, since: "2023-04", status: active, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : la guerre civile au Soudan — https://www.cfr.org/global-conflict-tracker/conflict/power-struggle-sudan"],
+     verified: 2026-09}
+  - {from: US, to: IR, type: war, since: "2026-02", status: reduced, confidence: high,
+     sources: ["Bibliothèque de la Chambre des communes, guerre et cessez-le-feu États-Unis–Iran en 2026 (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"],
+     verified: 2026-09, note: "Frappes américano-israéliennes à partir du 28 février 2026 ; cessez-le-feu le 8 avril, échanges de frappes depuis"}
+  - {from: IL, to: IR, type: war, since: "2026-02", status: reduced, confidence: high,
+     sources: ["Bibliothèque de la Chambre des communes, guerre et cessez-le-feu États-Unis–Iran en 2026 (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"],
+     verified: 2026-09, note: "Cessez-le-feu le 8 avril 2026, échanges de frappes depuis"}
+  - {from: IL, to: hezbollah, type: war, since: "2026-03", status: active, confidence: high,
+     sources: ["Al Jazeera, accord Israël–Liban liant cessez-le-feu et désarmement du Hezbollah (juin 2026) — https://www.aljazeera.com/features/2026/6/27/israel-lebanon-deal-ties-ceasefire-to-hezbollah-disarmament-will-it-work"],
+     verified: 2026-09, note: "Accord de juin 2026 liant retrait israélien et désarmement, rejeté par le Hezbollah"}
+  - {from: IL, to: hamas, type: war, since: "2023-10", status: reduced, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : le conflit israélo-palestinien (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/israeli-palestinian-conflict"],
+     verified: 2026-09, note: "Guerre à Gaza après l'attaque du 7 octobre 2023 ; cessez-le-feu en octobre 2025, le Hamas refuse de désarmer"}
+  - {from: m23, to: CD, type: war, since: "2021-11", status: active, confidence: high,
+     sources: ["ONU, Groupe d'experts sur la RD Congo, rapport final S/2025/446 (juill. 2025) — https://documents.un.org/doc/undoc/gen/n25/124/40/pdf/n2512440.pdf",
+               "Al Jazeera, feuille de route RDC–M23 pour les négociations (août 2026) — https://www.aljazeera.com/news/2026/8/23/dr-congo-m23-rebels-agree-on-roadmap-for-peace-talks"],
+     verified: 2026-09, note: "Feuille de route pour des négociations adoptée en août 2026"}
+  - {from: EU, to: RU, type: sanctions, since: "2014", status: active, confidence: high,
+     sources: ["Conseil de l'UE, les sanctions de l'UE contre la Russie depuis 2014 — https://www.consilium.europa.eu/en/infographics/eu-sanctions-against-russia-over-ukraine/",
+               "Conseil de l'UE, 20e paquet de sanctions (avr. 2026) — https://www.consilium.europa.eu/en/press/press-releases/2026/04/23/russia-s-war-of-aggression-against-ukraine-20th-round-of-stern-eu-sanctions-hits-energy-military-industrial-complex-trade-and-financial-services-including-crypto/"],
+     verified: 2026-09, note: "Depuis l'annexion de la Crimée ; fortement étendues depuis février 2022 (20 paquets)"}
+  - {from: US, to: IR, type: sanctions, status: active, confidence: high,
+     sources: ["Trésor américain, alerte sur les raffineries « teapot » qui achètent le pétrole iranien (avr. 2026) — https://home.treasury.gov/news/press-releases/sb0476"],
+     verified: 2026-09}
+  - {from: CN, to: TW, type: claims, status: active, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : la confrontation autour de Taïwan (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-over-taiwan"],
+     verified: 2026-09, note: "Pékin revendique Taïwan et vise la « réunification » d'ici 2049 ; pression militaire croissante autour de l'île"}
+  - {from: VE, to: GY, type: claims, status: active, confidence: high,
+     sources: ["France 24, le Guyana demande au Venezuela de respecter la décision de la CIJ sur l'Essequibo (sept. 2026) — https://www.france24.com/en/live-news/20260924-guyana-urges-venezuela-at-un-to-respect-icj-s-ruling-on-essequibo-region"],
+     verified: 2026-09, note: "Revendication de l'Essequibo, plus des deux tiers du Guyana, riche en pétrole ; décision de la Cour internationale de justice attendue, que Caracas ne reconnaît pas"}
+  - {from: IN, to: PK, type: rivalry, since: "1947", status: active, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : le conflit entre l'Inde et le Pakistan (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-between-india-and-pakistan"],
+     verified: 2026-09, note: "Rivalité née de la partition de 1947, centrée sur le Cachemire ; affrontements en mai 2025, collision navale en septembre 2026"}
+  - {from: US, to: CN, type: rivalry, status: active, confidence: high,
+     sources: ["Commission du Congrès américain sur la Chine (USCC), fiche sur la relation Chine-Russie (août 2026) — https://www.uscc.gov/research/china-russia-fact-sheet-short-primer-relationship",
+               "Council on Foreign Relations, Global Conflict Tracker : la confrontation autour de Taïwan (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-over-taiwan"],
+     verified: 2026-09, note: "Rivalité stratégique, dont Taïwan est le principal point de friction"}

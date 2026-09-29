@@ -7,6 +7,7 @@
 # sides     : les camps ; actors = ids de network.yaml. Soutiens ET dirigeant (champ leader) lus dans le graphe.
 # stakes    : les enjeux concrets ; timeline : dates AAAA ou AAAA-MM
 # market_labels : traduction française des questions de marché (affichées aussi en version originale)
+# history   : parallèles historiques ET leurs limites, attribués à des historiens (facultatif)
 # glossary  : termes expliqués au survol partout où ils apparaissent dans la page
 
 dossiers:
@@ -15,6 +16,49 @@ dossiers:
     since: "2023-04"
     verified: 2026-09
     dyad: sudan-war
+
+    # Carte d'ouverture. Coordonnées des villes : Wikidata (P625). Contours des États : geoBoundaries / OCHA (CC BY 3.0 IGO).
+    map:
+      bounds: [[-3, 12], [40, 58]]
+      regions:
+        file: sdn_adm1
+        sides:
+          - [Khartoum, Northern, River Nile, Red Sea, Kassala, Gedaref, Gezira, Sennar, White Nile]
+          - [North Darfur, South Darfur, West Darfur, Central Darfur, East Darfur]
+        contested: [North Kordofan, South Kordofan, West Kordofan, Blue Nile]
+        note: >-
+          Contrôle approximatif, État par État : l'armée tient Khartoum, la vallée du Nil et l'est ; les FSR, l'essentiel
+          du Darfour ; le Kordofan est la principale ligne de front, et les combats ont gagné le Nil Bleu à l'été 2026.
+          Les lignes de front réelles ne suivent pas les limites administratives.
+        sources:
+          - "International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"
+          - "Security Council Report, prévisions de septembre 2026 — https://www.securitycouncilreport.org/monthly-forecast/2026-09/sudan-41.php"
+      anchors: [[19.616, 37.216], [12.05, 24.883]]   # Port-Soudan (gouvernement de l'armée), Nyala (gouvernement des FSR)
+      pins:
+        - {label: Port-Soudan, at: [19.616, 37.216], text: "Siège du gouvernement de l'armée, sur la mer Rouge.",
+           source: "International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"}
+        - {label: Khartoum, at: [15.603, 32.527], text: "La capitale, au confluent des deux Nils, reprise par l'armée en mars 2025.",
+           source: "Middle East Eye (mars 2025) — https://www.middleeasteye.net/news/sudan-army-retake-control-presidential-palace-rsf"}
+        - {label: Nyala, at: [12.05, 24.883], text: "Siège du gouvernement parallèle des FSR depuis août 2025.",
+           source: "International Crisis Group, « Divided Sudan, Elusive Peace » (avr. 2026) — https://www.crisisgroup.org/brf/africa/sudan-egypt-saudi-arabia-united-arab-emirates-united-states/b211-divided-sudan-elusive-peace"}
+        - {label: El-Fasher, at: [13.627, 25.35], dir: left, text: "Prise par les FSR en octobre 2025 après 18 mois de siège ; l'ONU y relève les « marques d'un génocide ».",
+           source: "ONU Info (févr. 2026) — https://news.un.org/en/story/2026/02/1166997"}
+        - {label: El-Obeid, at: [13.183, 30.217], text: "Grande ville du Kordofan visée par les drones des FSR en 2026.",
+           source: "Security Council Report (sept. 2026) — https://www.securitycouncilreport.org/monthly-forecast/2026-09/sudan-41.php"}
+      routes:
+        - {label: "Transit par le Tchad", from: [12.11, 15.05], to: 1,
+           text: "Selon les enquêteurs de l'ONU, armes, mercenaires et matériel arrivent aux FSR via le Tchad (tracé schématique).",
+           source: "ONU Info (sept. 2026) — https://news.un.org/en/story/2026/09/1168270"}
+        - {label: "Transit par le sud-est de la Libye", from: [24, 23], to: 1,
+           text: "Autre point de transit cité par l'ONU vers les FSR (tracé schématique).",
+           source: "ONU Info (sept. 2026) — https://news.un.org/en/story/2026/09/1168270"}
+        - {label: "Transit par Bosaso (Somalie)", from: [11.283, 49.183], to: 1,
+           text: "Port somalien cité par l'ONU comme point de transit vers les FSR (tracé schématique).",
+           source: "ONU Info (sept. 2026) — https://news.un.org/en/story/2026/09/1168270"}
+      flows:
+        - {label: "L'or vers les Émirats", from: [15.603, 32.527], to_actor: AE,
+           text: "La plus grande partie de l'or soudanais, première source d'argent des deux camps, finit aux Émirats.",
+           source: "Chatham House, « Gold and the war in Sudan » (mars 2025, mis à jour mars 2026) — https://www.chathamhouse.org/2025/03/gold-and-war-sudan"}
     market_labels:
       "Sudan civil war ceasefire by December 31, 2026?": Un cessez-le-feu dans la guerre au Soudan d'ici le 31 décembre 2026 ?
     lede: >-
@@ -145,10 +189,137 @@ dossiers:
       Darfour: vaste région de l'ouest du Soudan, bastion des FSR
       Kordofan: région du centre du Soudan, principale ligne de front en 2026
 
+  - id: ukraine
+    title: La guerre en Ukraine
+    since: "2022-02"
+    verified: 2026-09
+    dyad: russia-ukraine
+    market_labels:
+      "Russia x Ukraine ceasefire agreement by December 31, 2026?": Un accord de cessez-le-feu entre la Russie et l'Ukraine d'ici le 31 décembre 2026 ?
+      "Russia x Ukraine ceasefire agreement by June 30, 2027?": Un accord de cessez-le-feu d'ici le 30 juin 2027 ?
+      "Russia-Ukraine peace talks by December 31, 2026?": Des pourparlers de paix entre les deux pays d'ici le 31 décembre 2026 ?
+    lede: >-
+      Depuis février 2022, la Russie mène une invasion à grande échelle de l'Ukraine, son voisin. Elle occupe environ
+      20 % du territoire ukrainien. L'Europe et, de moins en moins, les États-Unis soutiennent Kyiv ; la Corée du Nord,
+      la Chine et l'Iran aident Moscou. Des négociations sont en cours, sans avancée à ce jour.
+    lede_sources:
+      - "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
+      - "Bibliothèque de la Chambre des communes, « Ukraine : a new push for peace » (sept. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-12198/"
+
+    origins:
+      text: >-
+        En 2014, après l'arrivée au pouvoir d'un gouvernement pro-occidental à Kyiv, des forces spéciales russes s'emparent
+        de la Crimée, et des séparatistes prorusses proclament l'indépendance de deux régions de l'est, le Donbass : une
+        guerre de basse intensité s'y installe. Le 24 février 2022, Vladimir Poutine lance une invasion par terre, mer et
+        air, en affirmant vouloir « démilitariser et dénazifier » l'Ukraine.
+      sources:
+        - "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
+
+    sides:
+      - name: L'Ukraine
+        actors: [UA]
+        text: >-
+          Dirigée par le président Volodymyr Zelensky. Elle tient environ 80 % de son territoire, dont une petite partie
+          de la région de Donetsk, sur un front d'environ 1 200 km largement figé.
+        sources:
+          - "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
+      - name: La Russie
+        actors: [RU]
+        text: >-
+          Dirigée par Vladimir Poutine. Elle contrôle toute la région de Louhansk et la plus grande partie de celle de
+          Donetsk, et exige que l'Ukraine lui cède le reste de l'est du pays.
+        sources:
+          - "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
+          - "Al Jazeera, Poutine reçoit les émissaires américains (sept. 2026) — https://www.aljazeera.com/news/2026/9/5/russias-putin-meets-us-envoys-to-discuss-trump-proposal-to-end-ukraine-war"
+
+    stakes:
+      - label: Le territoire
+        icon: route
+        text: >-
+          La Russie occupe environ un cinquième de l'Ukraine. La question de savoir si Kyiv doit céder des territoires
+          pour obtenir la paix bloque toutes les négociations.
+        sources:
+          - "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
+          - "Bibliothèque de la Chambre des communes (sept. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-12198/"
+      - label: La sécurité de l'Europe
+        icon: anchor
+        text: >-
+          Pour l'Union européenne, l'agression russe est un « défi existentiel » : si l'Ukraine tombe, c'est tout le
+          continent qui devient plus exposé.
+        sources:
+          - "Carnegie Europe, Erik Jones (janv. 2026) — https://carnegieendowment.org/europe/strategic-europe/2026/01/solidarity-is-a-must-for-europe-to-ensure-its-own-security"
+      - label: L'OTAN
+        icon: gem
+        text: >-
+          Moscou présente la guerre comme une réponse à l'OTAN. Le plan de paix américain interdirait à l'Ukraine d'y
+          adhérer, ce qui pose la question des garanties de sécurité qu'on lui offrirait à la place.
+        sources:
+          - "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
+          - "Bibliothèque de la Chambre des communes (sept. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-12198/"
+      - label: Le duel Chine–États-Unis
+        icon: waves
+        text: >-
+          Selon une commission du Congrès américain, Pékin ne peut pas accepter une défaite russe, qui permettrait à
+          Washington de se concentrer entièrement sur la Chine. La guerre en Ukraine se joue aussi dans cette rivalité.
+        sources:
+          - "Commission du Congrès américain sur la Chine (USCC), fiche Chine-Russie (août 2026) — https://www.uscc.gov/research/china-russia-fact-sheet-short-primer-relationship"
+
+    toll:
+      text: >-
+        Selon les estimations du CSIS, un centre de recherche américain, les pertes militaires cumulées (tués, blessés et
+        disparus) des deux camps dépassent 2 millions de personnes entre février 2022 et juin 2026, dont 400 000 à 450 000
+        soldats russes et 125 000 à 150 000 soldats ukrainiens tués.
+      sources:
+        - "CSIS, « Russian Blood and Treasure » (juill. 2026) — https://www.csis.org/analysis/russian-blood-and-treasure-ballooning-costs-putins-war"
+
+    history:
+      text: >-
+        On compare souvent cette guerre à Munich, en 1938, quand la France et le Royaume-Uni laissèrent Hitler prendre une
+        partie de la Tchécoslovaquie : céder des territoires à la Russie encouragerait de nouvelles agressions. D'autres
+        invoquent 1914, où l'escalade entre puissances mena à une guerre mondiale. Des historiens mettent en garde : ces
+        analogies sont des raccourcis qui déforment autant qu'ils éclairent (l'Allemagne de 1938 n'avait pas l'arme
+        nucléaire). Chaque pays lit aussi la guerre à travers ses propres blessures : la Pologne pense à 1939, la
+        République tchèque à l'invasion soviétique de 1968, l'Allemagne à son passé nazi.
+      sources:
+        - "Christopher LaRoche, « Ukraine Isn't Munich—or Vietnam or Berlin », Foreign Policy, repris par History News Network (oct. 2022) — https://www.historynewsnetwork.org/article/ukraine-isnt-munich-berlin-or-vietnam-the-limits-a"
+        - "Kalhousová, Finkel et Kocián, « Historical analogies, traumatic past and responses to the war in Ukraine », International Affairs (nov. 2024) — https://academic.oup.com/ia/article/100/6/2501/7824588"
+        - "ASPI The Strategist, les limites de la décision politique par analogie — https://www.aspistrategist.org.au/another-munich-crisis-understanding-the-limits-of-policymaking-by-analogy/"
+
+    now:
+      text: >-
+        Le front est largement figé ; en février 2026, l'Ukraine a regagné du terrain pour la première fois depuis 2023.
+        Début septembre 2026, deux émissaires de Donald Trump ont rencontré Vladimir Poutine à Moscou puis Volodymyr
+        Zelensky à Kyiv, avec une trêve de trois jours sur les frappes visant les deux capitales. La Russie ne renonce à
+        aucune de ses exigences territoriales ; des pourparlers aux Émirats sont envisagés pour octobre, sans date fixée.
+      sources:
+        - "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
+        - "Al Jazeera (sept. 2026) — https://www.aljazeera.com/news/2026/9/5/russias-putin-meets-us-envoys-to-discuss-trump-proposal-to-end-ukraine-war"
+        - "Bibliothèque de la Chambre des communes (sept. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-12198/"
+
+    timeline:
+      - date: "2014"
+        text: La Russie s'empare de la Crimée ; guerre dans le Donbass
+        source: "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
+      - date: "2022-02"
+        text: Invasion russe à grande échelle
+        source: "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
+      - date: "2026-02"
+        text: Premier gain territorial mensuel de l'Ukraine depuis 2023
+        source: "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
+      - date: "2026-09"
+        text: Émissaires américains à Moscou et à Kyiv ; trêve de trois jours sur les capitales
+        source: "Al Jazeera (sept. 2026) — https://www.aljazeera.com/news/2026/9/5/russias-putin-meets-us-envoys-to-discuss-trump-proposal-to-end-ukraine-war"
+
+    glossary:
+      OTAN: alliance militaire de 32 pays d'Europe et d'Amérique du Nord, dont les membres se défendent mutuellement
+      Donbass: région industrielle de l'est de l'Ukraine (Donetsk et Louhansk)
+      Crimée: péninsule ukrainienne sur la mer Noire, annexée par la Russie en 2014
+      cessez-le-feu: arrêt des combats convenu entre les belligérants, sans être encore un accord de paix
+      CSIS: Center for Strategic and International Studies, centre de recherche américain
+
 # Conflits suivis dans le graphe mais pas encore racontés : cartes « en préparation » sur l'accueil.
 # actors = acteurs de network.yaml concernés ; le premier est ouvert dans l'explorateur.
 upcoming:
-  - {title: La guerre en Ukraine, actors: [UA, RU]}
   - {title: "Iran, Israël et États-Unis", actors: [IR, IL, US]}
   - {title: Chine et Taïwan, actors: [TW, CN]}
   - {title: L'est de la RD Congo, actors: [m23, CD]}

@@ -11,6 +11,12 @@ def load():
     data = _data()
     return data["actors"], data["edges"]
 
+def tensions():
+    """Guerres, sanctions, revendications et rivalités (clé tensions de network.yaml), hors soutiens."""
+    return _data().get("tensions") or []
+
+TENSION_TYPES = {"war": "guerre", "sanctions": "sanctionne", "claims": "revendique un territoire de", "rivalry": "rivalité avec"}
+
 def leader(actors, aid):
     """Dirigeant d'un acteur : {name, role, sources, photo_key, actor} ou None. Le champ leader est soit un dict
     décrivant la personne (photo sous « leader:<id> » dans data/people.json), soit l'id d'un acteur « person »."""

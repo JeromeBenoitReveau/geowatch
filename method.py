@@ -79,7 +79,7 @@ th{{color:var(--mute);font-weight:600}}.wrap{{overflow-x:auto}}code{{font-size:1
 <p class="mute">Page générée automatiquement le {_date(d["built"])} à partir des données publiées. Code sous licence MIT,
 données du graphe sous CC BY 4.0 — <a href="{brand.REPO}">dépôt GitHub</a>.</p>
 <nav class="mute"><a href="#principe">Principe</a><a href="#chaine">Chaîne de données</a><a href="#graphe">Graphe</a>
-<a href="#dossiers">Dossiers</a><a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a><a href="#marches">Marchés</a>
+<a href="#dossiers">Dossiers</a><a href="#tensions">Tensions</a><a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a><a href="#marches">Marchés</a>
 <a href="#profils">Profils</a><a href="#carte">Carte</a><a href="#limites">Limites</a><a href="#contribuer">Contribuer</a></nav>
 
 <div class="kpi">
@@ -167,6 +167,13 @@ source de la relation. Quand les analyses divergent, le dossier doit le dire plu
 « premier soutien documenté » renvoie à la date <code>since</code>, la plus ancienne attestée par les sources.</p>
 <p>Dossiers publiés : {", ".join(f'<a href="{e(x["id"])}.html">{e(x["title"])}</a>' for x in d.get("dossiers", [])) or "aucun"}.
 {sum(1 for x in edges if x.get("why"))} relation(s) sur {len(edges)} ont un « pourquoi ».</p>
+
+<h2 id="tensions">Tensions</h2>
+<p>À côté des soutiens, le graphe recense des <b>tensions</b> (clé <code>tensions</code> de <code>network.yaml</code>) :
+guerre ouverte, sanctions, revendication territoriale, rivalité stratégique sans guerre. Elles sont sourcées et datées
+comme les soutiens, mais tenues à part : elles <b>n'entrent pas</b> dans le calcul des blocs d'influence ni dans la
+liste des soutiens d'un dossier, et ne modifient pas la disposition du graphe. Une tension en trêve ou cessez-le-feu
+est affichée atténuée. {len(d.get("tensions", []))} tension(s) recensée(s).</p>
 
 <h2 id="blocs">Blocs d'influence</h2>
 <p>Deux blocs : {" et ".join(f'<b style="color:{b["color"]}">{e(b["name"])}</b>' for b in blocs.values())}.

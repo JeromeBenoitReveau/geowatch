@@ -1,10 +1,24 @@
 {
+ "leader:RU": {
+  "artist": "Пресс-служба Президента России",
+  "file": "Putin V 2026 08 10.png",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Putin_V_2026_08_10.png",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Putin_V_2026_08_10.png/250px-Putin_V_2026_08_10.png"
+ },
  "leader:SD": {
   "artist": "Press Service of the President of the Republic of Azerbaijan",
   "file": "Abdel Fattah al-Burhan in April 2025 (cropped).jpg",
   "license": "CC BY 4.0",
   "page": "https://commons.wikimedia.org/wiki/File:Abdel_Fattah_al-Burhan_in_April_2025_(cropped).jpg",
   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Abdel_Fattah_al-Burhan_in_April_2025_%28cropped%29.jpg/250px-Abdel_Fattah_al-Burhan_in_April_2025_%28cropped%29.jpg"
+ },
+ "leader:UA": {
+  "artist": "Press Service of the President of Ukraine",
+  "file": "New Year's Eve from President of Ukraine Volodymyr Zelensky (31-12-2025) (cropped).jpg",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:New_Year%27s_Eve_from_President_of_Ukraine_Volodymyr_Zelensky_(31-12-2025)_(cropped).jpg",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/New_Year%27s_Eve_from_President_of_Ukraine_Volodymyr_Zelensky_%2831-12-2025%29_%28cropped%29.jpg/250px-New_Year%27s_Eve_from_President_of_Ukraine_Volodymyr_Zelensky_%2831-12-2025%29_%28cropped%29.jpg"
  },
  "leader:rsf": {
   "artist": "Russian Government",

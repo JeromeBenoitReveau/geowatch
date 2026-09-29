@@ -146,6 +146,33 @@ def check(actors, edges, today=None, aligns=None):
                 errors.append(f"config.DYADS[{name}] : {aid} absent de actors")
     return errors, warnings
 
+def check_tensions(tensions, actors, today=None):
+    """Tensions : acteurs connus, type et statut valides, sources avec URL, dates au bon format."""
+    errors, warnings = [], []
+    for i, t in enumerate(tensions, 1):
+        where = f"tension {i} ({t.get('from')} – {t.get('to')})"
+        for k in ("from", "to"):
+            if t.get(k) not in actors:
+                errors.append(f"{where} : {k} « {t.get(k)} » absent de actors")
+        if t.get("type") not in network.TENSION_TYPES:
+            errors.append(f"{where} : type « {t.get('type')} » invalide ({', '.join(network.TENSION_TYPES)})")
+        if t.get("status") not in ("active", "reduced", "ended"):
+            errors.append(f"{where} : status « {t.get('status')} » invalide (active, reduced, ended)")
+        if t.get("confidence") not in CONFIDENCES:
+            errors.append(f"{where} : confidence « {t.get('confidence')} » invalide")
+        srcs = t.get("sources") or []
+        if not srcs or not all(isinstance(x, str) and "http" in x for x in srcs):
+            errors.append(f"{where} : sources avec URL requises")
+        for k in ("since", "until"):
+            if t.get(k) is not None and not re.fullmatch(r"\d{4}(-\d{2})?", str(t[k])):
+                errors.append(f"{where} : {k} « {t[k]} » doit être au format AAAA ou AAAA-MM")
+        v = str(t.get("verified", ""))
+        if not re.fullmatch(r"\d{4}-\d{2}", v):
+            errors.append(f"{where} : verified « {v} » doit être au format AAAA-MM")
+        elif months_since(v, today) > STALE_MONTHS:
+            warnings.append(f"{where} : vérifiée en {v}, à revoir (> {STALE_MONTHS} mois)")
+    return errors, warnings
+
 def check_dossiers(dossiers, actors, edges):
     """dossiers.yaml : acteurs connus, récit sourcé, dates valides ; signale les soutiens sans « pourquoi »."""
     errors, warnings = [], []
@@ -163,7 +190,7 @@ def check_dossiers(dossiers, actors, edges):
             errors.append(f"dossier {k} : il faut exactement deux camps (sides)")
         if not has_url(x.get("lede_sources")):
             errors.append(f"dossier {k} : lede_sources avec URL requises")
-        for f in ("origins", "toll", "now"):
+        for f in ("origins", "toll", "now", "history"):
             if x.get(f) and not has_url(x[f].get("sources")):
                 errors.append(f"dossier {k} : {f} sans source avec URL")
         for i, st in enumerate(x.get("stakes") or []):
@@ -174,6 +201,25 @@ def check_dossiers(dossiers, actors, edges):
                 errors.append(f"dossier {k} : date de frise « {t.get('date')} » au format AAAA ou AAAA-MM")
             if not has_url([t.get("source")]):
                 errors.append(f"dossier {k} : événement « {t.get('text')} » sans source avec URL")
+        mp = x.get("map")
+        if mp:
+            for kind in ("pins", "routes", "flows"):
+                for it in mp.get(kind) or []:
+                    if not has_url([it.get("source")]):
+                        errors.append(f"dossier {k} : carte, {kind} « {it.get('label')} » sans source avec URL")
+            reg = mp.get("regions")
+            if reg:
+                if not has_url(reg.get("sources")):
+                    errors.append(f"dossier {k} : carte, zones de contrôle sans source avec URL")
+                import json, pathlib
+                f = pathlib.Path(__file__).with_name("data") / "maps" / f"{reg.get('file')}.geojson"
+                if not f.exists():
+                    errors.append(f"dossier {k} : carte, contours data/maps/{reg.get('file')}.geojson introuvables")
+                else:
+                    known = {ft["properties"]["name"] for ft in json.loads(f.read_text())["features"]}
+                    for name in [n for grp in (reg.get("sides") or []) for n in grp] + (reg.get("contested") or []):
+                        if name not in known:
+                            errors.append(f"dossier {k} : carte, région « {name} » absente de {f.name}")
         for sd in x.get("sides") or []:
             ids = set(sd.get("actors") or [])
             for a in ids - set(actors):
@@ -190,6 +236,8 @@ if __name__ == "__main__":
     actors, edges = network.load()
     errors, warnings = check(actors, edges, aligns=network.alignments())
     de, dw = check_dossiers(dossier.load(), actors, edges)
+    te, tw = check_tensions(network.tensions(), actors)
+    de, dw = de + te, dw + tw
     import pages
     de += [f"dossier en préparation « {u.get('title')} » : acteur « {a} » absent de network.yaml"
            for u in pages.upcoming() for a in (u.get("actors") or ["?"]) if a not in actors]

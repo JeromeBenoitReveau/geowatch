@@ -13,7 +13,8 @@ TYPE_COLORS = {"arms": "#d64545", "troops": "#8b1e1e", "financial": "#2f8f5b", "
 
 def export_data(actors, edges):
     (OUT / "network.json").write_text(json.dumps(
-        {"license": DATA_LICENSE, "generated_at": db.now(), "actors": actors, "edges": edges},
+        {"license": DATA_LICENSE, "generated_at": db.now(), "actors": actors, "edges": edges,
+         "tensions": network.tensions()},
         ensure_ascii=False, indent=1, default=str), encoding="utf-8")
     with open(OUT / "network.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -44,7 +45,7 @@ def build():
         unga["countries"] = {by3[c]: v for c, v in unga["countries"].items() if c in by3}
         unga["by_year"] = {y: {by3[c]: v for c, v in d.items() if c in by3} for y, d in unga.get("by_year", {}).items()}
     data = {"actors": actors, "edges": edges, "profiles": profiles, "colors": TYPE_COLORS,
-            "align": aligns, "influence": network.influence(actors, edges, aligns), "geo": geo, "people": db.load_people(), "unga": unga,
+            "tensions": network.tensions(), "align": aligns, "influence": network.influence(actors, edges, aligns), "geo": geo, "people": db.load_people(), "unga": unga,
             "markets": markets, "calibration": track.calibration(),
             "dossiers": [{"id": x["id"], "title": x["title"]} for x in dossier.load()], "alert": MOVE_ALERT_PTS, "built": db.now()}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
@@ -117,6 +118,7 @@ h1{font-size:20px;margin:0 0 4px}h2{font-size:12px;text-transform:uppercase;lett
   <label>Année : <input type="range" id="year" min="2014" step="1" style="vertical-align:middle;width:130px"> <b id="year-label"></b></label>
   <label class="graph-only"><input type="checkbox" id="lyr-armed" checked> Groupes armés non étatiques</label>
   <label class="graph-only"><input type="checkbox" id="lyr-detail"> Partis & personnalités</label>
+  <label class="graph-only"><input type="checkbox" id="lyr-tensions" checked> Tensions (guerres, sanctions…)</label>
 </div></div>
 <aside id="panel"></aside>
 <script>
@@ -336,9 +338,24 @@ const edgeList = D.edges.map((e,i) => ({id:"e"+i, from:e.from, to:e.to, arrows:"
 const anchors = Object.entries(D.actors).filter(([id,a])=>DETAIL.has(a.kind) && D.actors[a.base])
   .map(([id,a]) => ({id:"b-"+id, from:id, to:a.base, dashes:[2,4], color:"#999", width:1, title:"rattaché à"}));
 
+// ---------- Tensions : guerres, sanctions, revendications, rivalités — hors soutiens ----------
+// Tracées sans effet sur la disposition du graphe (physics:false) ; atténuées si trêve ou cessez-le-feu.
+const TENSION = {war:{label:"guerre", color:"#b91c1c", width:3.2, dashes:false, arrows:""},
+  sanctions:{label:"sanctionne", color:"#7c3aed", width:1.8, dashes:[8,5], arrows:"to"},
+  claims:{label:"revendique", color:"#d97706", width:1.8, dashes:[3,4], arrows:"to"},
+  rivalry:{label:"rivalité", color:"#64748b", width:1.8, dashes:[10,6], arrows:""}};
+const TS = D.tensions || [], BG = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
+const tensionTitle = t => `${(D.actors[t.from]||{}).name||t.from} ${t.type==="war"||t.type==="rivalry" ? "⟷" : "→"} ${(D.actors[t.to]||{}).name||t.to} : ${TENSION[t.type].label}${t.status==="reduced" ? " (trêve ou cessez-le-feu)" : ""} (${dated(t)})`;
+const tensionEdges = TS.map((t,i) => { const s = TENSION[t.type];
+  return {id:"t"+i, from:t.from, to:t.to, arrows:s.arrows, physics:false, width:s.width, label:s.label,
+    color:{color:s.color, opacity: t.status==="active" ? 1 : .55}, dashes: t.status==="active" ? s.dashes : [2,6],
+    smooth:{type:"curvedCW", roundness:.18}, font:{size:10, color:s.color, strokeWidth:3, strokeColor:BG},
+    hidden: !activeAt(t, NOW), title: tensionTitle(t)}; });
+const tensionsVisible = () => TS.map((t,i) => ({id:"t"+i, hidden: !$("#lyr-tensions").checked || !activeAt(t, YEAR())}));
+
 const S0 = sizes("military");
 const nodesDS = new vis.DataSet(Object.keys(D.actors).map(id=>nodeFor(id, S0[id])));
-const edgesDS = new vis.DataSet([...edgeList, ...anchors]);
+const edgesDS = new vis.DataSet([...edgeList, ...anchors, ...tensionEdges]);
 const net = new vis.Network($("#graph"), {nodes:nodesDS, edges:edgesDS},
   {physics:{solver:"forceAtlas2Based", stabilization:{iterations:250}}, interaction:{hover:true}});
 net.on("click", p => p.nodes.length ? show(p.nodes[0]) : legend());
@@ -437,9 +454,10 @@ function refresh(){
   nodesDS.update(Object.keys(D.actors).map(id=>({id, size:sz(id), font:{color:fg, size:11+Math.round(sz(id)/7)},
     hidden: !visible(layer(id))}))); }
 ["metric","lyr-armed","lyr-detail"].forEach(i => $("#"+i).addEventListener("change", refresh));
+$("#lyr-tensions").addEventListener("change", () => edgesDS.update(tensionsVisible()));
 function onYear(){ const Y = YEAR();
   $("#year-label").textContent = Y === NOW ? `${Y} (aujourd'hui)` : String(Y);
-  edgesDS.update(D.edges.map((e,i) => ({id:"e"+i, hidden: !activeAt(e, Y)})));
+  edgesDS.update([...D.edges.map((e,i) => ({id:"e"+i, hidden: !activeAt(e, Y)})), ...tensionsVisible()]);
   drawVenn();
   if($("#layers-panel")) showLayers(); }
 $("#year").addEventListener("input", onYear); onYear();
@@ -448,7 +466,7 @@ $("#metric").addEventListener("change", () => map && drawMarkers());
 // ---------- Vue carte : une couche Leaflet par type d'acteur, chacun dans son pays ----------
 const WORLD = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";  // Natural Earth, domaine public
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-const MAP_LAYERS = {core:"États & blocs", non_state:"Groupes armés", party:"Partis", person:"Personnalités", links:"Liens de soutien"};
+const MAP_LAYERS = {core:"États & blocs", non_state:"Groupes armés", party:"Partis", person:"Personnalités", links:"Liens de soutien", tensions:"Tensions"};
 let map, groups, linkLayers = [], countries;
 const layerOf = id => { const k = D.actors[id].kind; return k==="state"||k==="bloc" ? "core" : k; };
 
@@ -491,6 +509,7 @@ function curve(a, b){ const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2, dx=b[0]-a[0], dy
   return Array.from({length:25}, (_,i) => { const t=i/24, u=1-t;
     return [u*u*a[0]+2*u*t*c[0]+t*t*b[0], u*u*a[1]+2*u*t*c[1]+t*t*b[1]]; }); }
 function drawLinks(){
+  drawTensions();
   groups.links.clearLayers(); linkLayers = [];
   const on = k => map.hasLayer(groups[k]);
   D.edges.filter(e => activeAt(e, YEAR())).forEach(e => {
@@ -503,6 +522,14 @@ function drawLinks(){
     // flèche : petit cercle plein côté bénéficiaire
     const tip = L.circleMarker(b, {radius:3, color: D.colors[e.types[0]]||"#888", fillOpacity:1, weight:0, interactive:false}).addTo(groups.links);
     linkLayers.push({e, l, tip}); }); }
+// Tensions sur la carte : traits droits, distincts des liens de soutien (courbes)
+function drawTensions(){ groups.tensions.clearLayers();
+  const on = k => map.hasLayer(groups[k]);
+  TS.filter(t => activeAt(t, YEAR())).forEach(t => { const a = POS[t.from], b = POS[t.to], s = TENSION[t.type];
+    if(!a || !b || !on(layerOf(t.from)) || !on(layerOf(t.to))) return;
+    L.polyline([a, b], {color:s.color, weight: s.width + .6, opacity: t.status==="active" ? .9 : .45,
+      dashArray: t.status!=="active" ? "2 6" : s.dashes ? s.dashes.join(" ") : null})
+      .bindTooltip(tensionTitle(t), {sticky:true}).addTo(groups.tensions); }); }
 function highlightLinks(id){ linkLayers.forEach(({e,l}) => { const hit = !id || e.from===id || e.to===id;
   l.setStyle({opacity: hit ? .9 : .12, weight: hit && id ? 3.5 : (e.confidence==="high"?2.2:1.4)}); }); }
 
@@ -619,6 +646,11 @@ function show(id){
   const out = D.edges.filter(e=>e.from===id&&e.status!=="ended"), inn = D.edges.filter(e=>e.to===id&&e.status!=="ended");
   if(out.length) h += `<h2>Soutient</h2>` + out.map(e=>rel(e,e.to)).join("");
   if(inn.length) h += `<h2>Soutenu par</h2>` + inn.map(e=>rel(e,e.from)).join("");
+  const tens = TS.filter(t => (t.from===id || t.to===id) && t.status!=="ended");
+  if(tens.length) h += `<h2>Tensions</h2>` + tens.map(t => { const other = t.from===id ? t.to : t.from, s = TENSION[t.type];
+    const verb = t.type==="sanctions" ? (t.from===id ? "sanctionne" : "sanctionné par") : t.type==="claims" ? (t.from===id ? "revendique un territoire de" : "territoire revendiqué par") : s.label + " avec";
+    return `<div class="rel"><b style="color:${s.color}">■</b> ${esc(verb[0].toUpperCase() + verb.slice(1))} <b data-id="${esc(other)}">${nm(other)}</b>
+      <div class="mute">${t.status==="reduced" ? "trêve ou cessez-le-feu · " : ""}${esc(dated(t))} · ${(t.sources||[]).map(src).join(" ; ")}${t.note ? "<br>"+esc(t.note) : ""}</div></div>`; }).join("");
   for(const [pair, v] of marketsFor(id)){
     h += `<h2>Marchés · ${esc(pair)}</h2>` + (v.markets.length ? v.markets.map(mkt).join("")
       : `<p class="mute">Aucun marché ouvert trouvé.</p>`); }
@@ -694,6 +726,9 @@ function legend(){
   UNGA Ideal Points</a> v${esc((U.source||{}).version)} (CC0) — ${esc((U.source||{}).cite)}.</p>
   ${driftBlock()}
   <h2>Types de soutien</h2><div class="legend">${tags(Object.keys(D.colors))}</div>
+  <h2>Tensions</h2><div class="legend">${Object.values(TENSION).map(s => `<span class="tag" style="background:${s.color}">${esc(s.label)}</span>`).join("")}</div>
+  <p class="mute">Guerres, sanctions, revendications territoriales et rivalités, sourcées comme les soutiens mais tracées à part :
+  elles n'entrent pas dans le calcul des blocs. Trait atténué = trêve ou cessez-le-feu.</p>
   <h2>Mouvements de marché ≥ ${D.alert} pts sur 7 j</h2>${moves.length ? moves.map(mkt).join("")
     : `<p class="mute">Aucun${all.length?"":" — pas encore de cotes relevées"}.</p>`}
   <p class="mute">Les seuls pourcentages affichés sont des cotes de marchés de prédiction (Polymarket, Kalshi).
