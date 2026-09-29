@@ -4,6 +4,9 @@
 # level : 3 = défense mutuelle · 2 = partenariat stratégique formalisé, sans défense mutuelle
 #         1 = candidature / participation gelée · 0 = intégration sans effet sur l'alignement (affiché seulement)
 # entity : acteur de network.yaml auquel le groupe est rattaché comme « niveau » (ex. EU)
+# since : date de création du groupe si elle tombe dans la période couverte (2014 →)
+# joined / left : {ISO2: AAAA-MM} — adhésions et départs datés depuis 2014 ; un membre sans date l'était déjà en 2014.
+#   left liste d'ANCIENS membres (absents de members). Chaque date doit être couverte par une source du groupe.
 # members : codes ISO2 (« NO » entre guillemets, sinon YAML le lit comme « faux »). Le Kosovo (sans code ISO officiel) n'est pas représenté.
 
 blocs:
@@ -22,6 +25,7 @@ groups:
     level: 3
     members: [AL, BE, BG, CA, HR, CZ, DK, EE, FI, FR, DE, GR, HU, IS, IT, LV, LT, LU, ME, NL,
               MK, "NO", PL, PT, RO, SK, SI, ES, SE, TR, GB, US]
+    joined: {ME: "2017-06", MK: "2020-03", FI: "2023-04", SE: "2024-03"}
     sources: ["OTAN, liste des 32 pays membres — https://www.nato.int/en/about-us/organization/nato-member-countries"]
 
   - id: eu
@@ -31,9 +35,11 @@ groups:
     level: 3
     members: [AT, BE, BG, HR, CY, CZ, DK, EE, FI, FR, DE, GR, HU, IE, IT, LV, LT, LU, MT, NL,
               PL, PT, RO, SK, SI, ES, SE]
+    left: {GB: "2020-01"}
     note: "L'assistance n'est pas nécessairement militaire : les États neutres (Autriche, Irlande, Malte) gardent leur politique"
     sources: ["Union européenne, les 27 pays membres — https://european-union.europa.eu/principles-countries-history/eu-countries_en",
-              "SEAE, la clause d'assistance mutuelle de l'article 42(7) TUE — https://www.eeas.europa.eu/sites/default/files/documents/Article%2042(7)%20TEU%20-The%20EU's%20mutual%20assistance%20clause.pdf"]
+              "SEAE, la clause d'assistance mutuelle de l'article 42(7) TUE — https://www.eeas.europa.eu/sites/default/files/documents/Article%2042(7)%20TEU%20-The%20EU's%20mutual%20assistance%20clause.pdf",
+              "Parlement européen, fiche « Le Royaume-Uni » (sortie le 31 janv. 2020) — https://www.europarl.europa.eu/factsheets/en/sheet/216/the-united-kingdom"]
 
   - id: eu_candidates
     name: Candidats et candidats potentiels à l'UE
@@ -41,8 +47,10 @@ groups:
     bloc: west
     level: 1
     members: [UA, MD, GE, TR, AL, BA, ME, MK, RS]
+    joined: {UA: "2022-06", MD: "2022-06", GE: "2022-06"}
     note: "La Commission juge la candidature de la Géorgie gelée de fait ; la Serbie reste proche de Moscou — le niveau ne reflète que le statut formel"
-    sources: ["Commission européenne, pays candidats et candidats potentiels — https://enlargement.ec.europa.eu/enlargement-policy/candidate-countries-and-potential-candidates_en"]
+    sources: ["Commission européenne, pays candidats et candidats potentiels — https://enlargement.ec.europa.eu/enlargement-policy/candidate-countries-and-potential-candidates_en",
+              "Conseil européen, conclusions du 23 juin 2022 (statut de candidat : Ukraine, Moldavie ; perspective européenne : Géorgie) — https://www.consilium.europa.eu/en/press/press-releases/2022/06/23/european-council-conclusions-on-ukraine-the-membership-applications-of-ukraine-the-republic-of-moldova-and-georgia-western-balkans-and-external-relations-23-june-2022/"]
 
   - id: euro
     name: Zone euro
@@ -50,7 +58,9 @@ groups:
     bloc: west
     level: 0
     members: [AT, BE, BG, HR, CY, EE, FI, FR, DE, GR, IE, IT, LV, LT, LU, MT, NL, PT, SK, SI, ES]
-    sources: ["Union européenne, pays utilisant l'euro (21, Bulgarie depuis janv. 2026) — https://european-union.europa.eu/institutions-law-budget/euro/countries-using-euro_en"]
+    joined: {LV: "2014-01", LT: "2015-01", HR: "2023-01", BG: "2026-01"}
+    sources: ["Union européenne, pays utilisant l'euro (21, Bulgarie depuis janv. 2026) — https://european-union.europa.eu/institutions-law-budget/euro/countries-using-euro_en",
+              "Union européenne, fiches pays (années d'entrée dans la zone euro et Schengen) — https://european-union.europa.eu/principles-countries-history/eu-countries_en"]
 
   - id: schengen
     name: Espace Schengen
@@ -59,7 +69,10 @@ groups:
     level: 0
     members: [AT, BE, BG, HR, CZ, DK, EE, FI, FR, DE, GR, HU, IT, LV, LT, LU, MT, NL, PL, PT,
               RO, SK, SI, ES, SE, IS, "NO", CH, LI]
-    sources: ["Commission européenne, l'espace Schengen (29 pays) — https://home-affairs.ec.europa.eu/policies/schengen/schengen-area_en"]
+    joined: {HR: "2023-01", BG: "2025-01", RO: "2025-01"}
+    note: "Bulgarie et Roumanie : frontières aériennes et maritimes ouvertes dès mars 2024, adhésion complète le 1er janvier 2025 (date retenue)"
+    sources: ["Commission européenne, l'espace Schengen (29 pays) — https://home-affairs.ec.europa.eu/policies/schengen/schengen-area_en",
+              "Union européenne, fiches pays (années d'entrée dans la zone euro et Schengen) — https://european-union.europa.eu/principles-countries-history/eu-countries_en"]
 
   - id: us_bilateral
     name: Traités de défense mutuelle bilatéraux des États-Unis
@@ -78,6 +91,7 @@ groups:
     bloc: axis
     level: 3
     members: [RU, BY, KZ, KG, TJ]
+    left: {AM: "2024-02"}
     sources: ["OTSC, États membres — https://en.odkb-csto.org/countries/"]
 
   - id: csto_frozen
@@ -85,6 +99,7 @@ groups:
     bloc: axis
     level: 1
     members: [AM]
+    joined: {AM: "2024-02"}
     note: "L'Arménie a gelé sa participation en février 2024 sans quitter l'organisation"
     sources: ["OC Media, Pashinyan : participation arménienne à l'OTSC « gelée » — https://oc-media.org/pashinyan-armenia-has-frozen-its-participation-in-the-csto/"]
 
@@ -93,6 +108,7 @@ groups:
     bloc: axis
     level: 3
     members: [KP]
+    joined: {KP: "2024-06"}
     sources: ["Kremlin, signature du traité de partenariat stratégique global (juin 2024) — http://en.kremlin.ru/events/president/trips/74342"]
 
   - id: ru_partners
@@ -100,6 +116,7 @@ groups:
     bloc: axis
     level: 2
     members: [CN, IR]
+    joined: {IR: "2025-01"}
     sources: ["Kremlin, déclaration conjointe Russie-Chine « amitié sans limites » (févr. 2022) — http://en.kremlin.ru/supplement/5770",
               "Kremlin, traité de partenariat stratégique global Russie-Iran (janv. 2025) — http://en.kremlin.ru/events/president/news/76125"]
 
@@ -110,21 +127,29 @@ groups:
     kind: forum
     level: 0
     members: [BR, RU, IN, CN, ZA, EG, ET, IR, AE, ID]
+    joined: {EG: "2024-01", ET: "2024-01", IR: "2024-01", AE: "2024-01", ID: "2025-01"}
     note: "L'Arabie saoudite, invitée en 2023, n'a pas formalisé son adhésion"
-    sources: ["DD News, sommet de Rio : l'Indonésie membre, dix pays partenaires (juill. 2025) — https://ddnews.gov.in/en/brics-indonesia-joins-as-full-member-10-countries-welcomed-as-partners/"]
+    sources: ["DD News, sommet de Rio : l'Indonésie membre, dix pays partenaires (juill. 2025) — https://ddnews.gov.in/en/brics-indonesia-joins-as-full-member-10-countries-welcomed-as-partners/",
+              "Africanews, cinq pays rejoignent les BRICS le 1er janv. 2024 — https://www.africanews.com/2024/01/02/brics-expansion-five-countries-join-ranks/",
+              "Geopolitical Economy Report, l'Indonésie membre à part entière (6 janv. 2025) — https://geopoliticaleconomy.com/2025/01/07/brics-adds-indonesia-member-economy/"]
 
   - id: brics_partners
     name: BRICS (pays partenaires)
     kind: forum
     level: 0
     members: [BY, BO, KZ, NG, MY, TH, CU, VN, UG, UZ]
-    sources: ["DD News, sommet de Rio : l'Indonésie membre, dix pays partenaires (juill. 2025) — https://ddnews.gov.in/en/brics-indonesia-joins-as-full-member-10-countries-welcomed-as-partners/"]
+    joined: {BY: "2025-01", BO: "2025-01", KZ: "2025-01", NG: "2025-01", MY: "2025-01", TH: "2025-01", CU: "2025-01", VN: "2025-06", UG: "2025-01", UZ: "2025-01"}
+    sources: ["DD News, sommet de Rio : l'Indonésie membre, dix pays partenaires (juill. 2025) — https://ddnews.gov.in/en/brics-indonesia-joins-as-full-member-10-countries-welcomed-as-partners/",
+              "Malay Mail, neuf pays partenaires au 1er janv. 2025 (Kremlin) — https://www.malaymail.com/news/malaysia/2024/12/24/kremlin-malaysia-among-nine-countries-to-officially-become-brics-partners-from-january-1-2025/160914",
+              "TV BRICS, le Nigeria 9e pays partenaire (18 janv. 2025) — https://tvbrics.com/en/news/nigeria-becomes-9th-brics-partner-country/",
+              "All India Radio, le Viêt Nam pays partenaire (juin 2025) — https://www.newsonair.gov.in/vietnam-officially-joins-brics-as-partner-country/"]
 
   - id: sco
     name: Organisation de coopération de Shanghai (OCS)
     kind: forum
     level: 0
     members: [CN, RU, IN, PK, IR, KZ, KG, TJ, UZ, BY]
+    joined: {IN: "2017-06", PK: "2017-06", IR: "2023-07", BY: "2024-07"}
     note: "Coopération de sécurité sans clause de défense mutuelle"
     sources: ["OCS, questions fréquentes (liste des 9 membres avant 2024) — https://eng.sectsco.org/20231127/1168690.html",
               "Anadolu, la Biélorussie devient le 10e membre (juill. 2024) — https://www.aa.com.tr/en/asia-pacific/belarus-joins-shanghai-cooperation-organization-as-10th-member-state/3265708"]
@@ -134,28 +159,37 @@ groups:
     kind: forum
     level: 0
     members: [RU, BY, KZ, KG, AM]
-    sources: ["Union économique eurasiatique, États membres — https://eaeunion.org/?lang=en"]
+    since: "2015-01"
+    joined: {AM: "2015-01", KG: "2015-08"}
+    sources: ["Union économique eurasiatique, États membres — https://eaeunion.org/?lang=en",
+              "Ministère biélorusse des Affaires étrangères, UEEA (traité en vigueur le 1er janv. 2015, Arménie 2 janv., Kirghizistan 12 août 2015) — https://mfa.gov.by/en/mulateral/organization/list/aa16658947a49c28.html"]
 
   - id: g7
     name: G7
     kind: forum
     level: 0
     members: [US, CA, FR, DE, IT, JP, GB]
-    note: "L'Union européenne participe aux sommets sans être membre"
-    sources: ["G7 Information Centre (Université de Toronto), qu'est-ce que le G7 — https://www.g7.utoronto.ca/what_is_g8.html"]
+    left: {RU: "2014-03"}
+    note: "L'Union européenne participe aux sommets sans être membre ; la Russie (G8) en a été suspendue en mars 2014"
+    sources: ["G7 Information Centre (Université de Toronto), qu'est-ce que le G7 — https://www.g7.utoronto.ca/what_is_g8.html",
+              "Maison-Blanche (archives), déclaration de La Haye du 24 mars 2014 : suspension du G8 — https://obamawhitehouse.archives.gov/realitycheck/the-press-office/2014/03/24/hague-declaration"]
 
   - id: mercosur
     name: Mercosur
     kind: forum
     level: 0
     members: [AR, BR, PY, UY, BO]
+    joined: {BO: "2024-07"}
+    left: {VE: "2016-12"}
     note: "Le Venezuela est suspendu ; la Bolivie a jusqu'en 2028 pour intégrer les règles communes"
-    sources: ["Mercosur, pays membres — https://www.mercosur.int/en/about-mercosur/countries"]
+    sources: ["Mercosur, pays membres — https://www.mercosur.int/en/about-mercosur/countries",
+              "Venezuelanalysis, le Mercosur suspend le Venezuela (2 déc. 2016) — https://venezuelanalysis.com/news/12814/"]
 
   - id: asean
     name: ASEAN
     kind: forum
     level: 0
     members: [BN, KH, ID, LA, MY, MM, PH, SG, TH, VN, TL]
+    joined: {TL: "2025-10"}
     note: "Timor-Leste admis comme 11e membre en octobre 2025"
     sources: ["ASEAN, admission du Timor-Leste (oct. 2025) — https://asean.org/forging-a-new-era-timor-leste-admitted-into-asean/"]

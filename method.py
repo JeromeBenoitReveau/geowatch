@@ -37,10 +37,17 @@ def page(d):
     blocs = al["blocs"]
     drift = unga.get("drift") or []
 
+    def moves(g):
+        m = [f"création {e(g['since'])}"] if g.get("since") else []
+        m += [f"{e(k)} +{e(v)}" for k, v in sorted((g.get("joined") or {}).items(), key=lambda x: x[1]) if v != g.get("since")]
+        m += [f"{e(k)} −{e(v)}" for k, v in sorted((g.get("left") or {}).items(), key=lambda x: x[1])]
+        return "<br>".join(m) or "—"
+
     def group_rows(gs):
         return "".join(
             f"<tr><td>{e(g['name'])}</td><td>{e(blocs[g['bloc']]['name']) if g.get('bloc') else 'forum'}</td>"
             f"<td>{g['level'] if g.get('kind') != 'forum' else '—'}</td><td>{len(g['members'])}</td>"
+            f"<td>{moves(g)}</td>"
             f"<td>{'<br>'.join(_src(s) for s in g['sources'])}</td></tr>" for g in gs)
 
     kind_fr = {"state": ("État", "États"), "bloc": ("bloc", "blocs"),
@@ -150,7 +157,7 @@ fichier séparé : rien n'entre dans le graphe sans relecture.</p>
 Seuls les <b>liens formels</b> (traités, adhésions) sont déclarés, avec un niveau :</p>
 <ul><li><b>3</b> défense mutuelle · <b>2</b> partenariat stratégique sans défense mutuelle · <b>1</b> candidature ou
 participation gelée · <b>0</b> intégration sans effet sur l'alignement (zone euro, Schengen).</li></ul>
-<div class="wrap"><table><tr><th>Groupe</th><th>Bloc</th><th>Niveau</th><th>Pays</th><th>Sources</th></tr>{group_rows(formal)}</table></div>
+<div class="wrap"><table><tr><th>Groupe</th><th>Bloc</th><th>Niveau</th><th>Pays</th><th>Depuis 2014</th><th>Sources</th></tr>{group_rows(formal)}</table></div>
 <h3>Règles de calcul (<code>network.influence()</code>)</h3>
 <ol>
 <li><b>Membre</b> : un pays reçoit le niveau le plus élevé de ses liens formels. À niveau égal avec les deux blocs, il est « disputé ».</li>
@@ -163,8 +170,14 @@ Exemple : les Houthis, soutenus uniquement par l'Iran.</li>
 La carte colore chaque pays selon son bloc, plus ou moins intensément selon le niveau.</p>
 <h3>Forums économiques et politiques</h3>
 <p>BRICS, OCS, G7… sont des cadres de coopération, pas des alliances (les BRICS réunissent l'Inde et la Chine). Ils sont
-affichés (sélecteur « Organisation » de la carte, fiches pays) mais <b>n'entrent pas dans le calcul des blocs</b>.</p>
-<div class="wrap"><table><tr><th>Forum</th><th></th><th></th><th>Pays</th><th>Sources</th></tr>{group_rows(forums)}</table></div>
+affichés (calques « Organisations superposées » de la carte, fiches pays) mais <b>n'entrent pas dans le calcul des blocs</b>.</p>
+<h3>Adhésions et départs datés</h3>
+<p>Chaque groupe peut dater ses adhésions (<code>joined</code>, ex. « FI +2023-04 ») et ses départs (<code>left</code>, anciens
+membres, ex. « GB −2020-01 ») depuis 2014, début du curseur « Année ». Un membre sans date l'était déjà en 2014. Chaque
+date est couverte par une source du groupe. Un pays compte comme membre une année donnée s'il y est entré cette année-là
+ou avant, et n'en est pas sorti cette année-là ou avant. Ces dates animent les calques de la carte ; le calcul des blocs
+d'influence, lui, reste fondé sur la composition actuelle.</p>
+<div class="wrap"><table><tr><th>Forum</th><th></th><th></th><th>Pays</th><th>Depuis 2014</th><th>Sources</th></tr>{group_rows(forums)}</table></div>
 
 <h2 id="onu">Votes à l'Assemblée générale de l'ONU</h2>
 <p>Source : {e(src.get("name", ""))}, version {e(src.get("version", "n/d"))} — {e(src.get("cite", ""))}.</p>

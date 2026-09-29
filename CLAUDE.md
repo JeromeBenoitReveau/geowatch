@@ -40,6 +40,7 @@ geowatch ne calcule ni n'estime de probabilité.
 - YAML : le code ISO « NO » (Norvège) doit être entre guillemets, sinon il est lu comme false.
 - Carte (Leaflet + Natural Earth/world-atlas, sans tuiles) : `data/geo.json` (Wikidata P625/P299, tous les pays des acteurs et d'alignments.yaml, rafraîchi avec les profils) ; `coords` explicites pour les blocs.
 - Taille des nœuds = valeur mesurée (Banque mondiale : MS.MIL.XPND.CD, PIB ; UE via l'agrégat EUU) ou nb de soutiens — jamais un poids choisi à la main.
+- Organisations superposées : jusqu'à 6, palette catégorielle fixe, JAMAIS de transparence qui mélange les couleurs (retour de Jérôme). Carte : rayures des couleurs des organisations d'un pays. Vue « Organisations » : diagramme d'Euler (un cercle par organisation, aire ∝ nb de membres, chevauchements ∝ membres communs, chaque pays dans la zone exacte de ses appartenances ; zone impossible → placé au plus près, contour pointillé). Rejeté : contours sur le graphe de soutiens (les liens tirent les pays ailleurs). Adhésions/départs datés depuis 2014 dans alignments.yaml (`joined`, `left`, `since`).
 - Les sites/pages générés échappent tout texte venant du graphe ou des marchés (contributions externes).
 
 ## À faire en priorité

@@ -77,6 +77,10 @@ border-radius:8px;padding:8px 10px;font-size:12px;display:flex;flex-direction:co
 #map{position:absolute;inset:0;display:none;background:var(--ocean)}
 body.map #map{display:block}body.map #graph,body.map .graph-only{display:none}
 .map-only{display:none}body.map .map-only{display:block}
+#venn{position:absolute;inset:0;display:none;padding:130px 12px 12px}body.venn #venn{display:block}
+body.venn #graph,body.venn .graph-only{display:none}#venn svg{width:100%;height:100%;overflow:visible}
+#venn text{font-family:system-ui,sans-serif}.vc{cursor:pointer}.vc:hover circle{stroke:var(--fg)}
+.venn-empty{max-width:380px;margin:120px auto;text-align:center}.venn-note{position:absolute;bottom:4px;left:12px;right:12px;margin:0}
 .leaflet-container{background:var(--ocean);font:inherit}
 .leaflet-control-layers,.leaflet-bar a,.leaflet-tooltip{background:var(--card);color:var(--fg);border-color:var(--line)}
 .mk{display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -84,7 +88,7 @@ body.map #map{display:block}body.map #graph,body.map .graph-only{display:none}
 .mk i{display:block;width:12px;height:12px;background:#6b4fbb;box-shadow:0 0 0 1.5px var(--card)}
 .mk.non_state i{background:#d64545;transform:rotate(45deg)}.mk.party i{background:#6b4fbb}
 .mk.person i{background:#6b4fbb;clip-path:polygon(50% 0,100% 100%,0 100%);box-shadow:none;width:14px;height:13px}
-aside{padding:20px;overflow:auto}
+aside{padding:20px;overflow:auto}aside a{color:inherit}
 h1{font-size:20px;margin:0 0 4px}h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin:20px 0 6px}
 .kv{display:grid;grid-template-columns:140px 1fr;gap:3px 10px}.kv span:nth-child(odd){color:var(--mute)}
 .rel{padding:6px 0;border-bottom:1px solid var(--line)}.rel b{cursor:pointer}
@@ -92,17 +96,21 @@ h1{font-size:20px;margin:0 0 4px}h2{font-size:12px;text-transform:uppercase;lett
 .mute{color:var(--mute);font-size:12px}.legend .tag{margin-right:4px}
 .mkt{padding:6px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:52px 1fr 80px;gap:8px;align-items:center}
 .mkt .p{font-weight:600;font-variant-numeric:tabular-nums}.mkt a{color:inherit}.up{color:#c0392b}.down{color:#2f8f5b}
+#orgs summary{cursor:pointer}#orgs .list{max-height:40vh;overflow:auto;margin-top:4px;padding-right:4px}
+#orgs .og{font-weight:600;color:var(--mute);margin-top:6px}#orgs label{display:flex;align-items:center;gap:6px}
+#orgs i,.sw{display:inline-block;width:11px;height:11px;border-radius:3px;flex:none;border:1px solid var(--line);vertical-align:-1px}
+.future{opacity:.45}
 .spark{width:80px;height:22px}.spark polyline{fill:none;stroke:currentColor;stroke-width:1.5}
 </style></head><body>
-<div id="stage"><div id="graph"></div><div id="map"></div>
-<div id="views"><button id="v-graph" aria-pressed="true">Graphe</button><button id="v-map" aria-pressed="false">Carte</button><a href="methode.html">Méthode & sources</a></div>
+<div id="stage"><div id="graph"></div><div id="map"></div><div id="venn"></div>
+<div id="views"><button id="v-graph" aria-pressed="true">Graphe</button><button id="v-map" aria-pressed="false">Carte</button><button id="v-venn" aria-pressed="false">Organisations</button><a href="methode.html">Méthode & sources</a></div>
 <div id="controls">
   <label>Taille des acteurs : <select id="metric">
     <option value="military">dépenses militaires ($)</option><option value="gdp">PIB ($)</option>
     <option value="supports">nombre de soutiens accordés</option></select></label>
   <label class="map-only">Couleur des pays : <select id="colormode">
     <option value="formal">liens formels (traités, adhésions)</option><option value="votes">votes à l'ONU</option></select></label>
-  <label class="map-only">Organisation : <select id="org"><option value="">aucune</option></select></label>
+  <details id="orgs"><summary>Organisations superposées <b id="orgs-n"></b></summary><div class="list"></div></details>
   <label>Année : <input type="range" id="year" min="2014" step="1" style="vertical-align:middle;width:130px"> <b id="year-label"></b></label>
   <label class="graph-only"><input type="checkbox" id="lyr-armed" checked> Groupes armés non étatiques</label>
   <label class="graph-only"><input type="checkbox" id="lyr-detail"> Partis & personnalités</label>
@@ -149,20 +157,75 @@ function blocLine(id){ const i = inf(id), nmv = i.via.map(nm).join(", ");
   if(i.role==="satellite") return `Bloc : <b style="color:${blocColor(id)}">${esc(BLOCS[i.bloc].name)}</b> — satellite, sans lien formel (soutenu par ${nmv})`;
   if(i.role==="contested") return `Bloc : <b style="color:${CONTESTED}">disputé</b> entre ${i.blocs.map(b=>esc(BLOCS[b].name)).join(" et ")}${ties ? ` (${ties})` : ` (soutenu par ${nmv})`}`;
   return ""; }
-// ---------- Organisations (groupes d'alignments.yaml) : sélecteur de la carte, fiches ----------
-(() => { const sel = $("#org"), add = (label, gs) => { if(!gs.length) return;
-    const og = document.createElement("optgroup"); og.label = label;
-    gs.forEach(g => { const o = document.createElement("option"); o.value = g.id; o.textContent = `${g.name} (${g.members.length})`; og.append(o); });
-    sel.append(og); };
+// ---------- Organisations (groupes d'alignments.yaml) : calques superposables de la carte, fiches ----------
+// Jusqu'à 6 calques, palette catégorielle validée (clair / sombre) ; une couleur reste attachée à son organisation
+// tant qu'elle est cochée, pour que cocher ou décocher une autre ne repeigne pas la carte.
+const ORG_PAL = matchMedia("(prefers-color-scheme: dark)").matches
+  ? ["#3987e5","#d95926","#199e70","#c98500","#d55181","#008300"]
+  : ["#2a78d6","#eb6834","#1baf7a","#eda100","#e87ba4","#008300"];
+const SEL = new Map();  // id du groupe → couleur
+const yr = d => +String(d).slice(0,4);
+// Membres l'année Y : adhésions (joined) et départs (left) datés depuis 2014 ; un membre sans date l'était déjà.
+function membersAt(g, Y){ if(g.since && yr(g.since) > Y) return [];
+  const j = g.joined || {}, l = g.left || {};
+  return [...g.members.filter(m => !j[m] || yr(j[m]) <= Y), ...Object.keys(l).filter(m => yr(l[m]) > Y)]; }
+function movesOf(g){ return [...(g.since ? [{g, d:g.since, t:"création"}] : []),
+  ...Object.entries(g.joined||{}).filter(([m,d]) => d !== g.since).map(([m,d]) => ({g, m, d, t:"entrée"})),
+  ...Object.entries(g.left||{}).map(([m,d]) => ({g, m, d, t:"sortie"}))]; }
+(() => { const box = $("#orgs .list"), add = (label, gs) => { if(!gs.length) return;
+    box.insertAdjacentHTML("beforeend", `<div class="og">${esc(label)}</div>` + gs.map(g =>
+      `<label><input type="checkbox" autocomplete="off" value="${esc(g.id)}"><i></i>${esc(g.name)} <span class="mute">(${g.members.length})</span></label>`).join("")); };
   add("Forums économiques et politiques", D.align.groups.filter(g => g.kind==="forum"));
-  Object.entries(BLOCS).forEach(([k,b]) => add(b.name, D.align.groups.filter(g => g.bloc===k))); })();
+  Object.entries(BLOCS).forEach(([k,b]) => add(b.name, D.align.groups.filter(g => g.bloc===k)));
+  box.addEventListener("change", syncOrgs);
+  addEventListener("pageshow", () => SEL.size || document.querySelector("#orgs input:checked") ? syncOrgs() : null); })();
+// Les cases cochées font foi (le navigateur peut les restaurer au rechargement) : SEL est réaligné sur elles.
+function syncOrgs(){
+  const on = new Set([...document.querySelectorAll("#orgs input:checked")].map(i => i.value));
+  [...SEL.keys()].forEach(id => on.has(id) || SEL.delete(id));
+  on.forEach(id => { if(!SEL.has(id) && SEL.size < ORG_PAL.length){ const used = new Set(SEL.values());
+    SEL.set(id, ORG_PAL.find(c => !used.has(c))); } });
+  document.querySelectorAll("#orgs input").forEach(i => i.checked = SEL.has(i.value));
+  document.querySelectorAll("#orgs input").forEach(i => { i.nextElementSibling.style.background = SEL.has(i.value) ? tint(SEL.get(i.value)) : "transparent";
+    i.disabled = !i.checked && SEL.size >= ORG_PAL.length; });
+  $("#orgs-n").textContent = SEL.size ? `(${SEL.size}/${ORG_PAL.length})` : "";
+  if(map) drawOrgs();
+  drawVenn();
+  SEL.size ? showLayers() : legend(); }
+// même teinte partout (carte, cases, panneau) : couleur de l'organisation légèrement adoucie vers le fond de carte
+const tint = c => mix(c, css("--land"), .8);
+const sw = c => `<span class="sw" style="background:${tint(c)}"></span>`;
+function showLayers(){ const Y = YEAR(), gs = [...SEL.keys()].map(id => GROUPS[id]);
+  const at = Object.fromEntries(gs.map(g => [g.id, membersAt(g, Y)])), where = {};
+  gs.forEach(g => at[g.id].forEach(m => (where[m] = where[m] || []).push(g.id)));
+  const pivots = Object.entries(where).filter(([,v]) => v.length > 1)
+    .sort((a,b) => b[1].length - a[1].length || cname(a[0]).localeCompare(cname(b[0])));
+  const moves = gs.flatMap(movesOf).sort((a,b) => a.d < b.d ? -1 : a.d > b.d ? 1 : 0);
+  $("#panel").innerHTML = `<div id="layers-panel"><h1>Organisations superposées</h1>
+    <div class="mute">Situation en ${Y} — curseur « Année » pour voir les adhésions et les départs</div>
+    ${gs.map(g => `<div class="rel">${sw(SEL.get(g.id))}<a href="#" data-group="${esc(g.id)}">${esc(g.name)}</a>
+      <span class="mute">— ${at[g.id].length} pays${g.kind==="forum" ? " · forum" : ` · ${esc(BLOCS[g.bloc].name)}, niveau ${g.level}/3`}</span></div>`).join("")}
+    ${gs.length > 1 ? `<h2>Pays à la croisée (${pivots.length})</h2>` + (pivots.length ? pivots.map(([m,ids]) =>
+        `<div class="rel"><a href="#" data-country="${esc(m)}">${cname(m)}</a> ${ids.map(id => sw(SEL.get(id))).join("")}
+        <span class="mute">${ids.map(id => esc(GROUPS[id].name)).join(" · ")}</span></div>`).join("")
+      : `<p class="mute">Aucun pays n'appartient à plusieurs de ces organisations en ${Y}.</p>`) : ""}
+    <h2>Mouvements depuis 2014</h2>${moves.length ? moves.map(v => `<div class="rel${yr(v.d) > Y ? " future" : ""}">${sw(SEL.get(v.g.id))}
+      <b>${esc(v.d)}</b> · ${v.m ? `<a href="#" data-country="${esc(v.m)}">${cname(v.m)}</a> ${v.t==="entrée" ? "entre dans" : "quitte"}` : "création de"}
+      ${esc(v.g.name)}</div>`).join("") : `<p class="mute">Aucune adhésion ni départ daté depuis 2014 pour ces organisations.</p>`}
+    <p class="mute">Chaque organisation a sa couleur ; un pays membre de plusieurs organisations cochées est rayé de
+    toutes leurs couleurs, sans mélange.
+    Dates d'adhésion et de départ sourcées dans <code>alignments.yaml</code> (voir chaque organisation).
+    Les couleurs des blocs d'influence sont masquées tant qu'un calque est affiché.</p></div>`; }
 const forumsOf = iso => D.align.groups.filter(g => g.kind==="forum" && g.members.includes(iso));
 const forumLine = iso => { const f = forumsOf(iso);
   return f.length ? `Organisations : ${f.map(g => `<a href="#" data-group="${esc(g.id)}">${esc(g.name)}</a>`).join(", ")}` : ""; };
 function showGroup(gid){ const g = GROUPS[gid]; if(!g) return;
   $("#panel").innerHTML = `<h1>${esc(g.name)}</h1><div class="mute">${g.kind==="forum" ? "forum — sans effet sur les blocs d'influence"
       : `${esc(BLOCS[g.bloc].name)} — niveau ${g.level}/3`} · ${g.members.length} pays</div>
-    <p>${g.members.map(m => `<a href="#" data-country="${esc(m)}">${cname(m)}</a>`).join(", ")}</p>
+    <p>${g.members.map(m => `<a href="#" data-country="${esc(m)}">${cname(m)}</a>${(g.joined||{})[m] ? ` <span class="mute">(depuis ${esc(g.joined[m])})</span>` : ""}`).join(", ")}</p>
+    ${Object.keys(g.left||{}).length ? `<p class="mute">Anciens membres : ${Object.entries(g.left).map(([m,d]) =>
+      `<a href="#" data-country="${esc(m)}">${cname(m)}</a> (jusqu'en ${esc(d)})`).join(", ")}</p>` : ""}
+    ${g.since ? `<p class="mute">Créée en ${esc(g.since)}.</p>` : ""}
     ${g.note ? `<p class="mute">${esc(g.note)}</p>` : ""}<p class="mute">${g.sources.map(src).join(" ; ")}</p>`; }
 document.addEventListener("click", ev => {
   const gl = ev.target.closest("[data-group]"); if(gl){ ev.preventDefault(); showGroup(gl.dataset.group); }
@@ -270,6 +333,94 @@ const net = new vis.Network($("#graph"), {nodes:nodesDS, edges:edgesDS},
   {physics:{solver:"forceAtlas2Based", stabilization:{iterations:250}}, interaction:{hover:true}});
 net.on("click", p => p.nodes.length ? show(p.nodes[0]) : legend());
 
+// ---------- Vue « Organisations » : diagramme d'ensembles (Euler) ----------
+// Un cercle par organisation cochée, d'aire proportionnelle à son nombre de membres ; les cercles sont placés pour
+// que leurs chevauchements suivent le nombre de membres communs. Chaque pays est posé dans la zone qui correspond
+// exactement à ses appartenances (Chine : dans BRICS et OCS, hors OTAN). Contours sans remplissage : aucun mélange.
+const VU = 26;
+// « Organisation de coopération de Shanghai (OCS) » → « OCS » ; « OTAN (article 5) » → « OTAN »
+const shortName = n => { const m = n.match(/^(.*) \(([^)]*)\)$/); return !m ? n : /^[A-ZÉ]{2,6}$/.test(m[2]) ? m[2] : m[1]; };  // côté de la place réservée à un pays, en unités du dessin
+function lens(r1, r2, d){ if(d >= r1 + r2) return 0; if(d <= Math.abs(r1 - r2)) return Math.PI*Math.min(r1,r2)**2;
+  const a = r1*r1*Math.acos((d*d + r1*r1 - r2*r2)/(2*d*r1)), b = r2*r2*Math.acos((d*d + r2*r2 - r1*r1)/(2*d*r2));
+  return a + b - .5*Math.sqrt((-d+r1+r2)*(d+r1-r2)*(d-r1+r2)*(d+r1+r2)); }
+function targetDist(r1, r2, area){ let lo = Math.abs(r1 - r2), hi = r1 + r2;   // lens() décroît avec d
+  if(area <= 0) return {d: hi + VU*.6, kind: "apart"};
+  if(area >= Math.PI*Math.min(r1,r2)**2*.999) return {d: Math.max(0, lo - VU*.6), kind: "inside"};
+  for(let k = 0; k < 50; k++){ const m = (lo + hi)/2; lens(r1, r2, m) > area ? lo = m : hi = m; }
+  return {d: (lo + hi)/2, kind: "exact"}; }
+function eulerLayout(sets){  // sets : [{id, members:Set}]
+  const n = sets.length, cell = VU*VU*2.4;
+  const C = sets.map((s, i) => ({...s, r: Math.sqrt(Math.max(1, s.members.size)*cell/Math.PI),
+    x: 200*Math.cos(2*Math.PI*i/n), y: 200*Math.sin(2*Math.PI*i/n)}));
+  const T = [];
+  for(let i = 0; i < n; i++) for(let j = i+1; j < n; j++){
+    const common = [...C[i].members].filter(m => C[j].members.has(m)).length;
+    T.push({i, j, ...targetDist(C[i].r, C[j].r, common*cell)}); }
+  for(let it = 0; it < 600; it++){ const lr = .12*(1 - it/700);   // descente de gradient sur l'écart aux distances cibles
+    for(const t of T){ const a = C[t.i], b = C[t.j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || .01;
+      // cercles disjoints : rapprochés doucement (pas d'espace perdu) ; inclus : libres à l'intérieur
+      let e = d - t.d; if(t.kind==="apart" && e > 0) e *= .15; if(t.kind==="inside" && e < 0) e = 0;
+      const ux = dx/d*e*lr, uy = dy/d*e*lr; a.x += ux; a.y += uy; b.x -= ux; b.y -= uy; } }
+  return C; }
+function placeCountries(C, all){  // {iso: {x, y, ok}} ; ok = false si la zone exacte n'existe pas dans le dessin
+  const minX = Math.min(...C.map(c => c.x - c.r)), maxX = Math.max(...C.map(c => c.x + c.r));
+  const minY = Math.min(...C.map(c => c.y - c.r)), maxY = Math.max(...C.map(c => c.y + c.r));
+  const pts = [], step = VU/3;
+  for(let x = minX; x <= maxX; x += step) for(let y = minY; y <= maxY; y += step){
+    const ins = C.map(c => Math.hypot(x - c.x, y - c.y) < c.r);
+    if(!ins.some(Boolean)) continue;
+    pts.push({x, y, sig: ins.map(Number).join(""), clear: Math.min(...C.map(c => Math.abs(Math.hypot(x - c.x, y - c.y) - c.r)))}); }
+  const bySig = {}; all.forEach(iso => { const sig = C.map(c => c.members.has(iso) ? 1 : 0).join("");
+    (bySig[sig] = bySig[sig] || []).push(iso); });
+  const out = {}, taken = [];
+  for(const [sig, isos] of Object.entries(bySig)){
+    let cand = pts.filter(p => p.sig === sig), ok = cand.length > 0;
+    if(!ok){ const score = p => [...sig].filter((b, k) => b === p.sig[k]).length;   // zone absente : la plus proche
+      const best = Math.max(...pts.map(score)); cand = pts.filter(p => score(p) === best); }
+    isos.sort((a, b) => cname(a).localeCompare(cname(b)));
+    const chosen = [];
+    for(const iso of isos){   // échantillonnage « le plus loin possible » : loin des bords et des pays déjà posés
+      let best = null, bs = -Infinity;
+      for(const p of cand){ const near = Math.min(VU*2, ...chosen.concat(taken).map(q => Math.hypot(p.x - q.x, p.y - q.y)));
+        const sc = Math.min(near, VU*1.2) + Math.min(p.clear, VU*.7)*1.5; if(sc > bs){ bs = sc; best = p; } }
+      chosen.push(best); out[iso] = {x: best.x, y: best.y, ok}; }
+    taken.push(...chosen); }
+  return out; }
+function drawVenn(){ const box = $("#venn"); if(!document.body.classList.contains("venn")) return;
+  const Y = YEAR(), sets = [...SEL.keys()].map(id => ({id, members: new Set(membersAt(GROUPS[id], Y))}));
+  if(sets.length < 2){ box.innerHTML = `<p class="venn-empty mute">Coche au moins deux organisations dans « Organisations
+    superposées » : chacune devient un cercle, et chaque pays se place à l'intersection des organisations dont il est membre.</p>`; return; }
+  const C = eulerLayout(sets), all = [...new Set(sets.flatMap(s => [...s.members]))], P = placeCountries(C, all);
+  // textes en pixels écran : on estime l'échelle du dessin, puis on agrandit le cadre pour y faire tenir les noms
+  const W = Math.max(200, box.clientWidth - 24), H = Math.max(200, box.clientHeight - 142);
+  let minX = Math.min(...C.map(c => c.x - c.r)), maxX = Math.max(...C.map(c => c.x + c.r));
+  let minY = Math.min(...C.map(c => c.y - c.r)), maxY = Math.max(...C.map(c => c.y + c.r));
+  const k = Math.min(W/(maxX - minX + 60), H/(maxY - minY + 60)), px = v => v/k;
+  const f = VU*.36, placed = [];
+  // nom de l'organisation au-dessus de son cercle ; remonté d'une ligne s'il chevaucherait un nom déjà posé
+  const labels = [...C].sort((a, b) => (a.y - a.r) - (b.y - b.r)).map(c => {
+    const text = `${shortName(GROUPS[c.id].name)} · ${c.members.size}`, w = px(text.length*7.2);
+    let ly = c.y - c.r - px(9);
+    while(placed.some(p => Math.abs(p.y - ly) < px(16) && Math.abs(p.x - c.x) < (p.w + w)/2 + px(8))) ly -= px(16);
+    placed.push({x: c.x, y: ly, w});
+    minX = Math.min(minX, c.x - w/2); maxX = Math.max(maxX, c.x + w/2); minY = Math.min(minY, ly - px(10));
+    return `<text x="${c.x.toFixed(1)}" y="${ly.toFixed(1)}" fill="${SEL.get(c.id)}" font-weight="600" font-size="${px(13).toFixed(2)}"
+      text-anchor="middle" stroke="var(--bg)" stroke-width="${px(4).toFixed(2)}" paint-order="stroke">${esc(text)}</text>`; }).join("");
+  minX -= px(12); maxX += px(12); minY -= px(12); maxY += px(16);
+  const off = all.filter(iso => !P[iso].ok);
+  box.innerHTML = `<svg viewBox="${minX} ${minY} ${maxX - minX} ${maxY - minY}" preserveAspectRatio="xMidYMid meet" role="img"
+      aria-label="Diagramme d'ensembles des organisations cochées">
+    <defs><clipPath id="vclip" clipPathUnits="objectBoundingBox"><circle cx=".5" cy=".5" r=".5"/></clipPath></defs>
+    ${C.map(c => `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${c.r.toFixed(1)}" fill="none" stroke="${SEL.get(c.id)}" stroke-width="2.5"/>`).join("")}
+    ${all.map(iso => { const p = P[iso];
+      return `<g class="vc" data-country="${esc(iso)}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})"><title>${cname(iso)} — ${
+        sets.filter(s => s.members.has(iso)).map(s => esc(GROUPS[s.id].name)).join(" · ")}${p.ok ? "" : " (zone impossible à dessiner avec des cercles : placé au plus près)"}</title>
+        <circle r="${f + 1.5}" fill="var(--card)" stroke="${p.ok ? "var(--line)" : "var(--fg)"}" ${p.ok ? "" : 'stroke-dasharray="2 2"'}/>
+        <image href="${flag(iso)}" x="${-f}" y="${-f}" width="${2*f}" height="${2*f}" clip-path="url(#vclip)"/>
+        <text y="${(f + px(10)).toFixed(1)}" text-anchor="middle" font-size="${px(10).toFixed(2)}" fill="var(--fg)"
+          stroke="var(--bg)" stroke-width="${px(3).toFixed(2)}" paint-order="stroke">${cname(iso)}</text></g>`; }).join("")}
+    ${labels}
+  </svg>${off.length ? `<p class="venn-note mute">${off.length} pays dans une combinaison que des cercles ne peuvent pas représenter (contour pointillé) : placés dans la zone la plus proche.</p>` : ""}`; }
 function refresh(){
   const S = sizes($("#metric").value);
   const sz = id => ["state","bloc"].includes(D.actors[id].kind) ? S[id] : Math.max(S[id], D.actors[id].kind==="person" ? 18 : 14);
@@ -278,7 +429,9 @@ function refresh(){
 ["metric","lyr-armed","lyr-detail"].forEach(i => $("#"+i).addEventListener("change", refresh));
 function onYear(){ const Y = YEAR();
   $("#year-label").textContent = Y === NOW ? `${Y} (aujourd'hui)` : String(Y);
-  edgesDS.update(D.edges.map((e,i) => ({id:"e"+i, hidden: !activeAt(e, Y)}))); }
+  edgesDS.update(D.edges.map((e,i) => ({id:"e"+i, hidden: !activeAt(e, Y)})));
+  drawVenn();
+  if($("#layers-panel")) showLayers(); }
 $("#year").addEventListener("input", onYear); onYear();
 $("#metric").addEventListener("change", () => map && drawMarkers());
 
@@ -286,7 +439,7 @@ $("#metric").addEventListener("change", () => map && drawMarkers());
 const WORLD = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";  // Natural Earth, domaine public
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const MAP_LAYERS = {core:"États & blocs", non_state:"Groupes armés", party:"Partis", person:"Personnalités", links:"Liens de soutien"};
-let map, groups, linkLayers = [];
+let map, groups, linkLayers = [], countries;
 const layerOf = id => { const k = D.actors[id].kind; return k==="state"||k==="bloc" ? "core" : k; };
 
 // Position : coords explicites (bloc), sinon coordonnées Wikidata du pays ; les acteurs rattachés
@@ -359,28 +512,51 @@ async function initMap(){
     : `${cname(iso)} — penchant ${leanAt(iso) > 0 ? "+" : ""}${leanAt(iso).toFixed(2)} en ${voteYear()} (+ = vote comme France/Allemagne, − = comme Russie/Chine)`;
   const style = f => { const iso = byNum[String(+f.id)], votes = $("#colormode").value==="votes";
     const c = iso && (votes ? votesColor(iso) : blocColor(iso) && mix(blocColor(iso), css("--land"), TINT[inf(iso).level] || .25));
-    const org = GROUPS[$("#org").value], inOrg = org && org.members.includes(iso);
-    return {color: inOrg ? css("--fg") : css("--line"), weight: inOrg ? 2 : .6, fillOpacity: org && !inOrg ? .35 : 1,
+    // organisations cochées : fond neutre, chaque pays prend la couleur de ses organisations (rayures si plusieurs)
+    if(SEL.size) return {color: css("--line"), weight: .6, fillOpacity: 1, fillColor: orgFill(iso) || css("--land")};
+    return {color: css("--line"), weight: .6, fillOpacity: 1,
             fillColor: c || (iso && D.actors[iso] ? css("--land-hl") : css("--land"))}; };
-  const countries = L.geoJSON(world, {style,
+  const orgTip = iso => { const ids = [...SEL.keys()].filter(id => membersAt(GROUPS[id], YEAR()).includes(iso));
+    return ids.length ? "<br>" + ids.map(id => sw(SEL.get(id)) + esc(GROUPS[id].name)).join("<br>") : ""; };
+  countries = L.geoJSON(world, {style,
     onEachFeature: (f, l) => { const iso = byNum[String(+f.id)];
       if(!iso) return;
-      l.bindTooltip(() => ($("#colormode").value==="votes" ? votesTip : formalTip)(iso), {sticky:true});
+      l.bindTooltip(() => SEL.size ? cname(iso) + orgTip(iso) : ($("#colormode").value==="votes" ? votesTip : formalTip)(iso), {sticky:true});
       l.on("click", () => D.actors[iso] ? show(iso) : showCountry(iso)); }
   }).addTo(map);
   $("#colormode").addEventListener("change", () => countries.setStyle(style));
-  $("#year").addEventListener("input", () => { countries.setStyle(style); drawLinks(); });
-  $("#org").addEventListener("change", () => { countries.setStyle(style); const g = GROUPS[$("#org").value]; if(g) showGroup(g.id); });
+  $("#year").addEventListener("input", () => { drawOrgs(); drawLinks(); });
+  drawOrgs.restyle = () => countries.setStyle(style);
   groups = Object.fromEntries(Object.keys(MAP_LAYERS).map(k => [k, L.layerGroup().addTo(map)]));
   L.control.layers(null, Object.fromEntries(Object.entries(MAP_LAYERS).map(([k,label]) => [label, groups[k]])),
     {collapsed: innerWidth < 800, position:"bottomleft"}).addTo(map);
-  map.on("overlayadd overlayremove", drawLinks);
-  drawMarkers(); drawLinks(); }
+  // différé : pendant l'événement de retrait, la couche est encore attachée à la carte et y ajouterait les liens
+  map.on("overlayadd overlayremove", () => setTimeout(drawLinks));
+  drawOrgs(); drawMarkers(); drawLinks(); }
+function drawOrgs(){ if(drawOrgs.restyle) drawOrgs.restyle(); }
+// Remplissage d'un pays selon les organisations cochées dont il est membre l'année choisie : couleur unie pour une,
+// rayures juxtaposées pour plusieurs. Les teintes ne se mélangent jamais : chaque couleur reste celle d'une organisation.
+const STRIPE = 5;
+function orgFill(iso){ if(!iso) return null; const Y = YEAR();
+  const cs = [...SEL].filter(([id]) => membersAt(GROUPS[id], Y).includes(iso)).map(([,c]) => tint(c));
+  if(cs.length < 2) return cs[0] || null;
+  const pid = "stripes-" + cs.map(c => c.slice(1)).join("-");
+  if(!document.getElementById(pid)){
+    let defs = document.getElementById("org-defs");
+    if(!defs){ document.body.insertAdjacentHTML("beforeend",
+      '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="org-defs"></defs></svg>');
+      defs = document.getElementById("org-defs"); }
+    defs.insertAdjacentHTML("beforeend", `<pattern id="${pid}" patternUnits="userSpaceOnUse" width="${cs.length*STRIPE}"
+      height="${cs.length*STRIPE}" patternTransform="rotate(45)">${cs.map((c,i) =>
+      `<rect x="${i*STRIPE}" y="0" width="${STRIPE}" height="${cs.length*STRIPE}" fill="${c}"/>`).join("")}</pattern>`); }
+  return `url(#${pid})`; }
 
 function setView(v){
-  document.body.classList.toggle("map", v==="map");
-  $("#v-graph").setAttribute("aria-pressed", v==="graph"); $("#v-map").setAttribute("aria-pressed", v==="map");
-  if(v==="map"){ if(!map) initMap(); else map.invalidateSize(); } }
+  document.body.classList.toggle("map", v==="map"); document.body.classList.toggle("venn", v==="venn");
+  ["graph","map","venn"].forEach(k => $("#v-"+k).setAttribute("aria-pressed", v===k));
+  if(v==="map"){ if(!map) initMap(); else map.invalidateSize(); }
+  if(v==="venn"){ drawVenn(); $("#orgs").open = !SEL.size; } }
+$("#v-venn").addEventListener("click", () => setView("venn"));
 $("#v-graph").addEventListener("click", () => setView("graph"));
 $("#v-map").addEventListener("click", () => setView("map"));
 
@@ -492,7 +668,8 @@ function legend(){
   <h2>Forums économiques et politiques</h2><p class="mute">${D.align.groups.filter(g => g.kind==="forum").map(g =>
     `<a href="#" data-group="${esc(g.id)}">${esc(g.name)}</a>`).join(" · ")}. Ce sont des cadres de coopération, pas des alliances :
   les BRICS réunissent l'Inde et la Chine, l'OCS l'Inde et le Pakistan. Ils n'entrent donc pas dans le calcul des blocs ;
-  le sélecteur « Organisation » de la carte en surligne les membres.</p>
+  en vue carte, « Organisations superposées » les affiche en calques transparents (jusqu'à 6), qu'on peut combiner
+  avec les alliances formelles et faire défiler dans le temps.</p>
   <h2>Votes à l'ONU</h2><p class="mute">Sur la carte, « Couleur des pays : votes à l'ONU » place chaque pays selon la fréquence
   à laquelle il vote comme France/Allemagne ou comme Russie/Chine (Assemblée générale, votes enregistrés, ${U.agreement_year}).
   Beaucoup de votes du Sud global (développement, décolonisation) coïncident avec ceux de la Chine : pencher vers

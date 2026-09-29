@@ -105,9 +105,20 @@ def check(actors, edges, today=None, aligns=None):
         srcs = g.get("sources") or []
         if not srcs or not all(isinstance(x, str) and "http" in x for x in srcs):
             errors.append(f"groupe {k} : sources avec URL requises")
-        for m in g.get("members") or []:
+        members = set(g.get("members") or [])
+        for m in members:
             if not re.fullmatch(r"[A-Z]{2}", str(m)):
                 errors.append(f"groupe {k} : membre « {m} » n'est pas un code ISO2")
+        # dates d'adhésion / de départ : AAAA-MM ; joined pour un membre actuel, left pour un ancien membre
+        if g.get("since") is not None and not re.fullmatch(r"\d{4}-\d{2}", str(g["since"])):
+            errors.append(f"groupe {k} : since « {g['since']} » doit être au format AAAA-MM")
+        for field, must_be_member in (("joined", True), ("left", False)):
+            for m, d in (g.get(field) or {}).items():
+                if not re.fullmatch(r"\d{4}-\d{2}", str(d)):
+                    errors.append(f"groupe {k} : {field}[{m}] « {d} » doit être au format AAAA-MM")
+                if (m in members) != must_be_member:
+                    errors.append(f"groupe {k} : {field}[{m}] — " + ("absent de members" if must_be_member
+                                  else "un ancien membre ne doit plus figurer dans members"))
     for b, v in ((aligns or {}).get("blocs") or {}).items():
         if not re.fullmatch(r"#[0-9a-fA-F]{6}", str(v.get("color", ""))):
             errors.append(f"bloc {b} : color doit être #rrggbb")
