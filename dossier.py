@@ -42,6 +42,7 @@ h3.sub{font:500 17px/1.3 var(--serif);margin:0 0 10px}.meds{display:grid;gap:10p
 .camp .who img{width:52px;height:52px;border-radius:50%;object-fit:cover}
 .camp h3{font-size:21px;margin:0}.camp .lead{color:var(--graphite);font-size:15px}
 .camp > p{margin:0 0 20px;font-size:16px}
+.lever{grid-column:2;font-size:14px;color:var(--graphite);margin-top:4px;padding-left:10px;border-left:2px solid #b08968}
 .backers-title{font-size:15px;color:var(--graphite);margin:0 0 4px}
 .backer{display:grid;grid-template-columns:22px 1fr;gap:4px 12px;padding:12px 0;border-top:1px solid var(--mist)}
 .backer img{width:22px;height:22px;border-radius:50%;margin-top:2px}
@@ -162,6 +163,9 @@ def backers_block(bs, d, g, cite):
         rows.append(f"""<div class="backer">{flag(xs[0]["from"], d) if len(xs) == 1 else flag("EU", d) if any(x["from"] == "EU" for x in xs) else flag(xs[0]["from"], d)}
   <div><span class="name">{", ".join(names)}</span><span class="kind">{e(", ".join(kinds))}</span>{'<span class="alleged">allégué</span>' if alleged else ""}</div>
   <div class="why">{glossed(xs[0]["why"], g) if xs[0].get("why") else '<span style="color:var(--graphite)">Motivation pas encore documentée.</span>'}{cite(srcs)}</div>
+  {"".join(f'<div class="lever">{e(d["actors"][dp["from"]]["name"])} : <b>{dp["share"]} %</b> de ses armes importées viennent de ce fournisseur ({e(d["actors"][dp["supplier"]]["name"])}, {e(dp.get("period") or str(dp["year"]))}){cite(dp["sources"])}{(" " + e(dp["note"]) + ".") if dp.get("note") else ""}</div>'
+           for dp in d.get("dependencies", []) for x in xs
+           if dp["type"] == "arms" and dp["supplier"] == x["from"] and dp["from"] == x["to"] and dp.get("status", "active") != "ended")}
   {f'<details><summary>Détails</summary>{"".join(f"<p>{glossed(x['note'], g)}</p>" for x in notes)}</details>' if notes else ""}</div>""")
     return "".join(rows)
 

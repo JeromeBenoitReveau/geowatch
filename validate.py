@@ -257,6 +257,29 @@ def check_mediations(meds, actors):
                 errors.append(f"{where} : {k} au format AAAA ou AAAA-MM")
     return errors
 
+def check_dependencies(deps, actors):
+    """Leviers (dépendances mesurées) : acteurs connus et distincts, type connu, part entre 0 et 100, année AAAA,
+    source avec URL. Une part chiffrée et sourcée, jamais une note d'importance."""
+    errors = []
+    for i, x in enumerate(deps):
+        where = f"dépendance {i} ({x.get('from')} → {x.get('supplier')})"
+        for k in ("from", "supplier"):
+            if x.get(k) not in actors:
+                errors.append(f"{where} : acteur {k} inconnu « {x.get(k)} »")
+        if x.get("from") == x.get("supplier"):
+            errors.append(f"{where} : un pays ne dépend pas de lui-même")
+        if x.get("type") not in network.DEPENDENCY_TYPES:
+            errors.append(f"{where} : type « {x.get('type')} » invalide ({', '.join(network.DEPENDENCY_TYPES)})")
+        if not isinstance(x.get("share"), (int, float)) or not 0 < x["share"] <= 100:
+            errors.append(f"{where} : share doit être un pourcentage entre 0 et 100")
+        if not re.fullmatch(r"\d{4}", str(x.get("year", ""))):
+            errors.append(f"{where} : year au format AAAA")
+        if x.get("status", "active") not in ("active", "reduced", "ended"):
+            errors.append(f"{where} : status « {x.get('status')} » invalide")
+        if not any("http" in str(s) for s in x.get("sources") or []):
+            errors.append(f"{where} : aucune source avec URL")
+    return errors
+
 def check_glossary(terms):
     """glossaire.yaml : ids uniques et en forme d'ancre, champs obligatoires, aucune forme (terme ou variante) partagée."""
     errors, warnings, ids, forms = [], [], set(), {}
@@ -334,6 +357,7 @@ if __name__ == "__main__":
     de, dw = de + te, dw + tw
     ge, gw = check_glossary(glossary.load())
     ge += check_mediations(network.mediations(), actors)
+    ge += check_dependencies(network.dependencies(), actors)
     ge += check_term_refs(glossary.load())
     pe, pw = check_presets(presets.load(), actors, network.alignments(), dossier.load())
     de, dw = de + ge + pe, dw + gw + pw

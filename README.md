@@ -59,6 +59,10 @@ France/Allemagne est suivi à part, jusqu'à l'année écoulée. Pencher vers Ru
 Forums (BRICS, OCS, G7…) : listés dans `alignments.yaml` avec `kind: forum` ; affichés sur la carte, mais sans effet
 sur les blocs d'influence (ce sont des cadres de coopération, pas des alliances).
 
+Réseaux d'influence : le site distingue trois étages, les alignements (`alignments.yaml`), les soutiens (le graphe) et
+les leviers, des dépendances chiffrées et sourcées (clé `dependencies` de `network.yaml`, pour commencer la part de chaque
+fournisseur dans les armes importées, d'après le SIPRI). Médiations (clé `mediations`) : qui négocie entre qui.
+
 La page `methode.html` du site détaille toutes les sources et règles de calcul.
 
 Personnalités : ajouter `wikidata: Qxxx` pour afficher leur photo (Wikimedia Commons, auteur et licence

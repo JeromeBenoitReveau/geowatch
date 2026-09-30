@@ -19,6 +19,13 @@ def mediations():
     """Médiations (clé mediations de network.yaml) : qui négocie entre qui. Ni soutien ni tension, hors calcul des blocs."""
     return _data().get("mediations") or []
 
+def dependencies():
+    """Leviers d'influence (clé dependencies de network.yaml) : parts chiffrées et sourcées d'une ressource tirée d'un
+    fournisseur (armes importées…) : {from, supplier, type, share, year, period, status, sources, note}. Hors calcul des blocs."""
+    return _data().get("dependencies") or []
+
+DEPENDENCY_TYPES = {"arms": "armes", "gas": "gaz", "oil": "pétrole", "debt": "dette", "trade": "commerce"}
+
 TENSION_TYPES = {"war": "guerre", "sanctions": "sanctionne", "claims": "revendique un territoire de", "rivalry": "rivalité avec"}
 
 def leader(actors, aid):

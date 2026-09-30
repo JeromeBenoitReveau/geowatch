@@ -41,7 +41,7 @@ def build():
         unga["countries"] = {by3[c]: v for c, v in unga["countries"].items() if c in by3}
         unga["by_year"] = {y: {by3[c]: v for c, v in d.items() if c in by3} for y, d in unga.get("by_year", {}).items()}
     data = {"actors": actors, "edges": edges, "profiles": profiles, "colors": TYPE_COLORS,
-            "tensions": network.tensions(), "mediations": network.mediations(), "align": aligns, "influence": network.influence(actors, edges, aligns), "geo": geo, "people": db.load_people(), "unga": unga,
+            "tensions": network.tensions(), "mediations": network.mediations(), "dependencies": network.dependencies(), "align": aligns, "influence": network.influence(actors, edges, aligns), "geo": geo, "people": db.load_people(), "unga": unga,
             "dossiers": [{"id": x["id"], "title": x["title"]} for x in dossier.load()], "built": db.now(),
             "glossary": glossary.for_js(), "presets": presets.load(), "correction": style.correction_url("Carte & graphe")}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
@@ -60,7 +60,7 @@ def build():
 TEMPLATE = r"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Carte & graphe — __NAME__</title>
-<meta name="description" content="Carte du monde, graphe des soutiens et organisations : qui soutient qui, qui s’affronte, qui appartient à quoi. Données sourcées.">
+<meta name="description" content="Les réseaux d’influence : alliances, soutiens et dépendances, sur une carte du monde, un graphe et des cercles d’organisations. Données sourcées.">
 <script src="https://cdn.jsdelivr.net/npm/vis-network@10.1.2/standalone/umd/vis-network.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -162,6 +162,9 @@ aside p{margin:0 0 10px}.keys{display:grid;grid-template-columns:78px 1fr;gap:6p
 #orgs .og{font-weight:600;color:var(--mute);margin-top:10px}#controls #orgs label{display:flex;align-items:center;gap:6px}
 #orgs i,.sw{display:inline-block;width:11px;height:11px;border-radius:3px;flex:none;border:1px solid var(--line);vertical-align:-1px}
 .future{opacity:.45}
+.dep{padding:8px 0;border-bottom:1px solid var(--mist)}.dep-h{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.dep-h b{cursor:pointer}.dep-h span{font-size:13px;color:var(--graphite);text-align:right}
+.bar{height:7px;border-radius:2px;background:color-mix(in srgb,var(--ink) 10%,transparent);margin:5px 0 4px}.bar i{display:block;height:100%;border-radius:2px;background:#b08968}
 .dossiers{display:flex;flex-direction:column;gap:8px;margin:0 0 16px}
 .btn-dossier{display:block;padding:11px 14px;border:1px solid var(--mist);border-radius:6px;background:var(--land);text-decoration:none;font:500 16px/1.3 var(--serif)}
 .btn-dossier:hover{border-color:var(--peach)}.btn-dossier::after{content:"Lire le dossier";display:block;font:13px var(--sans);color:var(--graphite);margin-top:2px}
@@ -438,6 +441,15 @@ const medEdges = MEDS.flatMap((m, i) => m.between.map(b => ({id: `m${i}-${b}`, f
   width: MED.width, dashes: MED.dashes, color: {color: MED.color, opacity: 1}, smooth: {type: "curvedCCW", roundness: .12},
   hidden: true, title: medTitle(m)})));
 const medsVisible = () => MEDS.flatMap((m, i) => m.between.map(b => ({id: `m${i}-${b}`, hidden: !medOn(m)})));
+// ---------- Leviers (clé dependencies) : part chiffrée d'une ressource tirée d'un fournisseur ; ni soutien ni tension ----------
+const DEPS = D.dependencies || [], DEP = {color: "#b08968", dashes: [1, 4]};
+const DEP_FR = {arms: "de ses importations d'armes", gas: "de son gaz importé", oil: "de son pétrole importé", debt: "de sa dette extérieure", trade: "de son commerce"};
+const depOn = x => checked("dep", "on") && x.status !== "ended";
+const depText = x => `${x.share} % ${DEP_FR[x.type] || x.type} (${x.period || x.year})`;
+const depEdges = DEPS.map((x, i) => ({id: "d" + i, from: x.supplier, to: x.from, arrows: {to: {enabled: true, scaleFactor: .4}}, physics: false,
+  width: .6 + x.share/25, dashes: DEP.dashes, color: {color: DEP.color, opacity: .9}, smooth: {type: "curvedCW", roundness: .25}, hidden: true,
+  title: `${(D.actors[x.from]||{}).name} : ${depText(x)} viennent de ${(D.actors[x.supplier]||{}).name}`}));
+const depsVisible = () => DEPS.map((x, i) => ({id: "d" + i, hidden: !depOn(x)}));
 const supportsVisible = () => D.edges.map((e,i) => ({id:"e"+i, hidden: !activeAt(e, YEAR()) || !supportOn(e)}));
 
 // ---------- Glossaire : un terme, une définition (glossaire.yaml) ; infobulle commune à tout le site (style.py) ----------
@@ -451,7 +463,7 @@ const TYPES_FR = {arms:"armes", troops:"troupes", financial:"argent", training:"
 const TYPE_TERM = {dual_use:"double-usage"}, TENSION_TERM = {war:"guerre", sanctions:"sanctions", claims:"revendication", rivalry:"rivalite"};
 // vue simplifiée par défaut (lisible au premier coup d'œil) ; « tout afficher » en un clic
 // (moins de 15 relations : les guerres et les troupes engagées ; les questions en haut de la vue mènent plus loin)
-const SIMPLE = {type: ["troops"], tension: ["war"], kind: ["core", "non_state"], med: []};
+const SIMPLE = {type: ["troops"], tension: ["war"], kind: ["core", "non_state"], med: [], dep: []};
 // échantillon de trait : mêmes couleur, épaisseur, tirets et flèche que le dessin
 const stroke = (color, {w=2, dash=null, arrow=true, op=1} = {}) => `<svg width="34" height="12" viewBox="0 0 34 12" aria-hidden="true">
   <line x1="2" y1="6" x2="${arrow ? 26 : 32}" y2="6" stroke="${color}" stroke-width="${w}" stroke-opacity="${op}" ${dash ? `stroke-dasharray="${dash}"` : ""}/>
@@ -475,6 +487,8 @@ const glyph = k => k==="core"
   <div class="fg" style="margin-top:14px">${head(`Tensions${Q("tension")}`, "tension")}
     ${Object.entries(TENSION).map(([k,t]) => row("tension", k, stroke(t.color, {w: Math.min(t.width, 3), dash: t.dashes ? t.dashes.join(" ") : null, arrow: !!t.arrows}), t.label, Q(TENSION_TERM[k]))).join("")}
     <div class="note">${stroke("currentColor", {dash:"2 5", arrow:false, op:.55})} pâle : ${T("cessez-le-feu", "trêve ou cessez-le-feu")}</div></div>
+  <div class="fg" style="margin-top:14px"><div class="fg-h"><b>Leviers${Q("levier")}</b></div>
+    ${row("dep", "on", stroke(DEP.color, {w: 2, dash: DEP.dashes.join(" ")}), "dépendance chiffrée (épaisseur = part)")}</div>
   <div class="fg" style="margin-top:14px"><div class="fg-h"><b>Médiations${Q("mediation")}</b></div>
     ${row("med", "on", stroke(MED.color, {w: MED.width, dash: MED.dashes.join(" "), arrow: false}), "négocie entre deux camps")}</div>
   <div class="fg" style="margin-top:14px">${head(`Acteurs${Q("acteur")}`, "kind")}
@@ -487,7 +501,7 @@ const glyph = k => k==="core"
     box.querySelectorAll(`input[data-g="${g}"]`).forEach(i => i.checked = !!b.dataset.all); userChanged(); });
   box.addEventListener("change", userChanged); })();
 const setChecks = (g, vals) => document.querySelectorAll(`#rel-filters input[data-g="${g}"]`).forEach(i => i.checked = vals == null || vals.includes(i.value));
-const isSimple = () => ["type", "tension", "kind", "med"].every(g => [...document.querySelectorAll(`#rel-filters input[data-g="${g}"]`)]
+const isSimple = () => ["type", "tension", "kind", "med", "dep"].every(g => [...document.querySelectorAll(`#rel-filters input[data-g="${g}"]`)]
   .every(i => i.checked === SIMPLE[g].includes(i.value)));
 // vue préréglée en cours (presets.yaml) : ne montrer qu'un groupe d'acteurs et leurs voisins directs
 let PRESET = null, AROUND = null;
@@ -497,6 +511,7 @@ function computeAround(){ if(!PRESET || !PRESET.around) return AROUND = null;
   TS.forEach(t => { if(activeAt(t, Y) && tensionOn(t) && (base.has(t.from) || base.has(t.to))){ out.add(t.from); out.add(t.to); } });
   // une médiation n'entre que si elle porte sur les acteurs de la question (ses deux parties y sont)
   MEDS.forEach(m => { if(medOn(m) && m.between.every(b => base.has(b))) [m.mediator, ...m.between].forEach(a => out.add(a)); });
+  DEPS.forEach(x => { if(depOn(x) && base.has(x.from)){ out.add(x.from); out.add(x.supplier); } });
   return AROUND = out; }
 // acteurs reliés par au moins une relation affichée : un acteur isolé par les filtres est masqué (graphe lisible)
 let LINKED = null;
@@ -504,11 +519,12 @@ function computeLinked(){ const Y = YEAR(), out = new Set();
   D.edges.forEach(e => { if(activeAt(e, Y) && supportOn(e) && visible(layer(e.from)) && visible(layer(e.to))){ out.add(e.from); out.add(e.to); } });
   TS.forEach(t => { if(activeAt(t, Y) && tensionOn(t) && visible(layer(t.from)) && visible(layer(t.to))){ out.add(t.from); out.add(t.to); } });
   MEDS.forEach(m => { if(medOn(m)) [m.mediator, ...m.between].forEach(a => visible(layer(a)) && out.add(a)); });
+  DEPS.forEach(x => { if(depOn(x) && visible(layer(x.from)) && visible(layer(x.supplier))){ out.add(x.from); out.add(x.supplier); } });
   return LINKED = out; }
 const shown = id => visible(layer(id)) && (!AROUND || AROUND.has(id)) && (!LINKED || LINKED.has(id) || id === FOCUS);
 function applyFilters(){
   if(typeof nodesDS === "undefined") return;
-  computeAround(); computeLinked(); refresh(); edgesDS.update([...supportsVisible(), ...tensionsVisible(), ...medsVisible()]);
+  computeAround(); computeLinked(); refresh(); edgesDS.update([...supportsVisible(), ...tensionsVisible(), ...medsVisible(), ...depsVisible()]);
   if(FOCUS) focusGraph(FOCUS);
   if(map && groups){ Object.entries(groups).forEach(([k, g]) => { if(!["core","non_state","party","person"].includes(k)) return;
     visible(k) ? g.addTo(map) : map.removeLayer(g); }); drawLinks(); }
@@ -518,7 +534,7 @@ function userChanged(){ if(PRESET) history.replaceState(null, "", location.pathn
 
 const S0 = sizes("military");
 const nodesDS = new vis.DataSet(Object.keys(D.actors).map(id=>nodeFor(id, S0[id])));
-const edgesDS = new vis.DataSet([...edgeList, ...anchors, ...tensionEdges, ...medEdges]);
+const edgesDS = new vis.DataSet([...edgeList, ...anchors, ...tensionEdges, ...medEdges, ...depEdges]);
 const net = new vis.Network($("#graph"), {nodes:nodesDS, edges:edgesDS},
   {physics:{solver:"forceAtlas2Based", stabilization:{iterations:250}}, interaction:{hover:true}});
 net.on("click", p => p.nodes.length ? show(p.nodes[0]) : legend());
@@ -904,6 +920,12 @@ function show(id){
   const out = D.edges.filter(e=>e.from===id&&e.status!=="ended"), inn = D.edges.filter(e=>e.to===id&&e.status!=="ended");
   if(out.length) h += `<h2>Soutient</h2>` + out.map(e=>rel(e,e.to)).join("");
   if(inn.length) h += `<h2>Soutenu par${Q("soutien")}</h2>` + inn.map(e=>rel(e,e.from)).join("");
+  const deps = DEPS.filter(x => x.from === id).sort((a, b) => b.share - a.share);
+  if(deps.length) h += `<h2>Dépend de${Q("levier")}</h2>` + deps.map(x => `<div class="dep"><div class="dep-h"><b data-id="${esc(x.supplier)}">${nm(x.supplier)}</b>
+    <span>${esc(depText(x))}</span></div><div class="bar"><i style="width:${Math.min(100, x.share)}%"></i></div>
+    <div class="mute">${x.note ? esc(x.note) + ". " : ""}Source : ${(x.sources||[]).map(src).join(", ")}</div></div>`).join("");
+  const supplied = DEPS.filter(x => x.supplier === id).sort((a, b) => b.share - a.share);
+  if(supplied.length) h += `<h2>Pays qui dépendent de lui</h2><p class="mute">${supplied.map(x => `<b data-id="${esc(x.from)}">${nm(x.from)}</b> ${esc(depText(x))}`).join(" ; ")}.</p>`;
   const tens = TS.filter(t => (t.from===id || t.to===id) && t.status!=="ended");
   const meds = MEDS.filter(m => m.mediator === id || m.between.includes(id));
   if(meds.length) h += `<h2>Médiations${Q("mediation")}</h2>` + meds.map(m => `<div class="rel">${m.mediator === id
@@ -952,6 +974,7 @@ function legend(){
   if(map) highlightLinks(null);
   if(FOCUS){ focusGraph(null); refresh(); }
   $("#panel").innerHTML = `<h1>Carte &amp; graphe</h1>
+  <p>Les ${T("influence", "réseaux d'influence")} : alliances, soutiens et dépendances.</p>
   <p>Pour commencer simplement, lisez un dossier : il raconte un conflit, ses camps et leurs soutiens.</p>
   <div class="dossiers">${(D.dossiers||[]).map(x => `<a class="btn-dossier" href="${esc(x.id)}.html">${esc(x.title)}</a>`).join("")}</div>
   <p>Ou choisissez une question en haut de la vue. Cliquez sur un ${T("acteur")}, un pays ou un lien pour voir ce qui
@@ -987,7 +1010,7 @@ $("#presets").addEventListener("keydown", ev => { const items = [...$("#presets"
   if(ev.key === "Escape"){ qOpen(false); $("#qbtn").focus(); } });
 document.addEventListener("click", ev => { if(!ev.target.closest("#qmenu")) qOpen(false); });
 function applyPreset(p){ PRESET = p;
-  setChecks("type", p.types); setChecks("tension", p.tensions); setChecks("kind", p.kinds || SIMPLE.kind); setChecks("med", p.mediations ? ["on"] : []);
+  setChecks("type", p.types); setChecks("tension", p.tensions); setChecks("kind", p.kinds || SIMPLE.kind); setChecks("med", p.mediations ? ["on"] : []); setChecks("dep", p.dependencies ? ["on"] : []);
   if(p.colormode){ $("#colormode").value = p.colormode; $("#colormode").dispatchEvent(new Event("change")); }
   if(p.orgs){ document.querySelectorAll("#orgs input").forEach(i => i.checked = p.orgs.includes(i.value)); SEL.clear(); syncOrgs(); }
   setView(VIEW_OF[p.view]); applyFilters(); renderPresets();
@@ -1000,7 +1023,7 @@ function applyPreset(p){ PRESET = p;
   if(p.view === "carte" && map) map.setView([30, 20], 2); }
 // quitter une vue préréglée : ses filtres n'étaient pas des choix du lecteur, on revient à la vue simplifiée
 function clearPreset(){ if(!PRESET) return; PRESET = null; AROUND = null;
-  ["type", "tension", "kind", "med"].forEach(g => setChecks(g, SIMPLE[g]));
+  ["type", "tension", "kind", "med", "dep"].forEach(g => setChecks(g, SIMPLE[g]));
   document.querySelectorAll("#presets a[aria-current]").forEach(a => a.removeAttribute("aria-current"));
   history.replaceState(null, "", location.pathname + location.hash); applyFilters(); drawVenn(); renderPresets(); }
 // ce qui est affiché, et comment en sortir en un clic
@@ -1010,8 +1033,8 @@ function viewNote(){ const box = $("#viewnote"); if(!box) return;
   box.innerHTML = isSimple() ? `Vue simplifiée : guerres et troupes. <button type="button" data-note="all">Tout afficher</button>`
     : `<button type="button" data-note="simple">Revenir à la vue simplifiée</button>`; }
 $("#viewnote").addEventListener("click", ev => { const b = ev.target.closest("button[data-note]"); if(!b) return;
-  if(b.dataset.note === "all"){ setChecks("type", null); setChecks("tension", null); setChecks("med", null); userChanged(); return; }
-  clearPreset(); ["type", "tension", "kind", "med"].forEach(g => setChecks(g, SIMPLE[g])); legend(); applyFilters(); });
+  if(b.dataset.note === "all"){ setChecks("type", null); setChecks("tension", null); setChecks("med", null); setChecks("dep", null); userChanged(); return; }
+  clearPreset(); ["type", "tension", "kind", "med", "dep"].forEach(g => setChecks(g, SIMPLE[g])); legend(); applyFilters(); });
 
 // Liens directs (accueil, dossiers, contrôle segmenté) : #graphe, #carte, #organisations, #graphe:<id acteur>,
 // et ?vue=<preset> ; aussi quand on est déjà sur la page (l'ancre change sans recharger)

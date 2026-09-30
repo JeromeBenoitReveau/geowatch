@@ -104,6 +104,7 @@ Les rapports de force du monde rendus lisibles, sans prérequis. Chaque affirmat
 </section>
 
 <section class="s"><h2>Aller plus loin : explorer les données</h2>
+<p class="quiet" style="margin:-8px 0 18px">Les réseaux d'influence : alliances, soutiens et dépendances, pays par pays.</p>
 <div class="explore">
 <a class="card" href="explorer.html#organisations">{svg("orgs")}<h3>Les organisations</h3>
 <p class="use">Voir qui appartient à quoi (OTAN, BRICS, Union européenne…), et quels pays sont à la croisée de plusieurs camps.</p>

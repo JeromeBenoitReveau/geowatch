@@ -68,7 +68,7 @@ nav.toc{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px;color:var(--grap
 <p class="meta">Page générée automatiquement le {_date(d["built"])} à partir des données publiées. Code sous licence MIT,
 données du graphe sous CC BY 4.0 — <a href="{brand.REPO}">dépôt GitHub</a>.</p>
 <nav class="toc"><a href="#principe">Principe</a><a href="#chaine">Chaîne de données</a><a href="#graphe">Graphe</a>
-<a href="#dossiers">Dossiers</a><a href="#tensions">Tensions</a><a href="#mediations">Médiations</a><a href="#personnes">Personnes</a><a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a>
+<a href="#dossiers">Dossiers</a><a href="#tensions">Tensions</a><a href="#influence">Influence</a><a href="#mediations">Médiations</a><a href="#personnes">Personnes</a><a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a>
 <a href="#profils">Profils</a><a href="#carte">Carte</a><a href="#explorateur">Explorateur</a><a href="#glossaire">Glossaire</a><a href="#limites">Limites</a><a href="#contribuer">Contribuer</a></nav>
 
 <div class="kpi">
@@ -161,6 +161,22 @@ guerre ouverte, sanctions, revendication territoriale, rivalité stratégique sa
 comme les soutiens, mais tenues à part : elles <b>n'entrent pas</b> dans le calcul des blocs d'influence ni dans la
 liste des soutiens d'un dossier, et ne modifient pas la disposition du graphe. Une tension en trêve ou cessez-le-feu
 est affichée atténuée. {len(d.get("tensions", []))} tension(s) recensée(s).</p>
+
+<h2 id="influence">Réseaux d'influence</h2>
+<p>Un réseau d'influence, c'est l'ensemble des moyens par lesquels un acteur pèse sur les choix d'un autre. Le site en
+distingue trois étages, du plus formel au plus diffus :</p>
+<div class="scroll"><table><tr><th>Étage</th><th>Contenu</th><th>Données</th><th>Dans le site</th></tr>
+<tr><td>Alignements</td><td>traités, adhésions, alliances</td><td><code>alignments.yaml</code></td><td>vue Organisations, blocs de la carte</td></tr>
+<tr><td>Soutiens</td><td>aides concrètes à un camp (armes, argent, troupes…)</td><td><code>network.yaml</code>, <code>edges</code></td><td>graphe des soutiens, dossiers</td></tr>
+<tr><td>Leviers</td><td>dépendances chiffrées (armes importées ; gaz, pétrole, dette à venir)</td><td><code>network.yaml</code>, <code>dependencies</code></td><td>fiche « Dépend de », filtre « Leviers », dossiers</td></tr>
+</table></div>
+<p><b>Règle des leviers</b> : une dépendance est une <b>part chiffrée et sourcée</b>, jamais un poids choisi à la main.
+Premier type : la part d'un fournisseur dans les importations d'armes majeures d'un pays (SIPRI, tableau 2 de la fiche
+« Trends in International Arms Transfers 2025 », période 2021-2025), pour les pays du graphe et les parts d'au moins 10 %.
+C'est une part des <i>importations</i>, pas de tout l'armement : pour un grand exportateur (États-Unis, Allemagne, Chine,
+Israël, Royaume-Uni), une note le rappelle. Les leviers n'entrent pas dans le calcul des blocs.
+{len(d.get("dependencies", []))} dépendance(s) recensée(s). Ce qui ne se mesure pas de façon comparable (médias, religion,
+désinformation) reste dans les dossiers, en texte attribué.</p>
 
 <h2 id="mediations">Médiations</h2>
 <p>Un acteur qui négocie entre deux camps, ou accueille leurs pourparlers, est un <b>médiateur</b> (clé <code>mediations</code>

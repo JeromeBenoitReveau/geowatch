@@ -215,3 +215,16 @@ terms:
     term: émissaire
     aliases: [émissaires]
     definition: Une personne envoyée par un dirigeant pour négocier en son nom.
+
+  # ---------- Réseaux d'influence ----------
+  - id: influence
+    term: réseau d'influence
+    aliases: [réseaux d'influence]
+    auto: false
+    definition: L'ensemble des moyens par lesquels un pays ou un groupe pèse sur les choix d'un autre. Le site en distingue trois étages, des plus visibles aux plus diffus. Il y a les alignements (traités, alliances), les soutiens (aides concrètes à un camp) et les leviers (dépendances chiffrées, par exemple pour les armes).
+  - id: levier
+    term: levier d'influence
+    aliases: [leviers d'influence, levier, leviers, dépendance, dépendances]
+    auto: false
+    definition: Une dépendance qu'un pays peut utiliser pour peser sur un autre, sans rien lui donner ni lui prendre. Le site ne retient que des dépendances chiffrées et sourcées, comme la part des armes qu'un pays importe d'un fournisseur (SIPRI).
+    example: 40 % des armes importées par l'Inde viennent de Russie (2021-2025, SIPRI).
