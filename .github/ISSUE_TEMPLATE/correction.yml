@@ -1,0 +1,30 @@
+name: Proposer une correction
+description: Signaler une erreur, une source manquante ou une information dépassée sur le site.
+title: "Correction : "
+labels: [correction]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci ! Pas besoin de connaître le code : décrivez simplement ce qui vous semble inexact.
+  - type: input
+    id: page
+    attributes:
+      label: Page concernée
+      description: Le titre de la page ou son adresse (par exemple la guerre au Soudan).
+    validations:
+      required: true
+  - type: textarea
+    id: probleme
+    attributes:
+      label: Ce qui est inexact ou manquant
+      description: La phrase, la relation ou le chiffre en cause, et ce qui devrait être écrit à la place.
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Source
+      description: Un lien vers une source fiable (organisation internationale, centre de recherche, presse de référence). Rien n'entre sur le site sans source.
+    validations:
+      required: false

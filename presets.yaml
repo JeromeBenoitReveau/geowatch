@@ -1,0 +1,45 @@
+# Vues préréglées de l'explorateur (« Carte & graphe ») : des questions qui donnent une vue lisible en un clic.
+# URL partageable : explorer.html?vue=<id> rejoue exactement l'état décrit ici. Contrôlé par validate.py.
+#
+# id        : identifiant dans l'URL
+# question  : libellé du bouton, formulé comme une question
+# view      : graphe | carte | organisations
+# focus     : acteur sélectionné et centré (optionnel)
+# around    : n'afficher que ces acteurs et ceux qui leur sont directement reliés (optionnel)
+# dossier   : id d'un dossier de dossiers.yaml → « around » = les acteurs de ses deux camps, lus dans les données
+# types     : types de soutien affichés (arms, troops, financial, training, intelligence, political, economic, dual_use) ;
+#             absent = tous, [] = aucun
+# tensions  : types de tension affichés (war, sanctions, claims, rivalry) ; absent = tous, [] = aucune
+# kinds     : acteurs affichés (core = États et blocs, non_state, party, person) ; absent = États, blocs, groupes armés
+# colormode : carte — formal (liens formels) | votes (votes à l'ONU)
+# orgs      : organisations — ids de groupes d'alignments.yaml (2 à 6)
+# highlight : organisations — crossing = mettre en avant les pays membres de plusieurs organisations affichées
+
+presets:
+  - id: armer-ukraine
+    question: Qui arme l'Ukraine ?
+    view: graphe
+    focus: UA
+    around: [UA]
+    types: [arms, financial, intelligence]
+    tensions: []
+
+  - id: soudan-deux-camps
+    question: Qui soutient les deux camps au Soudan ?
+    view: graphe
+    dossier: soudan
+    tensions: [war]
+
+  - id: otan-axe
+    question: L'OTAN face à l'axe Russie–Chine–Iran–Corée du Nord
+    view: carte
+    colormode: formal
+    types: []
+    tensions: []
+    kinds: [core]
+
+  - id: croisee
+    question: Quels pays sont à la croisée de plusieurs camps ?
+    view: organisations
+    orgs: [nato, csto, brics, sco]
+    highlight: crossing

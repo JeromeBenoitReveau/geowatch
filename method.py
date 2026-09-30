@@ -69,7 +69,7 @@ nav.toc{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px;color:var(--grap
 données du graphe sous CC BY 4.0 — <a href="{brand.REPO}">dépôt GitHub</a>.</p>
 <nav class="toc"><a href="#principe">Principe</a><a href="#chaine">Chaîne de données</a><a href="#graphe">Graphe</a>
 <a href="#dossiers">Dossiers</a><a href="#tensions">Tensions</a><a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a>
-<a href="#profils">Profils</a><a href="#carte">Carte</a><a href="#limites">Limites</a><a href="#contribuer">Contribuer</a></nav>
+<a href="#profils">Profils</a><a href="#carte">Carte</a><a href="#explorateur">Explorateur</a><a href="#glossaire">Glossaire</a><a href="#limites">Limites</a><a href="#contribuer">Contribuer</a></nav>
 
 <div class="kpi">
   <div><b>{len(actors)}</b><span class="mute">acteurs</span></div>
@@ -124,6 +124,8 @@ publiées ou de règles écrites ici) ; rien n'entre dans le graphe sans source 
 <li><b>types</b> : armes, financement, formation, troupes, renseignement, politique, économique, double usage ;</li>
 <li><b>statut</b> : actif, réduit, terminé, allégué ; <b>confiance</b> : élevée (documenté officiellement), moyenne
 (sources concordantes), faible (allégations) ;</li>
+<li><b>lecture sur le graphe et la carte</b> : deux dimensions, deux codages. Le <b>statut</b> se lit au tracé (plein =
+actif, tirets = en baisse ou allégué), la <b>confiance</b> à l'épaisseur (épais = élevée, moyen = moyenne, fin = faible) ;</li>
 <li><b>sources</b> : au moins une, avec URL ouverte et relue ; <b>verified</b> : mois de la dernière vérification
 (signalée au-delà de 6 mois).</li>
 </ul>
@@ -165,6 +167,8 @@ est affichée atténuée. {len(d.get("tensions", []))} tension(s) recensée(s).<
 Seuls les <b>liens formels</b> (traités, adhésions) sont déclarés, avec un niveau :</p>
 <ul><li><b>3</b> défense mutuelle · <b>2</b> partenariat stratégique sans défense mutuelle · <b>1</b> candidature ou
 participation gelée · <b>0</b> intégration sans effet sur l'alignement (zone euro, Schengen).</li></ul>
+<p>Sur le site, le niveau s'affiche en clair : « défense mutuelle (niveau 3 sur 3) », « partenariat stratégique (niveau 2
+sur 3) », « lien formel partiel (niveau 1 sur 3) », avec la définition au survol (glossaire).</p>
 <div class="scroll"><table><tr><th>Groupe</th><th>Bloc</th><th>Niveau</th><th>Pays</th><th>Depuis 2014</th><th>Sources</th></tr>{group_rows(formal)}</table></div>
 <h3>Règles de calcul (<code>network.influence()</code>)</h3>
 <ol>
@@ -192,7 +196,9 @@ d'influence, lui, reste fondé sur la composition actuelle.</p>
 <p><b>Placement des pays</b> ({unga.get("agreement_year", "n/d")}, dernière année disponible pour les taux d'accord) :
 pour chaque pays, part des votes enregistrés identiques à ceux de la France et de l'Allemagne (moyenne des deux), et à ceux
 de la Russie et de la Chine. <code>penchant = accord(France, Allemagne) − accord(Russie, Chine)</code>, entre −1 et +1.
-Un pays de référence n'est comparé qu'à l'autre membre de son groupe.</p>
+Un pays de référence n'est comparé qu'à l'autre membre de son groupe. Le site ne montre pas ce nombre brut : il l'exprime
+en <b>points d'écart</b> (×100, de −100 à +100) : « penche vers Russie/Chine (écart de 36 points) » ; entre −5 et +5
+points, le pays est « entre les deux » (<code>sources/unga.py</code>, <code>build.py</code>).</p>
 <p><b>Dérive transatlantique</b> : écart entre les États-Unis et la moyenne France/Allemagne sur l'« axe idéal » de Voeten,
 jusqu'à {drift[-1]["year"] if drift else "n/d"} ({" → ".join(f'{x["us_gap"]} en {x["year"]}' for x in drift[-2:])} ;
 France ↔ Allemagne : {drift[-1]["fr_de_gap"] if drift else "n/d"}). Cet axe unique mesure bien l'écart entre deux pays, mais
@@ -218,6 +224,25 @@ La « forme de gouvernement » Wikidata est la forme officielle, pas le fonction
 (coordonnées Wikidata) ; plusieurs acteurs d'un même pays sont disposés en couronne. Un groupe armé reste dans son pays
 d'origine même s'il agit ailleurs. Seule l'UE a une position fixée à la main (Bruxelles).</p>
 
+<h2 id="explorateur">Explorateur (carte, graphe, organisations)</h2>
+<p><b>Vue simplifiée</b> : au premier chargement, le graphe et la carte n'affichent que les guerres et les troupes engagées
+(moins de 15 relations), pour être lisibles sans rien toucher. « Tout afficher » rétablit toutes les relations ; la légende,
+dans les filtres, sert aussi de filtre. Un acteur sans aucune relation affichée est masqué.</p>
+<p><b>Questions pour commencer</b> (<code>presets.yaml</code>) : chacune fixe un état complet (vue, filtres, acteur
+sélectionné, cadrage) et a sa propre adresse, partageable : {", ".join(f'<a href="explorer.html?vue={e(x["id"])}#{e(x["view"])}">{e(x["question"])}</a>' for x in d.get("presets", []))}.
+Une question qui porte sur un conflit prend ses acteurs dans les camps du dossier, eux-mêmes lus dans le graphe : elle ne
+peut pas contredire les données. <code>validate.py</code> contrôle les vues, acteurs, types et organisations cités.</p>
+<p><b>Vue Organisations</b> : chaque pays est placé dans la zone exacte de ses appartenances (cercle privé de ses
+intersections), en occupant toute la surface de cette zone (échantillonnage puis relaxation de Lloyd). Une zone trop serrée
+réduit ses drapeaux ; au-delà de 24 pays, les plus petits sont regroupés en une pastille « +N ». Zoom et déplacement : les
+textes gardent une taille constante, et un nom qui chevaucherait un drapeau n'est affiché qu'au survol.</p>
+
+<h2 id="glossaire">Glossaire</h2>
+<p><code>glossaire.yaml</code> donne une seule définition par terme, utilisée partout : infobulles des dossiers et de
+l'explorateur, page <a href="glossaire.html">glossaire</a>. Les définitions d'échelles et d'indices décrivent le code qui les
+calcule (<code>network.influence()</code>, <code>sources/unga.py</code>). <code>validate.py</code> refuse un terme en double
+ou un terme cité dans le code mais absent du glossaire. {len(d.get("glossary", {}))} termes définis.</p>
+
 <h2 id="limites">Limites connues</h2>
 <ul>
 <li>Le graphe ne couvre que ce qui a été sourcé : l'absence d'une relation ne prouve pas l'absence de soutien.</li>
@@ -229,11 +254,12 @@ s'appuie autant que possible sur des sources officielles.</li>
 </ul>
 
 <h2 id="contribuer">Contribuer</h2>
-<p>Modifier <code>network.yaml</code> ou <code>alignments.yaml</code>, lancer <code>python validate.py</code>, puis ouvrir une
-pull request avec les sources. Les données brutes sont réutilisables : <a href="network.json">network.json</a>,
+<p>Sans connaître le code : <a href="{style.correction_url("Méthode et sources")}">proposer une correction</a> via un
+formulaire guidé (compte GitHub gratuit). Pour les contributeurs : modifier <code>network.yaml</code> ou
+<code>alignments.yaml</code>, lancer <code>python validate.py</code>, puis ouvrir une pull request avec les sources. Les données brutes sont réutilisables : <a href="network.json">network.json</a>,
 <a href="network.csv">network.csv</a> (CC BY 4.0), profils pays dans le dossier
 <a href="{brand.REPO}/tree/main/data">data/</a> du dépôt.</p>
-</main></div>{style.foot()}</body></html>"""
+</main></div>{style.foot(page="Méthode et sources")}</body></html>"""
 
 def write(out, data):
     (out / "methode.html").write_text(page(data), encoding="utf-8")

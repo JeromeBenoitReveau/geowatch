@@ -72,6 +72,8 @@ Contribuer : modifier `network.yaml`, lancer `python validate.py`, ouvrir une PR
 - `alignments.yaml` — alliances et organisations, adhésions datées
 - `dossiers.yaml` / `dossier.py` — les dossiers ; `data/maps/` — contours régionaux des cartes
 - `pages.py` — accueil et manifeste ; `method.py` — page méthode ; `style.py` — feuille de style commune ; `brand.py` — nom
+- `glossaire.yaml` / `glossary.py` — une définition par terme, infobulles partout et page glossaire
+- `presets.yaml` / `presets.py` — questions pour commencer dans l'explorateur (`explorer.html?vue=<id>`)
 - `sources/profiles.py` — Banque mondiale WDI + Wikidata ; `sources/unga.py` — votes à l'ONU (Voeten)
 - `db.py` — données en JSON (`data/`) ; `build.py` — site statique + exports
 

@@ -6,7 +6,7 @@
 # sides     : les camps ; actors = ids de network.yaml. Soutiens ET dirigeant (champ leader) lus dans le graphe.
 # stakes    : les enjeux concrets ; timeline : dates AAAA ou AAAA-MM
 # history   : parallèles historiques ET leurs limites, attribués à des historiens (facultatif)
-# glossary  : termes expliqués au survol partout où ils apparaissent dans la page
+# (vocabulaire : glossaire.yaml, commun à tout le site ; les termes y sont expliqués au survol partout)
 
 dossiers:
   - id: soudan
@@ -177,13 +177,6 @@ dossiers:
         text: L'ONU documente les réseaux étrangers qui arment les FSR
         source: "ONU Info (sept. 2026) — https://news.un.org/en/story/2026/09/1168270"
 
-    glossary:
-      FSR: Forces de soutien rapide — groupe paramilitaire soudanais, rival de l'armée
-      paramilitaire: force armée organisée comme une armée, mais qui n'est pas l'armée officielle de l'État
-      Quad: groupe de médiation formé par les États-Unis, l'Arabie saoudite, les Émirats et l'Égypte
-      gouvernement parallèle: gouvernement rival proclamé par un camp, sans reconnaissance internationale
-      Darfour: vaste région de l'ouest du Soudan, bastion des FSR
-      Kordofan: région du centre du Soudan, principale ligne de front en 2026
 
   - id: ukraine
     title: La guerre en Ukraine
@@ -332,9 +325,3 @@ dossiers:
         text: Émissaires américains à Moscou et à Kyiv ; trêve de trois jours sur les capitales
         source: "Al Jazeera (sept. 2026) — https://www.aljazeera.com/news/2026/9/5/russias-putin-meets-us-envoys-to-discuss-trump-proposal-to-end-ukraine-war"
 
-    glossary:
-      OTAN: alliance militaire de 32 pays d'Europe et d'Amérique du Nord, dont les membres se défendent mutuellement
-      Donbass: région industrielle de l'est de l'Ukraine (Donetsk et Louhansk)
-      Crimée: péninsule ukrainienne sur la mer Noire, annexée par la Russie en 2014
-      cessez-le-feu: arrêt des combats convenu entre les belligérants, sans être encore un accord de paix
-      CSIS: Center for Strategic and International Studies, centre de recherche américain

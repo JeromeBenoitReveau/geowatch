@@ -224,13 +224,85 @@ def check_dossiers(dossiers, actors, edges):
                     warnings.append(f"dossier {k} : soutien {e['from']} → {e['to']} sans « why »")
     return errors, warnings
 
+def check_glossary(terms):
+    """glossaire.yaml : ids uniques et en forme d'ancre, champs obligatoires, aucune forme (terme ou variante) partagée."""
+    errors, warnings, ids, forms = [], [], set(), {}
+    for i, t in enumerate(terms):
+        where = f"glossaire {t.get('id', i)}"
+        for k in ("id", "term", "definition"):
+            if not t.get(k):
+                errors.append(f"{where} : champ « {k} » manquant")
+        tid = t.get("id", "")
+        if tid in ids:
+            errors.append(f"{where} : id en double")
+        ids.add(tid)
+        if tid and not re.fullmatch(r"[a-z0-9-]+", tid):
+            errors.append(f"{where} : id « {tid} » invalide (minuscules, chiffres, tirets)")
+        for f in [t.get("term", ""), *(t.get("aliases") or [])]:
+            if f in forms:
+                errors.append(f"{where} : « {f} » déjà utilisé par {forms[f]}")
+            forms[f] = tid
+    return errors, warnings
+
+def check_term_refs(terms, sources=("build.py", "pages.py", "dossier.py", "method.py")):
+    """Termes du glossaire cités dans le code (T("id"), Q("id"), term("id"), tables *_TERM) : tous doivent exister."""
+    from pathlib import Path
+    ids, errors = {t.get("id") for t in terms}, []
+    pat = re.compile(r'\b(?:T|Q|term)\(\s*"([a-z0-9-]+)"|_TERM\s*=\s*\{([^}]*)\}')
+    for f in sources:
+        text = Path(__file__).with_name(f).read_text(encoding="utf-8")
+        for m in pat.finditer(text):
+            refs = [m.group(1)] if m.group(1) else re.findall(r':\s*"([a-z0-9-]+)"', m.group(2))
+            errors += [f"{f} : terme du glossaire inconnu « {r} »" for r in refs if r not in ids]
+    return errors
+
+def check_presets(presets, actors, aligns, dossiers):
+    """presets.yaml : vues, acteurs, types, organisations et dossiers existants ; champs cohérents avec la vue."""
+    errors, warnings, ids = [], [], set()
+    types, tensions = TYPES, set(network.TENSION_TYPES)
+    groups, dos = {g["id"] for g in aligns["groups"]}, {x["id"] for x in dossiers}
+    for p in presets:
+        where = f"preset {p.get('id')}"
+        if not p.get("id") or p["id"] in ids or not p.get("question"):
+            errors.append(f"{where} : id manquant ou en double, ou question manquante")
+        ids.add(p.get("id"))
+        if p.get("view") not in {"graphe", "carte", "organisations"}:
+            errors.append(f"{where} : vue « {p.get('view')} » invalide (graphe, carte, organisations)")
+        for a in ([p["focus"]] if p.get("focus") else []) + list(p.get("around") or []):
+            if a not in actors:
+                errors.append(f"{where} : acteur inconnu « {a} »")
+        if p.get("dossier") and p["dossier"] not in dos:
+            errors.append(f"{where} : dossier inconnu « {p['dossier']} »")
+        for k, allowed in (("types", types), ("tensions", tensions), ("kinds", {"core", "non_state", "party", "person"})):
+            for v in p.get(k) or []:
+                if v not in allowed:
+                    errors.append(f"{where} : {k} « {v} » invalide")
+        if p.get("colormode") not in (None, "formal", "votes"):
+            errors.append(f"{where} : colormode « {p['colormode']} » invalide")
+        if p.get("view") == "organisations":
+            orgs = p.get("orgs") or []
+            if not 2 <= len(orgs) <= 6:
+                errors.append(f"{where} : vue Organisations : 2 à 6 organisations (orgs)")
+            for g in orgs:
+                if g not in groups:
+                    errors.append(f"{where} : organisation inconnue « {g} »")
+        elif p.get("orgs") or p.get("highlight"):
+            errors.append(f"{where} : orgs/highlight ne servent qu'à la vue organisations")
+        if p.get("colormode") and p.get("view") != "carte":
+            errors.append(f"{where} : colormode ne sert qu'à la vue carte")
+    return errors, warnings
+
 if __name__ == "__main__":
-    import dossier
+    import dossier, glossary, presets
     actors, edges = network.load()
     errors, warnings = check(actors, edges, aligns=network.alignments())
     de, dw = check_dossiers(dossier.load(), actors, edges)
     te, tw = check_tensions(network.tensions(), actors)
     de, dw = de + te, dw + tw
+    ge, gw = check_glossary(glossary.load())
+    ge += check_term_refs(glossary.load())
+    pe, pw = check_presets(presets.load(), actors, network.alignments(), dossier.load())
+    de, dw = de + ge + pe, dw + gw + pw
     errors, warnings = errors + de, warnings + dw
     for w in warnings:
         print(f"⚠️  {w}")

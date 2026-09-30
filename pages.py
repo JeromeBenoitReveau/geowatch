@@ -6,7 +6,7 @@ import json
 import brand, dossier, style
 
 CSS = """
-.hero{padding:88px 0 40px;max-width:780px}.hero h1{font-size:48px;line-height:1.08}
+.hero{padding:72px 0 40px;max-width:780px}.hero h1{font-size:48px;line-height:1.08}
 .hero p{font-size:19px;color:var(--graphite);margin:0;max-width:34em}
 .conflicts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .conflict{display:flex;flex-direction:column;padding:0;overflow:hidden}
@@ -22,7 +22,11 @@ CSS = """
 .conflict .key{font-size:12.5px;color:var(--graphite);margin:8px 0 0}.conflict .go{margin-top:auto;padding-top:14px}
 .explore{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .explore .card{padding:22px}.explore .ico{display:block;margin-bottom:12px}
-.explore p{margin:0 0 14px;font-size:15.5px;color:var(--graphite)}.explore .count{font-size:14px;color:var(--ink)}
+.explore p.use{margin:0 0 14px;font-size:16px;color:var(--ink)}.explore .count{font-size:13px;color:var(--graphite)}
+.cta{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:26px}
+.btn{display:inline-block;background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:6px;text-decoration:none;font-weight:500}
+.btn:hover{background:color-mix(in srgb,var(--ink) 85%,var(--peach))}.cta .alt{color:var(--graphite);font-size:15px}
+.hero .updated{margin-top:18px;font-size:14px}
 .page{padding:64px 0 0}.page h2{margin-top:40px}.page ol li,.page ul li{margin-bottom:10px}
 @media (max-width:760px){.hero{padding:48px 0 28px}.hero h1{font-size:34px}.conflicts{grid-template-columns:1fr}
   .explore{grid-template-columns:1fr}}
@@ -55,7 +59,7 @@ fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r =
 
 def page(title, body, current, desc=brand.BASELINE, extra=""):
     return style.head(title, desc, f"<style>{CSS}</style>") + f"""<body><div class="wrap">{style.top(current)}
-{body}</div>{style.foot()}{extra}</body></html>"""
+{body}</div>{style.foot(page=title.split(" — ")[0])}{extra}</body></html>"""
 
 def countries(ids, d):
     """Pays d'un ensemble d'acteurs : l'État lui-même, le pays d'ancrage d'un groupe ou d'une personne,
@@ -100,27 +104,33 @@ def conflict_row(x, d):
 
 def home(d, dossiers):
     groups = d["align"]["groups"]
+    first = dossiers[0]
+    built = "/".join(reversed(d["built"][:10].split("-")))
     body = f"""<section class="hero"><h1>{e(brand.BASELINE)}</h1>
 <p>Guerres, alliances, sanctions, rivalités : qui s'oppose à qui, qui soutient qui, et pour quelles raisons.
-Les rapports de force du monde rendus lisibles, sans prérequis. Chaque affirmation est sourcée.</p></section>
+Les rapports de force du monde rendus lisibles, sans prérequis. Chaque affirmation est sourcée.</p>
+<div class="cta"><a class="btn" href="{e(first['id'])}.html">Commencer par une guerre : {e(first['title'][:1].lower() + first['title'][1:])}</a>
+<a class="alt" href="explorer.html">ou explorer la carte et le graphe</a></div>
+<p class="meta updated">Mis à jour le {built}</p></section>
 
-
-<section><h2>Explorer les rapports de force</h2>
-<div class="explore">
-<a class="card" href="explorer.html#organisations">{svg("orgs")}<h3>Comprendre les organisations</h3>
-<p>OTAN, BRICS, Union européenne, OCS : qui appartient à quoi, et quels pays sont à la croisée de plusieurs camps.</p>
-<span class="count">{len(groups)} organisations et alliances</span></a>
-<a class="card" href="explorer.html#carte">{svg("map")}<h3>La carte du monde</h3>
-<p>Les camps qui structurent le monde, pays par pays : blocs d'influence, votes à l'ONU, évolution depuis 2014.</p>
-<span class="count">{len(d["geo"])} pays</span></a>
-<a class="card" href="explorer.html#graphe">{svg("graph")}<h3>Le graphe des soutiens</h3>
-<p>Qui arme, finance ou soutient qui, et qui s'affronte : États, groupes armés, partis et personnalités.</p>
-<span class="count">{len(d["actors"])} acteurs, {len(d["edges"])} relations</span></a>
-</div></section>
-<section id="conflits" class="s"><h2>Comprendre les conflits en cours</h2>
+<section id="conflits"><h2>Comprendre les conflits en cours</h2>
 <div class="conflicts">{"".join(conflict_row(x, d) for x in dossiers)}</div>
 </section>
-<p class="quiet" style="margin-top:56px">Pourquoi vulgariser la géopolitique, et comment ce site est fait : <a href="manifeste.html">le manifeste</a>.</p>"""
+
+<section class="s"><h2>Aller plus loin : explorer les données</h2>
+<div class="explore">
+<a class="card" href="explorer.html#organisations">{svg("orgs")}<h3>Les organisations</h3>
+<p class="use">Voir qui appartient à quoi (OTAN, BRICS, Union européenne…), et quels pays sont à la croisée de plusieurs camps.</p>
+<span class="count">{len(groups)} organisations et alliances</span></a>
+<a class="card" href="explorer.html#carte">{svg("map")}<h3>La carte du monde</h3>
+<p class="use">Voir de quel côté penche chaque pays, et depuis quand.</p>
+<span class="count">{len(d["geo"])} pays</span></a>
+<a class="card" href="explorer.html#graphe">{svg("graph")}<h3>Le graphe des soutiens</h3>
+<p class="use">Suivre qui arme, qui finance et qui affronte qui.</p>
+<span class="count">{len(d["actors"])} acteurs, {len(d["edges"])} relations</span></a>
+</div></section>
+<p class="quiet" style="margin-top:56px">Pourquoi vulgariser la géopolitique, et comment ce site est fait : <a href="manifeste.html">le manifeste</a>.
+Les mots du site sont définis dans le <a href="glossaire.html">glossaire</a>.</p>"""
     return page(f"{brand.NAME} — {brand.BASELINE}", body, "", extra=WORLD_MAP)
 
 def manifesto(d):
@@ -162,7 +172,7 @@ démocraties ou de dictatures, d'alliés ou de rivaux de la France.</li>
 <li><b>Relu par un humain.</b> Des outils automatiques peuvent proposer des mises à jour, mais rien n'entre dans le
 graphe sans relecture.</li>
 <li><b>Ouvert.</b> Le code est libre (MIT), les données sont réutilisables (CC BY 4.0), et chacun peut proposer une
-correction <a href="{brand.REPO}">sur GitHub</a>.</li>
+correction <a href="{style.correction_url()}">via un formulaire guidé</a>.</li>
 </ol>
 
 <h2>Ce que ce site n'est pas</h2>

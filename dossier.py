@@ -6,7 +6,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 import json, re, shutil
 import yaml
-import brand, network, style
+import brand, glossary, network, style
 
 PATH = Path(__file__).with_name("dossiers.yaml")
 URL = re.compile(r"https?://\S+")
@@ -61,22 +61,9 @@ def fr_date(d):
     d = str(d)
     return f"{MONTHS[int(d[5:7]) - 1]} {d[:4]}" if len(d) >= 7 else d[:4]
 
-def glossed(text, glossary):
-    """Texte échappé, chaque terme du glossaire expliqué au survol (première occurrence). Une seule passe sur le
-    texte : une définition qui contient elle-même un terme n'est jamais re-balisée."""
-    h = e(" ".join(str(text).split()))
-    if not glossary:
-        return h
-    terms = sorted(glossary, key=len, reverse=True)
-    pattern = re.compile(r"(?<!\w)(" + "|".join(re.escape(e(t)) for t in terms) + r")(?!\w)")
-    by_escaped, seen = {e(t): t for t in terms}, set()
-    def tag(m):
-        t = by_escaped[m.group()]
-        if t in seen:
-            return m.group()
-        seen.add(t)
-        return f'<abbr title="{e(glossary[t])}" tabindex="0">{m.group()}</abbr>'
-    return pattern.sub(tag, h)
+def glossed(text, g):
+    """Texte échappé, termes du glossaire du site expliqués (première occurrence dans la page) : voir glossary.py."""
+    return g(text)
 
 class Notes:
     """Sources → appels de note numérotés (dédoublonnés par URL), listés en bas de page."""
@@ -198,7 +185,7 @@ def hero_map(dos, d, backers, cite):
   {f'<span><b class="ln dot" style="border-color:{SIDE_COLORS[1]}"></b>Route d\'approvisionnement</span>' if m.get("routes") else ""}
   {'<span><b class="ln" style="border-color:#b7791f"></b>Flux (or)</span>' if m.get("flows") else ""}
 </div>
-<p class="map-note">Cliquez sur un élément pour son explication et ses sources. {glossed(reg.get("note", ""), dos.get("glossary") or {})}{cite(reg.get("sources"))}</p>
+<p class="map-note">Cliquez sur un élément pour son explication et ses sources. {glossed(reg.get("note", ""), glossary.Glosser())}{cite(reg.get("sources"))}</p>
 <p class="map-note">Fond de carte Natural Earth ; {e(reg.get("credit", ""))} ; villes : Wikidata.</p>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -256,7 +243,7 @@ for(const p of M.pins){{
 </script>"""
 
 def page(dos, d):
-    g, cite = dos.get("glossary") or {}, Notes()
+    g, cite = glossary.Glosser(), Notes()
     sides = [set(s["actors"]) for s in dos["sides"]]
     backers = [[x for x in d["edges"] if x["to"] in ids and x["from"] not in ids and x["status"] != "ended"] for ids in sides]
     for bs in backers:
@@ -317,9 +304,10 @@ def page(dos, d):
 
 {f'<section class="s"><h2>Ce que l’histoire éclaire, et ses limites</h2><div class="card block"><p>{glossed(dos["history"]["text"], g)}{cite(dos["history"].get("sources"))}</p></div></section>' if dos.get("history") else ""}
 
-<section class="notes"><h2>Sources</h2><ol>{cite.html()}</ol></section>
+<section class="notes"><h2>Sources</h2><ol>{cite.html()}</ol>
+<p class="fix">Une erreur, une source manquante, une information dépassée ? {style.correction(dos["title"])}</p></section>
 </div>
-{style.foot(f'Photos {"; ".join(f"""<a href="{e(c['page'])}">{e(c['artist'] or 'auteur inconnu')}</a>, {e(c['license'])}""" for c in credits)}, via Wikimedia Commons. ' if credits else "")}"""
+{style.foot(f'Photos {"; ".join(f"""<a href="{e(c['page'])}">{e(c['artist'] or 'auteur inconnu')}</a>, {e(c['license'])}""" for c in credits)}, via Wikimedia Commons. ' if credits else "", dos["title"])}"""
     extra = f'<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><style>{CSS}</style>'
     return style.head(f"{dos['title']} — {brand.NAME}", " ".join(dos["lede"].split())[:180], extra) + f"<body>{body}</body></html>"
 

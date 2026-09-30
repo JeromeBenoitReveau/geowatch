@@ -1,0 +1,173 @@
+# Glossaire du site — UNE définition par terme, utilisée partout : infobulles des dossiers et de l'explorateur,
+# page glossaire.html. Les définitions d'échelles et d'indices décrivent le code qui les calcule
+# (network.influence(), sources/unga.py) : les modifier en même temps que le code, et que methode.html.
+#
+# id         : ancre dans glossaire.html (minuscules, tirets)
+# term       : libellé affiché dans le glossaire
+# aliases    : autres formes repérées dans les textes (pluriels, variantes)
+# definition : 1 à 2 phrases en langage courant
+# example    : exemple concret (optionnel)
+# auto       : false = mot trop courant pour être souligné automatiquement dans les textes ; il reste défini ici et
+#              expliqué là où le site l'emploie comme notion (filtres, panneau Détails)
+
+terms:
+  # ---------- Le vocabulaire du site ----------
+  - id: acteur
+    term: acteur
+    aliases: [acteurs]
+    auto: false
+    definition: Tout ce qui figure sur le graphe des soutiens, qu'il s'agisse d'un État, d'un bloc (l'Union européenne), d'un groupe armé, d'un parti ou d'une personnalité.
+  - id: relation
+    term: relation
+    aliases: [relations]
+    auto: false
+    definition: Un lien sourcé et daté entre deux acteurs. C'est soit un soutien (l'un aide l'autre), soit une tension (ils s'opposent).
+  - id: soutien
+    term: soutien
+    aliases: [soutiens]
+    auto: false
+    definition: L'aide qu'un acteur apporte à un autre (armes, argent, troupes, formation, renseignement, appui politique ou économique). Chaque soutien est daté et sourcé.
+  - id: tension
+    term: tension
+    aliases: [tensions]
+    auto: false
+    definition: Une opposition entre deux acteurs (guerre, sanctions, revendication territoriale ou rivalité). Les tensions sont affichées à part et ne comptent pas dans le calcul des blocs.
+  - id: double-usage
+    term: double usage
+    definition: Des biens civils qui peuvent aussi servir à faire la guerre, comme des composants électroniques, des moteurs ou des machines-outils.
+    example: Des composants électroniques vendus pour l'industrie et retrouvés dans des drones militaires.
+  - id: statut
+    term: statut d'une relation
+    aliases: [statut]
+    auto: false
+    definition: Où en est une relation. Elle peut être active, en baisse, terminée ou alléguée. Sur le graphe et la carte, un trait plein indique une relation active, et des tirets une relation en baisse ou alléguée.
+  - id: allegue
+    term: allégué
+    aliases: [alléguée, allégués, alléguées]
+    definition: Affirmé par certaines sources, mais démenti par les intéressés ou pas encore prouvé.
+  - id: confiance
+    term: niveau de confiance
+    aliases: [confiance]
+    auto: false
+    definition: La solidité des sources d'une relation. Elle est élevée si la relation est documentée officiellement, moyenne si les sources concordent, faible s'il ne s'agit que d'allégations. Plus le trait est épais sur le graphe et la carte, plus la confiance est élevée.
+
+  # ---------- Tensions ----------
+  - id: guerre
+    term: guerre
+    auto: false
+    definition: Un affrontement armé ouvert entre deux acteurs.
+  - id: sanctions
+    term: sanctions
+    aliases: [sanction, sanctionne, sanctionné, sanctionnée]
+    definition: Des mesures économiques ou financières prises pour faire pression sur un pays ou un groupe, comme le gel d'avoirs, l'embargo ou l'interdiction de commercer.
+  - id: revendication
+    term: revendication territoriale
+    aliases: [revendique, revendication, revendications]
+    definition: Un acteur réclame un territoire qu'un autre contrôle ou administre.
+    example: La Chine revendique Taïwan.
+  - id: rivalite
+    term: rivalité
+    aliases: [rivalités]
+    definition: Une concurrence stratégique durable, sans guerre ouverte, qui porte sur l'influence, les armements ou les alliances.
+  - id: cessez-le-feu
+    term: cessez-le-feu
+    aliases: [trêve, trêves]
+    definition: Un arrêt des combats convenu entre les belligérants, sans être encore un accord de paix. Une trêve est une pause, souvent plus courte ou plus locale.
+
+  # ---------- Blocs et alliances (network.influence()) ----------
+  - id: bloc
+    term: bloc d'influence
+    aliases: [blocs d'influence, bloc, blocs]
+    auto: false
+    definition: Un ensemble de pays liés par des traités ou des adhésions. Le site en distingue deux, le bloc occidental et l'axe Russie–Chine–Iran–Corée du Nord. Un pays y est rattaché par ses liens formels, ou ses soutiens l'y rattachent (voir « satellite »).
+  - id: lien-formel
+    term: lien formel
+    aliases: [liens formels]
+    definition: Un traité ou une adhésion qui rattache officiellement un pays à un bloc (OTAN, Union européenne, OTSC…). L'option « liens formels » de la carte colore chaque pays selon ces liens.
+  - id: niveau
+    term: niveau d'alignement
+    aliases: [niveau]
+    auto: false
+    definition: La force du lien formel d'un pays avec son bloc, de 1 à 3. Le niveau 3 correspond à la défense mutuelle, le 2 à un partenariat stratégique formalisé mais sans défense mutuelle, le 1 à une candidature ou une participation gelée. Un pays reçoit le niveau le plus élevé de ses liens formels.
+    example: La Pologne est au niveau 3 grâce à l'OTAN.
+  - id: defense-mutuelle
+    term: défense mutuelle
+    definition: Un engagement à se défendre si l'un des membres est attaqué, comme l'article 5 de l'OTAN. C'est le niveau d'alignement le plus fort (3 sur 3).
+  - id: partenariat-strategique
+    term: partenariat stratégique
+    aliases: [partenariats stratégiques]
+    definition: Un accord de coopération militaire ou politique formalisé, mais sans obligation de défendre l'autre. C'est le niveau d'alignement 2 sur 3.
+  - id: lien-partiel
+    term: lien formel partiel
+    definition: Une candidature à une alliance ou une participation gelée. C'est le niveau d'alignement 1 sur 3.
+  - id: satellite
+    term: satellite
+    aliases: [satellites]
+    definition: Un pays ou un groupe qui n'a aucun lien formel avec un bloc, mais dont tous les soutiens actifs viennent de membres d'un même bloc.
+    example: Les Houthis du Yémen, soutenus uniquement par l'Iran.
+  - id: dispute
+    term: disputé
+    aliases: [disputée, disputés]
+    definition: Un pays tiraillé entre les deux blocs, soit par des liens formels de même niveau avec les deux, soit par des soutiens actifs venus des deux.
+    example: L'Inde, soutenue à la fois par la Russie et par la France.
+  - id: forum
+    term: forum
+    aliases: [forums]
+    definition: Une organisation de coopération (BRICS, OCS, G7, ASEAN…) qui n'est pas une alliance militaire, dont les membres peuvent même être rivaux. Les forums sont affichés sur le site, mais ils ne comptent pas dans le calcul des blocs.
+    example: L'Inde et la Chine sont toutes deux membres des BRICS.
+
+  # ---------- Mesures (sources/unga.py, Banque mondiale) ----------
+  - id: vote-onu
+    term: indice de vote à l'ONU
+    aliases: [votes à l'ONU, vote à l'ONU]
+    definition: "Il mesure de quel côté un pays vote à l'Assemblée générale de l'ONU. On calcule la part de ses votes identiques à ceux de la France et de l'Allemagne, puis à ceux de la Russie et de la Chine (taux d'accord publiés par Erik Voeten, dernière année disponible). L'écart entre les deux va de −100 points (il vote toujours comme Russie/Chine) à +100 (toujours comme France/Allemagne). Entre −5 et +5, le pays est « entre les deux »."
+    example: Un pays qui vote 80 % des fois comme Russie/Chine et 50 % comme France/Allemagne penche vers Russie/Chine de 30 points.
+  - id: depenses-militaires
+    term: dépenses militaires
+    definition: Le budget qu'un pays consacre chaque année à son armée, en dollars (source Banque mondiale).
+  - id: pib
+    term: PIB
+    definition: Le produit intérieur brut, c'est-à-dire la valeur de tout ce qu'un pays produit en un an. Il mesure la taille de son économie.
+
+  # ---------- Organisations ----------
+  - id: otan
+    term: OTAN
+    definition: Une alliance militaire de 32 pays d'Europe et d'Amérique du Nord, dont les membres se défendent mutuellement.
+  - id: brics
+    term: BRICS
+    definition: Un forum créé par le Brésil, la Russie, l'Inde, la Chine et l'Afrique du Sud, élargi depuis 2024 à d'autres pays. C'est un cadre de coopération, pas une alliance.
+  - id: ocs
+    term: OCS
+    aliases: [Organisation de coopération de Shanghai]
+    definition: L'Organisation de coopération de Shanghai, un forum de sécurité et d'économie formé autour de la Chine et de la Russie, avec notamment l'Inde, le Pakistan, l'Iran et des pays d'Asie centrale.
+
+  # ---------- Soudan ----------
+  - id: fsr
+    term: FSR
+    definition: Les Forces de soutien rapide, un groupe paramilitaire soudanais rival de l'armée.
+  - id: paramilitaire
+    term: paramilitaire
+    definition: Une force armée organisée comme une armée, mais qui n'est pas l'armée officielle de l'État.
+  - id: quad
+    term: Quad
+    definition: Le groupe de médiation formé par les États-Unis, l'Arabie saoudite, les Émirats et l'Égypte.
+  - id: gouvernement-parallele
+    term: gouvernement parallèle
+    definition: Un gouvernement rival proclamé par un camp, sans reconnaissance internationale.
+  - id: darfour
+    term: Darfour
+    definition: Une vaste région de l'ouest du Soudan, bastion des FSR.
+  - id: kordofan
+    term: Kordofan
+    definition: Une région du centre du Soudan, principale ligne de front en 2026.
+
+  # ---------- Ukraine ----------
+  - id: donbass
+    term: Donbass
+    definition: Une région industrielle de l'est de l'Ukraine (Donetsk et Louhansk).
+  - id: crimee
+    term: Crimée
+    definition: Une péninsule ukrainienne sur la mer Noire, annexée par la Russie en 2014.
+  - id: csis
+    term: CSIS
+    definition: Le Center for Strategic and International Studies, un centre de recherche américain.

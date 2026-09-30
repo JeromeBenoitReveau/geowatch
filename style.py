@@ -2,6 +2,7 @@
 la typographie et l'en-tête. La couleur est réservée aux données (camps, soutiens, tensions) ; l'interface reste
 en encre et gris, et l'espace sépare les sections plutôt que des cadres."""
 from html import escape as e
+from urllib.parse import quote
 import brand
 
 DARK = ("color-scheme:dark;--paper:#141821;--ink:#e8ebf0;--graphite:#9ba3b0;--mist:#29303b;"
@@ -42,7 +43,7 @@ a:focus-visible,summary:focus-visible,button:focus-visible,input:focus-visible,s
 .dd a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;color:var(--ink);white-space:nowrap}
 .dd a:hover,.dd a:focus-visible{background:color-mix(in srgb,var(--ink) 6%,var(--land))}.dd a[aria-current]{box-shadow:inset 2px 0 0 var(--peach)}
 .dd .ico,.explore .ico{color:var(--peach);flex:none}
-/* Explorer : lien simple (le choix de la vue se fait dans la page) */
+/* Carte & graphe : lien simple (le choix de la vue se fait dans la page) */
 .menu-link{color:var(--graphite);padding:4px 0;border-bottom:2px solid transparent}.menu-link:hover{color:var(--ink)}
 .menu-link[aria-current]{color:var(--ink);border-bottom-color:var(--peach)}
 .theme{background:none;border:0;color:var(--graphite);cursor:pointer;padding:4px;border-radius:3px;display:flex;align-items:center}
@@ -64,9 +65,18 @@ a.card{transition:border-color .15s}a.card:hover{border-color:var(--peach)}
 sup.fns{font:500 11px/1 var(--sans);color:var(--graphite);margin-left:1px;white-space:nowrap}
 sup.fns a{text-decoration:none;padding:0 1px}sup.fns a:hover{color:var(--ink);text-decoration:underline}
 abbr{text-decoration:underline dotted var(--graphite);text-underline-offset:3px;cursor:help}
+/* termes du glossaire (glossary.py) : souligné pointillé, définition au survol ou au focus, clic vers glossaire.html */
+a.term{color:inherit;text-decoration:underline dotted var(--graphite);text-decoration-thickness:1px;text-underline-offset:3px;cursor:help}
+a.term:hover{text-decoration-color:var(--peach);text-decoration-style:solid}
+a.term.q{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;
+  border:1px solid var(--graphite);font-size:10.5px;font-weight:600;line-height:1;text-decoration:none;color:var(--graphite);vertical-align:1px;margin-left:4px}
+a.term.q:hover{border-color:var(--peach);color:var(--ink)}
+#tip{position:fixed;z-index:3000;max-width:320px;background:var(--ink);color:var(--paper);font:13.5px/1.45 var(--sans);
+  padding:9px 12px;border-radius:6px;box-shadow:0 6px 20px #0003;pointer-events:none;display:none}
+#tip b{display:block;font-weight:600;margin-bottom:2px}#tip small{display:block;margin-top:5px;opacity:.7;font-size:12px}
 .notes{padding:64px 0 72px;font-size:13.5px;color:var(--graphite)}
 .notes h2{font-size:21px;color:var(--ink)}.notes ol{margin:0;padding-left:22px;columns:2;column-gap:48px}
-.notes li{break-inside:avoid;margin:0 0 6px}.notes li:target{color:var(--ink)}
+.notes li{break-inside:avoid;margin:0 0 6px}.notes li:target{color:var(--ink)}.notes .fix{margin:28px 0 0;font-size:15px;color:var(--ink)}
 footer{border-top:1px solid var(--mist);margin-top:64px;padding:20px 0 40px;font-size:13.5px;color:var(--graphite)}
 @media (max-width:760px){h1{font-size:34px}.lede{font-size:19px}.notes ol{columns:1}.menus{gap:18px}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
@@ -100,18 +110,18 @@ def head(title, desc=brand.BASELINE, extra=""):
 <link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.svg" type="image/svg+xml">{THEME_INIT}{extra}</head>"""
 
 def top(current=""):
-    """En-tête commun : menus déroulants Conflits et À propos, lien Explorer, identiques sur toutes les pages.
+    """En-tête commun : menus déroulants Conflits et À propos, lien « Carte & graphe » (explorer.html), identiques partout.
     current = nom du fichier de la page, pour signaler la rubrique et la page actives."""
     import dossier  # import tardif : dossier importe style
     conflicts = [(f"{x['id']}.html", x["title"]) for x in dossier.load()]
-    about = [("manifeste.html", "Manifeste"), ("methode.html", "Méthode et sources")]
+    about = [("manifeste.html", "Manifeste"), ("glossaire.html", "Glossaire"), ("methode.html", "Méthode et sources")]
     here = lambda h: ' aria-current="page"' if h == current else ""
     def menu(label, items, active):
         links = "".join(f'<a href="{h}"{here(h)}>{t}</a>' for h, t in items)
         return f'<details class="menu"{" data-active" if active else ""}><summary>{label}</summary><div class="dd">{links}</div></details>'
     return f"""<div class="top"><a class="brand" href="index.html">{LOGO}{e(brand.NAME)}</a><nav class="menus">
 {menu("Conflits", conflicts, current in dict(conflicts))}
-<a class="menu-link" href="explorer.html"{' aria-current="page"' if current == "explorer.html" else ""}>Explorer</a>
+<a class="menu-link" href="explorer.html"{' aria-current="page"' if current == "explorer.html" else ""}>Carte &amp; graphe</a>
 {menu("À propos", about, current in dict(about))}
 <button class="theme" id="theme-toggle" type="button" title="Mode clair / mode sombre" aria-label="Basculer entre mode clair et mode sombre">
 <svg class="moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
@@ -125,6 +135,18 @@ document.getElementById("theme-toggle").addEventListener("click", () => {{ const
   r.dataset.theme = dark ? "light" : "dark"; try {{ localStorage.setItem("theme", r.dataset.theme); }} catch(_) {{}}
   if(window.THEME_RELOAD) location.reload(); }});
 document.addEventListener("keydown", ev => {{ if(ev.key === "Escape") document.querySelectorAll("details.menu[open]").forEach(d => d.open = false); }});
+// infobulle des termes du glossaire, commune à tout le site (délégation : marche aussi sur les contenus ajoutés en JS)
+(() => {{ const tip = document.createElement("div"); tip.id = "tip"; tip.setAttribute("role", "tooltip"); document.body.appendChild(tip);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}}[c]));
+  const showTip = a => {{ tip.innerHTML = `<b>${{esc(a.dataset.term)}}</b>${{esc(a.dataset.def)}}<small>Cliquer pour ouvrir le glossaire</small>`;
+    tip.style.display = "block"; const r = a.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = Math.min(Math.max(8, r.left + r.width/2 - w/2), innerWidth - w - 8), y = r.bottom + 8;
+    if(y + h > innerHeight - 8) y = r.top - h - 8;
+    tip.style.left = x + "px"; tip.style.top = y + "px"; }};
+  const hide = () => tip.style.display = "none";
+  document.addEventListener("mouseover", ev => {{ const a = ev.target.closest && ev.target.closest("a.term[data-def]"); a ? showTip(a) : hide(); }});
+  document.addEventListener("focusin", ev => {{ const a = ev.target.closest && ev.target.closest("a.term[data-def]"); a ? showTip(a) : hide(); }});
+  document.addEventListener("scroll", hide, true); }})();
 // à l'ouverture : on ferme les autres menus et on garde la liste dans l'écran, quelle que soit sa largeur
 document.querySelectorAll("details.menu").forEach(d => d.addEventListener("toggle", () => {{ if(!d.open) return;
   document.querySelectorAll("details.menu[open]").forEach(o => {{ if(o !== d) o.open = false; }});
@@ -133,9 +155,18 @@ document.querySelectorAll("details.menu").forEach(d => d.addEventListener("toggl
   const r = dd.getBoundingClientRect(); if(r.right > innerWidth - 8) dd.style.left = (innerWidth - 8 - r.width - d.getBoundingClientRect().left) + "px"; }}));
 </script>"""
 
-def foot(extra=""):
+def correction_url(page=""):
+    """Formulaire de signalement GitHub pré-rempli (.github/ISSUE_TEMPLATE/correction.yml), titré avec la page."""
+    return f"{brand.REPO}/issues/new?template=correction.yml&title={quote('Correction : ' + page)}&page={quote(page)}"
+
+def correction(page=""):
+    where = f" sur « {e(page)} »" if page else ""
+    return (f'<a href="{e(correction_url(page))}">Proposer une correction</a>{where} : un formulaire guidé, '
+            f'sans connaître le code (il faut un compte GitHub, gratuit).')
+
+def foot(extra="", page=""):
     return f"""<footer><div class="wrap">{extra}{e(brand.NAME)} est un projet indépendant et open source. Code sous licence MIT,
-textes et données sous licence CC BY 4.0. <a href="{brand.REPO}">Proposer une correction</a>.</div></footer>"""
+textes et données sous licence CC BY 4.0. {correction(page)}</div></footer>"""
 
 def write(out):
     (out / "style.css").write_text(CSS.replace("__DARK__", DARK).strip() + "\n", encoding="utf-8")
