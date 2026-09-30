@@ -1,6 +1,6 @@
 # Lignes de force (dépôt « geowatch ») — contexte pour Claude Code
 
-Site d'information open source : les conflits expliqués aux néophytes, à partir d'un graphe sourcé
+Site d'information open source qui rend la géopolitique accessible et la vulgarise (baseline « La géopolitique, expliquée simplement. », 2026-09-30) : les conflits, alliances et tensions expliqués aux néophytes, à partir d'un graphe sourcé
 « qui soutient qui, et pourquoi », publié en données ouvertes. En Python.
 Auteur : Jérôme. Style attendu : direct, concret, pas de sur-ingénierie.
 

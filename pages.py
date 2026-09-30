@@ -45,26 +45,26 @@ def conflict_row(x, d):
 def home(d, dossiers):
     groups = d["align"]["groups"]
     body = f"""<section class="hero"><h1>{e(brand.BASELINE)}</h1>
-<p>Les conflits expliqués simplement : les camps, leurs soutiens étrangers, ce qu'ils y cherchent et ce qui est en jeu.
-Chaque affirmation est sourcée.</p></section>
+<p>Guerres, alliances, sanctions, rivalités : qui s'oppose à qui, qui soutient qui, et pour quelles raisons.
+Les rapports de force du monde rendus lisibles, sans prérequis. Chaque affirmation est sourcée.</p></section>
 
-<section id="conflits"><h2>Les conflits en cours</h2>
+<section id="conflits"><h2>Comprendre les conflits en cours</h2>
 <div class="conflicts">{"".join(conflict_row(x, d) for x in dossiers)}</div>
 </section>
 
-<section class="s"><h2>Explorer par soi-même</h2>
+<section class="s"><h2>Explorer les rapports de force</h2>
 <div class="explore">
 <a class="card" href="explorer.html#organisations">{svg("orgs")}<h3>Comprendre les organisations</h3>
 <p>OTAN, BRICS, Union européenne, OCS : qui appartient à quoi, et quels pays sont à la croisée de plusieurs camps.</p>
 <span class="count">{len(groups)} organisations et alliances</span></a>
 <a class="card" href="explorer.html#carte">{svg("map")}<h3>La carte du monde</h3>
-<p>Les blocs d'influence, les votes à l'ONU et les organisations, pays par pays, avec leur évolution depuis 2014.</p>
+<p>Les camps qui structurent le monde, pays par pays : blocs d'influence, votes à l'ONU, évolution depuis 2014.</p>
 <span class="count">{len(d["geo"])} pays</span></a>
 <a class="card" href="explorer.html#graphe">{svg("graph")}<h3>Le graphe des soutiens</h3>
-<p>Qui arme, finance ou soutient qui : États, groupes armés, partis et personnalités, relation par relation.</p>
+<p>Qui arme, finance ou soutient qui, et qui s'affronte : États, groupes armés, partis et personnalités.</p>
 <span class="count">{len(d["actors"])} acteurs, {len(d["edges"])} relations</span></a>
 </div></section>
-<p class="quiet" style="margin-top:56px">Pourquoi ce site, et comment il est fait : <a href="manifeste.html">le manifeste</a>.</p>"""
+<p class="quiet" style="margin-top:56px">Pourquoi vulgariser la géopolitique, et comment ce site est fait : <a href="manifeste.html">le manifeste</a>.</p>"""
     return page(f"{brand.NAME} — {brand.BASELINE}", body, "")
 
 def manifesto(d):
@@ -73,17 +73,22 @@ def manifesto(d):
 <p class="meta">Pourquoi {e(brand.NAME)} existe, et comment il est fait.</p>
 
 <h2>Le constat</h2>
-<p>On n'a jamais eu autant d'informations sur les conflits : dépêches en continu, tableaux de bord, cartes des combats,
-indicateurs de tension. Mais ces outils répondent surtout à la question « que se passe-t-il ? ». Ils laissent de côté
-celle qui permet vraiment de comprendre : <b>qui est derrière qui, et pourquoi ?</b></p>
+<p>La géopolitique s'invite partout : dans le prix de l'énergie, dans les élections, dans les guerres dont on parle
+chaque soir. Pourtant, elle reste réservée aux initiés. Les dépêches supposent qu'on connaît déjà les acteurs, les
+alliances et l'histoire ; les analyses spécialisées, qu'on maîtrise leur vocabulaire. Entre les deux, beaucoup
+décrochent. Et l'information répond surtout à « que se passe-t-il ? », rarement à la question qui permet vraiment de
+comprendre : <b>qui est derrière qui, et pourquoi ?</b></p>
 <p>La <a href="soudan.html">guerre au Soudan</a>, par exemple, oppose deux généraux, mais c'est aussi une rivalité entre
-puissances régionales, une course à l'or et une bataille pour la mer Rouge. Sans ces relations, les chiffres restent
-froids et l'actualité incompréhensible.</p>
+puissances régionales, une course à l'or et une bataille pour la mer Rouge. Sans ces relations, l'actualité reste
+incompréhensible.</p>
 
 <h2>Notre objectif</h2>
-<p>Rendre lisibles les relations qui font la géopolitique (entre États, alliances, groupes armés, partis et
-personnalités), pour quelqu'un qui n'y connaît rien. En quelques minutes, un dossier doit permettre de répondre à
-quatre questions : qui s'affronte ? qui les soutient ? qu'y cherchent-ils ? qu'est-ce qui est en jeu ?</p>
+<p>Rendre la géopolitique accessible à tous, sans prérequis. Expliquer simplement les rapports de force du monde :
+les conflits, mais aussi les alliances, les organisations, les sanctions et les rivalités qui les entourent. Vulgariser
+sans simplifier à tort : chaque notion est définie, chaque affirmation est sourcée.</p>
+<p>En quelques minutes, un dossier doit permettre de répondre à quatre questions : qui s'affronte ? qui les soutient ?
+qu'y cherchent-ils ? qu'est-ce qui est en jeu ? Et l'explorateur permet d'élargir : à quel camp appartient tel pays, avec
+qui il vote à l'ONU, de quelles organisations il est membre.</p>
 
 <h2>Notre démarche</h2>
 <ol>
@@ -106,9 +111,11 @@ correction <a href="{brand.REPO}">sur GitHub</a>.</li>
 
 <h2>Ce que ce site n'est pas</h2>
 <ul>
+<li><b>Pas un site de spécialistes.</b> On écrit pour quelqu'un qui découvre le sujet : pas de jargon sans
+explication, pas de sous-entendu.</li>
 <li><b>Pas un fil d'actualité.</b> Les dossiers sont revus régulièrement, pas en temps réel. Pour suivre les événements
 heure par heure, les médias et les tableaux de bord spécialisés restent indispensables.</li>
-<li><b>Pas exhaustif.</b> Un conflit n'est ajouté que lorsque ses relations peuvent être sourcées sérieusement.</li>
+<li><b>Pas exhaustif.</b> Un conflit ou une relation n'est ajouté que lorsqu'il peut être sourcé sérieusement.</li>
 <li><b>Pas un outil de pronostic.</b> On ne parie pas sur l'issue d'une guerre, et on n'affiche pas les paris des autres.</li>
 </ul>
 
