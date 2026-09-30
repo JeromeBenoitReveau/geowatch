@@ -105,14 +105,25 @@ body.map #controls .graph-only,body.venn #controls .graph-only,body.map #control
 
 /* choix de la vue : contrôle segmenté centré en haut de la zone principale */
 /* haut de la zone principale : choix de la vue, questions pour commencer (presets.yaml), état de la vue */
-#stagebar{position:absolute;top:0;left:0;right:0;padding:12px 12px 10px;border-bottom:1px solid var(--mist);background:var(--paper);z-index:1000;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+#stagebar{position:absolute;top:0;left:0;right:0;padding:10px 12px;border-bottom:1px solid var(--mist);background:var(--paper);z-index:1000;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 12px;pointer-events:none}
 #stagebar>*{pointer-events:auto}
 #views{display:flex;padding:3px;gap:2px;
   background:var(--land);border:1px solid var(--mist);border-radius:8px;box-shadow:0 2px 10px #0000001a;max-width:100%}
-#presets{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:760px}
-#presets a{background:var(--land);border:1px solid var(--mist);border-radius:18px;padding:6px 13px;font-size:13.5px;color:var(--ink);
+/* menu « Questions » : les questions de l'onglet ouvert ; une question active remplace le libellé du bouton */
+#qmenu{position:relative}#qmenu[hidden]{display:none}
+.qbtns{display:flex;border:1px solid var(--mist);border-radius:8px;background:var(--land);box-shadow:0 2px 10px #0000001a;overflow:hidden}
+#qbtn,#qclear{background:none;border:0;font:inherit;font-size:14px;color:var(--ink);cursor:pointer;padding:8px 12px;display:flex;align-items:center;gap:7px;max-width:340px}
+#qbtn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#qbtn::after{content:"";width:6px;height:6px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:translateY(-2px) rotate(45deg);opacity:.7;flex:none}
+#qbtn[aria-expanded="true"]::after{transform:translateY(1px) rotate(-135deg)}
+#qbtn.on{box-shadow:inset 0 -2px 0 var(--peach)}#qclear[hidden]{display:none}#qclear{border-left:1px solid var(--mist);color:var(--graphite);padding:8px 10px}
+#qbtn:hover,#qclear:hover{background:color-mix(in srgb,var(--ink) 6%,var(--land))}
+#presets{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);z-index:2000;width:max-content;max-width:min(360px,90cqw);display:flex;flex-direction:column;padding:6px;
+  background:var(--land);border:1px solid var(--mist);border-radius:8px;box-shadow:0 8px 24px #0000002a}
+#presets[hidden]{display:none}
+#presets a{padding:8px 10px;border-radius:5px;font-size:14px;color:var(--ink);
   text-decoration:none;box-shadow:0 1px 4px #00000012}
-#presets a:hover{border-color:var(--peach)}#presets a[aria-current]{border-color:var(--peach);box-shadow:inset 0 0 0 1px var(--peach)}
+#presets a:hover,#presets a:focus-visible{background:color-mix(in srgb,var(--ink) 6%,var(--land))}#presets a[aria-current]{box-shadow:inset 2px 0 0 var(--peach)}
 #viewnote{font-size:12.5px;color:var(--graphite);background:color-mix(in srgb,var(--paper) 88%,transparent);padding:2px 10px;border-radius:10px}
 #viewnote:empty{display:none}
 #viewnote button{background:none;border:0;padding:0;font:inherit;color:var(--ink);cursor:pointer;text-decoration:underline;text-decoration-color:var(--peach);text-underline-offset:2px}
@@ -180,7 +191,8 @@ aside p{margin:0 0 10px}.keys{display:grid;grid-template-columns:78px 1fr;gap:6p
   </div>
 </nav>
 <div id="stage"><div id="stagebar"><nav id="views" aria-label="Vues">__VIEWS__</nav>
-<div id="presets" aria-label="Questions pour commencer"></div><div id="viewnote"></div></div><div id="graph"></div><div id="map"></div><div id="venn"></div></div>
+<div id="qmenu"><div class="qbtns"><button type="button" id="qbtn" aria-haspopup="true" aria-expanded="false" aria-controls="presets"></button><button type="button" id="qclear" title="Revenir à la vue simplifiée" aria-label="Quitter la question, revenir à la vue simplifiée" hidden>✕</button></div>
+<div id="presets" role="menu" aria-label="Questions pour cette vue" hidden></div></div><div id="viewnote"></div></div><div id="graph"></div><div id="map"></div><div id="venn"></div></div>
 <aside id="side" aria-label="Détails"><div class="ctl-head"><span>Détails</span><button id="side-toggle" class="toggle" type="button" aria-expanded="true" aria-controls="panel" title="Replier">
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m8 9 3 3-3 3"/></svg></button></div>
 <div id="panel"></div></aside>
@@ -941,10 +953,21 @@ new ResizeObserver(() => { $("#stage").style.setProperty("--bar", $("#stagebar")
 const PRESETS = D.presets || [], VIEW_OF = {carte:"map", organisations:"venn", graphe:"graph"};
 // chaque question appartient à un onglet et ne s'affiche que dans celui-ci : elle ne change jamais d'onglet
 const TAB = () => document.body.classList.contains("map") ? "carte" : document.body.classList.contains("venn") ? "organisations" : "graphe";
-function renderPresets(){ const tab = TAB();
-  $("#presets").innerHTML = PRESETS.filter(p => p.view === tab).map(p => `<a href="?vue=${esc(p.id)}#${esc(p.view)}" data-preset="${esc(p.id)}"${PRESET && PRESET.id === p.id ? ' aria-current="true"' : ""}>${esc(p.question)}</a>`).join(""); }
+function renderPresets(){ const tab = TAB(), list = PRESETS.filter(p => p.view === tab), on = PRESET && PRESET.view === tab;
+  $("#qmenu").hidden = !list.length;
+  $("#presets").innerHTML = list.map(p => `<a role="menuitem" href="?vue=${esc(p.id)}#${esc(p.view)}" data-preset="${esc(p.id)}"${PRESET && PRESET.id === p.id ? ' aria-current="true"' : ""}>${esc(p.question)}</a>`).join("");
+  $("#qbtn").innerHTML = `<span>${on ? esc(PRESET.question) : `Questions (${list.length})`}</span>`;
+  $("#qbtn").classList.toggle("on", !!on); $("#qclear").hidden = !on; }
+const qOpen = open => { $("#presets").hidden = !open; $("#qbtn").setAttribute("aria-expanded", String(open)); };
+$("#qbtn").addEventListener("click", () => { qOpen($("#presets").hidden); if(!$("#presets").hidden) ($("#presets a[aria-current]") || $("#presets a")).focus(); });
+$("#qclear").addEventListener("click", () => { clearPreset(); legend(); renderPresets(); viewNote(); });
 $("#presets").addEventListener("click", ev => { const a = ev.target.closest("a[data-preset]"); if(!a) return; ev.preventDefault();
-  history.pushState(null, "", a.getAttribute("href")); route(); });
+  qOpen(false); history.pushState(null, "", a.getAttribute("href")); route(); });
+$("#presets").addEventListener("keydown", ev => { const items = [...$("#presets").querySelectorAll("a")], i = items.indexOf(document.activeElement);
+  if(ev.key === "ArrowDown"){ ev.preventDefault(); items[(i + 1) % items.length].focus(); }
+  if(ev.key === "ArrowUp"){ ev.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+  if(ev.key === "Escape"){ qOpen(false); $("#qbtn").focus(); } });
+document.addEventListener("click", ev => { if(!ev.target.closest("#qmenu")) qOpen(false); });
 function applyPreset(p){ PRESET = p;
   setChecks("type", p.types); setChecks("tension", p.tensions); setChecks("kind", p.kinds || SIMPLE.kind);
   if(p.colormode){ $("#colormode").value = p.colormode; $("#colormode").dispatchEvent(new Event("change")); }
@@ -952,6 +975,7 @@ function applyPreset(p){ PRESET = p;
   setView(VIEW_OF[p.view]); applyFilters(); renderPresets();
   document.querySelectorAll("#presets a").forEach(a => a.dataset.preset === p.id ? a.setAttribute("aria-current", "true") : a.removeAttribute("aria-current"));
   if(p.focus && D.actors[p.focus]) show(p.focus); else legend();
+  viewNote();
   // cadrage sur les acteurs affichés, une fois le graphe stabilisé
   const fit = () => net.fit({nodes: nodesDS.get({filter: n => !n.hidden}).map(n => n.id), animation: {duration: 500}});
   if(p.view === "graphe"){ net.once("stabilized", fit); setTimeout(fit, 900); }
@@ -960,12 +984,12 @@ function applyPreset(p){ PRESET = p;
 function clearPreset(){ if(!PRESET) return; PRESET = null; AROUND = null;
   ["type", "tension", "kind"].forEach(g => setChecks(g, SIMPLE[g]));
   document.querySelectorAll("#presets a[aria-current]").forEach(a => a.removeAttribute("aria-current"));
-  history.replaceState(null, "", location.pathname + location.hash); applyFilters(); drawVenn(); }
+  history.replaceState(null, "", location.pathname + location.hash); applyFilters(); drawVenn(); renderPresets(); }
 // ce qui est affiché, et comment en sortir en un clic
 function viewNote(){ const box = $("#viewnote"); if(!box) return;
-  if(PRESET){ box.innerHTML = `Vue : ${esc(PRESET.question)} <button type="button" data-note="reset">revenir à la vue simplifiée</button>`; return; }
+  if(PRESET){ box.innerHTML = ""; return; }   // la question active est affichée dans le bouton, avec sa croix
   if(document.body.classList.contains("venn")){ box.innerHTML = ""; return; }
-  box.innerHTML = isSimple() ? `Vue simplifiée : les guerres et les troupes engagées. <button type="button" data-note="all">Tout afficher</button>`
+  box.innerHTML = isSimple() ? `Vue simplifiée : guerres et troupes. <button type="button" data-note="all">Tout afficher</button>`
     : `<button type="button" data-note="simple">Revenir à la vue simplifiée</button>`; }
 $("#viewnote").addEventListener("click", ev => { const b = ev.target.closest("button[data-note]"); if(!b) return;
   if(b.dataset.note === "all"){ setChecks("type", null); setChecks("tension", null); userChanged(); return; }

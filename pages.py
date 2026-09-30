@@ -9,14 +9,17 @@ CSS = """
 .hero{padding:72px 0 40px;max-width:780px}.hero h1{font-size:48px;line-height:1.08}
 .hero p{font-size:19px;color:var(--graphite);margin:0;max-width:34em}
 .conflicts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.conflict{display:flex;flex-direction:column;padding:0;overflow:hidden}
-.conflict .wm{display:block;width:100%;aspect-ratio:2/1;background:var(--ocean);border-bottom:1px solid var(--mist)}
-.conflict .wm path{stroke:var(--mist);stroke-width:.5}
-.conflict .body{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1}
-.conflict h3{font-size:25px;margin:0 0 6px}
-.conflict .vs{margin:0 0 10px;font-size:15px}.conflict .vs span{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 6px 0 0}
-.conflict p{margin:0;max-width:40em}.conflict .go{margin-top:14px;font-size:15px;text-decoration:underline;text-decoration-color:var(--peach);text-decoration-thickness:1.5px;text-underline-offset:3px;width:max-content}
-.conflict .key{font-size:12.5px;color:var(--graphite);margin:8px 0 0}.conflict .go{margin-top:auto;padding-top:14px}
+/* dossiers : cartes horizontales compactes ; miniature cadrée sur la région, camps identifiés par leurs drapeaux */
+.conflict{display:grid;grid-template-columns:150px minmax(0,1fr);padding:0;overflow:hidden;min-height:118px}
+.conflict .wm{display:block;width:150px;height:100%;background:var(--ocean);border-right:1px solid var(--mist)}
+.conflict .wm path{stroke:var(--mist);stroke-width:.6}
+.conflict .body{padding:14px 16px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.conflict h3{font-size:19px;margin:0}
+.conflict .vs{margin:0;font-size:13.5px;display:flex;align-items:center;flex-wrap:wrap;gap:4px 6px}
+.conflict .vs img,.conflict .vs .ns{width:16px;height:16px;border-radius:50%;object-fit:cover;flex:none;box-shadow:0 0 0 1px var(--mist)}
+.conflict .vs .ns{display:inline-flex;align-items:center;justify-content:center;background:var(--graphite);color:var(--paper)}
+.conflict .vs .vs-x{color:var(--graphite)}
+.conflict p.lede1{margin:0;font-size:14px;line-height:1.45;color:var(--graphite);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .explore{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .explore .card{padding:22px}.explore .ico{display:block;margin-bottom:12px}
 .explore p.use{margin:0 0 14px;font-size:16px;color:var(--ink)}.explore .count{font-size:13px;color:var(--graphite)}
@@ -36,22 +39,19 @@ WORLD_MAP = """<script src="https://cdn.jsdelivr.net/npm/d3-array@3/dist/d3-arra
 <script src="https://cdn.jsdelivr.net/npm/d3-geo@3/dist/d3-geo.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <script>
-// Petites cartes des conflits : camps en couleur pleine, soutiens étrangers en teinte claire, rayures si un pays
-// est dans les deux (guerre civile) ; un point marque le lieu du conflit. Fond Natural Earth (domaine public).
-fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(r => r.json()).then(world => {
+// Miniatures des dossiers, cadrées sur la région (cadre de la carte d'ouverture du dossier). Une seule couleur de
+// conflit : pays en guerre en encre, soutiens étrangers en gris clair ; les camps se distinguent par leurs drapeaux,
+// les couleurs de camp (bleu / orange) restent réservées aux pages des dossiers. Fond Natural Earth (domaine public).
+fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json").then(r => r.json()).then(world => {
   const land = topojson.feature(world, world.objects.countries).features.filter(f => f.id !== "010");  // sans l'Antarctique
-  const proj = d3.geoNaturalEarth1().fitExtent([[6, 6], [594, 294]], {type: "FeatureCollection", features: land});
-  const path = d3.geoPath(proj), light = c => `color-mix(in srgb,var(${c}) 55%,var(--land))`;
-  document.querySelectorAll("svg.wm").forEach((svg, n) => { const m = JSON.parse(svg.dataset.map), has = (k, id) => m[k].includes(String(+id));
-    const defs = `<defs><pattern id="ab${n}" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
-      <rect width="3" height="6" style="fill:var(--a)"/><rect x="3" width="3" height="6" style="fill:var(--b)"/></pattern>
-      <pattern id="lab${n}" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
-      <rect width="3" height="6" style="fill:${light("--a")}"/><rect x="3" width="3" height="6" style="fill:${light("--b")}"/></pattern></defs>`;
-    const fill = id => has("a", id) && has("b", id) ? `url(#ab${n})` : has("a", id) ? "var(--a)" : has("b", id) ? "var(--b)"
-      : has("ba", id) && has("bb", id) ? `url(#lab${n})` : has("ba", id) ? light("--a") : has("bb", id) ? light("--b") : "var(--land)";
-    const pin = m.pin[0] != null ? proj(m.pin) : null;
-    svg.innerHTML = defs + land.map(f => `<path d="${path(f)}" style="fill:${fill(f.id)}"/>`).join("")
-      + (pin ? `<circle cx="${pin[0].toFixed(1)}" cy="${pin[1].toFixed(1)}" r="9" fill="none" style="stroke:var(--ink)" stroke-width="1.6"/>` : ""); });
+  const war = "color-mix(in srgb,var(--ink) 72%,var(--land))", ally = "color-mix(in srgb,var(--ink) 24%,var(--land))";
+  document.querySelectorAll("svg.wm").forEach(svg => { const m = JSON.parse(svg.dataset.map), has = (k, id) => m[k].includes(String(+id));
+    const [[s, w], [n, e]] = m.bounds, W = 150, H = 150;
+    const proj = d3.geoMercator().fitExtent([[4, 4], [W - 4, H - 4]], {type: "MultiPoint", coordinates: [[w, s], [e, n]]}), path = d3.geoPath(proj);
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
+    const fill = id => has("war", id) ? war : has("ally", id) ? ally : "var(--land)";
+    svg.innerHTML = land.map(f => `<path d="${path(f)}" style="fill:${fill(f.id)}"/>`).join("")
+      + m.dots.map(p => { const [x, y] = proj(p); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" style="fill:var(--paper);stroke:var(--ink)" stroke-width="1.5"/>`; }).join(""); });
 });
 </script>"""
 
@@ -60,30 +60,36 @@ def page(title, body, current, desc=brand.BASELINE, extra=""):
 {body}</div>{style.foot(page=title.split(" — ")[0])}{extra}</body></html>"""
 
 def conflict_map(x, d):
-    """Données de la petite carte du monde : codes numériques ISO (ceux de Natural Earth) par rôle, et le lieu du conflit."""
+    """Données de la miniature : cadre (carte d'ouverture du dossier, sinon le monde), pays en guerre, pays des soutiens
+    étrangers (codes numériques ISO de Natural Earth) et lieux repères (ancres de la carte du dossier)."""
     sides = [set(sd["actors"]) for sd in x["sides"]]
     backers = [{ed["from"] for ed in d["edges"] if ed["to"] in sd and ed["from"] not in sd and ed["status"] != "ended"} for sd in sides]
     num = lambda isos: sorted(str(int(d["geo"][i]["iso_numeric"])) for i in isos if d["geo"].get(i, {}).get("iso_numeric"))
-    fixed = (x.get("map") or {}).get("countries")   # pays précisés dans le dossier (Gaza n'est pas la Cisjordanie)
-    a, b = (set(fixed[0]), set(fixed[1])) if fixed else (dossier.side_countries(sides[0], d), dossier.side_countries(sides[1], d))
-    ba, bb = dossier.side_countries(backers[0], d) - a - b, dossier.side_countries(backers[1], d) - a - b
-    # lieu du conflit : centre du cadre de la carte d'ouverture du dossier, sinon le pays du premier camp
-    if (x.get("map") or {}).get("bounds"):
-        (s_lat, w_lon), (n_lat, e_lon) = x["map"]["bounds"]
-        pin = [(w_lon + e_lon)/2, (s_lat + n_lat)/2]
-    else:
-        where = d["geo"].get(sorted(a)[0] if a else "", {})
-        pin = [where.get("lon"), where.get("lat")]
-    return {"a": num(a), "b": num(b), "ba": num(ba), "bb": num(bb), "pin": pin}
+    mp = x.get("map") or {}
+    fixed = mp.get("countries")   # pays précisés dans le dossier (Gaza n'est pas la Cisjordanie)
+    war = set().union(*fixed) if fixed else dossier.side_countries(sides[0], d) | dossier.side_countries(sides[1], d)
+    ally = (dossier.side_countries(backers[0], d) | dossier.side_countries(backers[1], d)) - war
+    return {"war": num(war), "ally": num(ally), "bounds": mp.get("bounds", [[-55, -170], [75, 180]]),
+            "dots": [[lon, lat] for lat, lon in mp.get("anchors", [])]}
+
+SWORDS = ('<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" '
+          'stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/></svg>')
+
+def camp_marks(side, d):
+    """Drapeaux d'un camp (ses États, deux au plus) ; un groupe armé ou un parti : un pictogramme."""
+    states = [a for a in side["actors"] if d["actors"].get(a, {}).get("kind") == "state"][:2]
+    if states:
+        return "".join(f'<img src="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/{a.lower()}.svg" alt="">' for a in states)
+    return f'<span class="ns" aria-hidden="true">{SWORDS}</span>'
 
 def conflict_row(x, d):
     names = [s["name"] for s in x["sides"]]
     first = " ".join(x["lede"].split()).split(". ")[0].rstrip(".") + "."
     return f"""<a class="card conflict" href="{e(x['id'])}.html">
-<svg class="wm" viewBox="0 0 600 300" role="img" aria-label="Carte : pays des deux camps et de leurs soutiens étrangers" data-map='{e(json.dumps(conflict_map(x, d)))}'></svg>
+<svg class="wm" role="img" aria-label="Carte de la région : pays en guerre et soutiens étrangers" data-map='{e(json.dumps(conflict_map(x, d)))}'></svg>
 <div class="body"><h3>{e(x['title'])}</h3>
-<p class="vs"><span style="background:var(--a)"></span>{e(names[0])} contre <span style="background:var(--b);margin-left:4px"></span>{e(names[1][:1].lower() + names[1][1:])}</p>
-<p>{e(first)}</p><p class="key">Sur la carte, en teinte claire : leurs soutiens étrangers.</p><p class="go">Lire le dossier</p></div></a>"""
+<p class="vs">{camp_marks(x["sides"][0], d)}<span>{e(names[0])}</span><span class="vs-x">contre</span>{camp_marks(x["sides"][1], d)}<span>{e(names[1][:1].lower() + names[1][1:])}</span></p>
+<p class="lede1">{e(first)}</p></div></a>"""
 
 def home(d, dossiers):
     groups = d["align"]["groups"]
