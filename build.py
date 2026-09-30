@@ -45,7 +45,8 @@ def build():
             "dossiers": [{"id": x["id"], "title": x["title"]} for x in dossier.load()], "built": db.now()}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
                             .replace("</", "<\\/"))
-    (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS).replace("__TOP__", style.top("explorer.html")).replace("__THEME__", style.THEME_INIT), encoding="utf-8")
+    (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS).replace("__TOP__", style.top("explorer.html")).replace("__THEME__", style.THEME_INIT).replace("__VIEWS__", "".join(
+        f'<a href="#{a}" data-view="{a}" title="{t}">{style.icon(k, 16)}<span>{t}</span></a>' for a, k, t in style.VIEWS)), encoding="utf-8")
     export_data(actors, edges)
     method.write(OUT, data)
     style.write(OUT)
@@ -97,7 +98,15 @@ body.map #map{display:block}body.map #graph,body.map .graph-only{display:none}
 #controls .map-only,#controls .venn-only{display:none}body.map #controls .map-only,body.venn #controls .venn-only{display:block}
 body.map #controls .graph-only,body.venn #controls .graph-only,body.map #controls .no-map,body.venn #controls .no-venn{display:none}
 
-#venn{position:absolute;inset:0;display:none;padding:40px 12px 28px}body.venn #venn{display:block}
+/* choix de la vue : contrôle segmenté centré en haut de la zone principale */
+#views{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;padding:3px;gap:2px;
+  background:var(--land);border:1px solid var(--mist);border-radius:8px;box-shadow:0 2px 10px #0000001a;max-width:calc(100% - 24px)}
+#views a{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:5px;color:var(--graphite);text-decoration:none;white-space:nowrap;font-size:14px}
+#views a:hover{color:var(--ink)}#views a[aria-current]{background:color-mix(in srgb,var(--ink) 8%,var(--land));color:var(--ink)}
+#views .ico{color:var(--peach)}
+#stage{container-type:inline-size;overflow:hidden}
+@container (max-width:520px){#views a{padding:6px 10px}#views a span{display:none}}
+#venn{position:absolute;inset:0;display:none;padding:72px 12px 28px}body.venn #venn{display:block}
 body.venn #graph,body.venn .graph-only{display:none}#venn svg{width:100%;height:100%;overflow:visible}
 #venn text{font-family:system-ui,sans-serif}.vc{cursor:pointer}.vc:hover circle{stroke:var(--fg)}
 .venn-empty{max-width:380px;margin:120px auto;text-align:center}.venn-note{position:absolute;bottom:4px;left:12px;right:12px;margin:0}
@@ -147,7 +156,7 @@ aside p{margin:0 0 10px}.keys{display:grid;grid-template-columns:78px 1fr;gap:6p
   <div id="rel-filters" class="no-venn"></div>
   </div>
 </nav>
-<div id="stage"><div id="graph"></div><div id="map"></div><div id="venn"></div></div>
+<div id="stage"><nav id="views" aria-label="Vues">__VIEWS__</nav><div id="graph"></div><div id="map"></div><div id="venn"></div></div>
 <aside id="side" aria-label="Détails"><div class="ctl-head"><span>Détails</span><button id="side-toggle" class="toggle" type="button" aria-expanded="true" aria-controls="panel" title="Replier">
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m8 9 3 3-3 3"/></svg></button></div>
 <div id="panel"></div></aside>
@@ -503,7 +512,7 @@ function drawVenn(){ const box = $("#venn"); if(!document.body.classList.contain
   const R = Object.fromEntries(all.map(iso => [iso, m==="none" ? VU*.36 : V[iso] ? VU*(.14 + .66*Math.sqrt(V[iso]/vmax)) : VU*.12]));
   const P = placeCountries(C, all, R);
   // textes en pixels écran : on estime l'échelle du dessin, puis on agrandit le cadre pour y faire tenir les noms
-  const W = Math.max(200, box.clientWidth - 24), H = Math.max(200, box.clientHeight - 68);
+  const W = Math.max(200, box.clientWidth - 24), H = Math.max(200, box.clientHeight - 100);
   let minX = Math.min(...C.map(c => c.x - c.r)), maxX = Math.max(...C.map(c => c.x + c.r));
   let minY = Math.min(...C.map(c => c.y - c.r)), maxY = Math.max(...C.map(c => c.y + c.r));
   const k = Math.min(W/(maxX - minX + 60), H/(maxY - minY + 60)), px = v => v/k;
@@ -661,9 +670,9 @@ async function initMap(){
 
 function setView(v){
   document.body.classList.toggle("map", v==="map"); document.body.classList.toggle("venn", v==="venn");
-  // vue courante signalée dans le menu Explorer de l'en-tête (seul moyen de changer de vue)
+  // vue courante signalée dans le contrôle segmenté (seul moyen de changer de vue)
   const anchor = {graph:"graphe", map:"carte", venn:"organisations"}[v];
-  document.querySelectorAll(".dd a[data-view]").forEach(a => a.dataset.view === anchor ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
+  document.querySelectorAll("#views a").forEach(a => a.dataset.view === anchor ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
   if(v!=="venn" && $("#layers-panel")) legend();
   const sup = $('#metric option[value="supports"]'); sup.hidden = sup.disabled = v==="venn";
   if(v==="venn" && $("#metric").value==="supports"){ $("#metric").value = "military"; refresh(); }

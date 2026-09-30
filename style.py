@@ -42,6 +42,9 @@ a:focus-visible,summary:focus-visible,button:focus-visible,input:focus-visible,s
 .dd a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;color:var(--ink);white-space:nowrap}
 .dd a:hover,.dd a:focus-visible{background:color-mix(in srgb,var(--ink) 6%,var(--land))}.dd a[aria-current]{box-shadow:inset 2px 0 0 var(--peach)}
 .dd .ico,.explore .ico{color:var(--peach);flex:none}
+/* Explorer : lien simple (le choix de la vue se fait dans la page) */
+.menu-link{color:var(--graphite);padding:4px 0;border-bottom:2px solid transparent}.menu-link:hover{color:var(--ink)}
+.menu-link[aria-current]{color:var(--ink);border-bottom-color:var(--peach)}
 .theme{background:none;border:0;color:var(--graphite);cursor:pointer;padding:4px;border-radius:3px;display:flex;align-items:center}
 .theme:hover{color:var(--ink)}.theme .sun{display:none}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .theme .sun{display:block}:root:not([data-theme=light]) .theme .moon{display:none}}
@@ -100,7 +103,7 @@ def head(title, desc=brand.BASELINE, extra=""):
 <link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.svg" type="image/svg+xml">{THEME_INIT}{extra}</head>"""
 
 def top(current=""):
-    """En-tête commun : trois menus déroulants (Conflits, Explorer, À propos), identiques sur toutes les pages.
+    """En-tête commun : menus déroulants Conflits et À propos, lien Explorer, identiques sur toutes les pages.
     current = nom du fichier de la page, pour signaler la rubrique et la page actives."""
     import dossier  # import tardif : dossier importe style
     conflicts = [(f"{x['id']}.html", x["title"]) for x in dossier.load()]
@@ -109,10 +112,9 @@ def top(current=""):
     def menu(label, items, active):
         links = "".join(f'<a href="{h}"{here(h)}>{t}</a>' for h, t in items)
         return f'<details class="menu"{" data-active" if active else ""}><summary>{label}</summary><div class="dd">{links}</div></details>'
-    explore = "".join(f'<a href="explorer.html#{a}" data-view="{a}">{icon(k)}{t}</a>' for a, k, t in VIEWS)
     return f"""<div class="top"><a class="brand" href="index.html">{LOGO}{e(brand.NAME)}</a><nav class="menus">
 {menu("Conflits", conflicts, current in dict(conflicts))}
-<details class="menu"{" data-active" if current == "explorer.html" else ""}><summary>Explorer</summary><div class="dd">{explore}</div></details>
+<a class="menu-link" href="explorer.html"{' aria-current="page"' if current == "explorer.html" else ""}>Explorer</a>
 {menu("À propos", about, current in dict(about))}
 <button class="theme" id="theme-toggle" type="button" title="Mode clair / mode sombre" aria-label="Basculer entre mode clair et mode sombre">
 <svg class="moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
