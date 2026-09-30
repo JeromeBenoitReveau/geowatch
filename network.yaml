@@ -99,12 +99,14 @@ edges:
                "US Treasury, sanctions Hamas et soutien iranien (oct. 2023) — https://home.treasury.gov/news/press-releases/jy1845",
                "Al Jazeera, accord de désarmement par étapes du Hamas annoncé par le Board of Peace (juill. 2026) — https://www.aljazeera.com/news/2026/7/31/gaza-board-of-peace-announces-hamas-disarmament-agreement-what-we-know",
                "CFR, qu'est-ce que le Hamas : environ 100 M$ par an de l'Iran au Hamas, au JIP et à d'autres groupes (estimation du Département d'État, 2021) — https://www.cfr.org/backgrounders/what-hamas"], verified: 2026-06,
-     note: "Accord de désarmement par étapes annoncé le 31 juillet 2026 ; aucune source de 2026 sur la poursuite du financement iranien — relation non revérifiée"}
+     note: "Accord de désarmement par étapes annoncé le 31 juillet 2026 ; aucune source de 2026 sur la poursuite du financement iranien — relation non revérifiée",
+     why: "Une pièce de l'« axe de la résistance », le réseau de partenaires hostiles à Israël que soutient Téhéran, selon le CFR"}
   - {from: IR, to: pij, since: "2021", types: [financial, arms], status: active, confidence: high,
      sources: ["US State Dept",
                "US Treasury, financement iranien de Hamas et du JIP via la Fondation des martyrs (oct. 2023) — https://home.treasury.gov/news/press-releases/jy1845",
                "CFR, qu'est-ce que le Hamas : environ 100 M$ par an de l'Iran au Hamas, au JIP et à d'autres groupes (estimation du Département d'État, 2021) — https://www.cfr.org/backgrounders/what-hamas"], verified: 2026-06,
-     note: "Aucune source de 2026 sur la poursuite du financement iranien — relation non revérifiée"}
+     note: "Aucune source de 2026 sur la poursuite du financement iranien — relation non revérifiée",
+     why: "Une pièce de l'« axe de la résistance », le réseau de partenaires hostiles à Israël que soutient Téhéran, selon le CFR"}
   - {from: IR, to: kataib_hezbollah, since: "2008", types: [arms, financial, training], status: active, confidence: high,
      sources: ["US DoD / désignations US",
                "US Treasury, Kataeb Hezbollah « formé, financé et soutenu » par l'IRGC-QF (nov. 2023) — https://home.treasury.gov/news/press-releases/jy1921",
@@ -138,12 +140,15 @@ edges:
      sources: ["US Treasury, alerte sur les raffineries « teapot » : la Chine achète ~90 % des exportations de pétrole iranien (avr. 2026) — https://home.treasury.gov/news/press-releases/sb0476",
                "Atlantic Council, Chine et Russie aident l'Iran via leurs chaînes d'approvisionnement (mars 2026) — https://www.atlanticcouncil.org/dispatches/from-drones-to-rocket-fuel-china-and-russia-are-helping-iran-through-supply-chains/"],
      verified: 2026-09,
-     note: "Achats de pétrole documentés officiellement (Trésor américain) ; transferts de technologies de navigation et de précurseurs de carburant de missile rapportés en 2026 — d'où la confiance moyenne"}
+     note: "Achats de pétrole documentés officiellement (Trésor américain) ; transferts de technologies de navigation et de précurseurs de carburant de missile rapportés en 2026 — d'où la confiance moyenne",
+     why: "Du pétrole : la Chine achète environ 90 % des exportations de pétrole iranien, un revenu qui finance au bout du compte le régime et ses programmes d'armement, selon le Trésor américain"}
   - {from: RU, to: IR, since: "2025-01", types: [political, arms, intelligence], status: active, confidence: medium,
      sources: ["Traité de partenariat stratégique global, janvier 2025",
                "Kremlin, signature du traité le 17 janv. 2025 — http://en.kremlin.ru/events/president/news/76125",
+               "Chatham House, Timothy Ash : la guerre en Iran, une aubaine économique pour Poutine (avr. 2026) — https://www.chathamhouse.org/2026/04/iran-war-has-been-economic-gift-putin",
                "Atlantic Council, drones russes et imagerie satellite fournis à l'Iran pendant la guerre (mars 2026) — https://www.atlanticcouncil.org/dispatches/from-drones-to-rocket-fuel-china-and-russia-are-helping-iran-through-supply-chains/"], verified: 2026-09,
-     note: "Traité de 2025 officiel ; livraisons de drones et partage d'imagerie satellite pendant la guerre de 2026 rapportés, non confirmés officiellement — d'où la confiance moyenne"}
+     note: "Traité de 2025 officiel ; livraisons de drones et partage d'imagerie satellite pendant la guerre de 2026 rapportés, non confirmés officiellement — d'où la confiance moyenne",
+     why: "Un partenaire contre l'Occident, et une guerre qui profite à Moscou : la flambée du pétrole renfloue son budget et sa guerre en Ukraine, selon Timothy Ash (Chatham House)"}
   - {from: US, to: UA, since: "2022-02", types: [arms, intelligence], status: reduced, confidence: high,
      sources: ["Annonces DoD / Maison-Blanche",
                "Kiel Institute, Ukraine Support Tracker — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/",
@@ -164,13 +169,16 @@ edges:
                "Maison-Blanche (archives), fiche sur le MoU de 2016 — https://obamawhitehouse.archives.gov/the-press-office/2016/09/14/fact-sheet-memorandum-understanding-reached-israel",
                "Bibliothèque de la Chambre des communes, guerre et cessez-le-feu États-Unis–Iran en 2026 (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/",
                "SIPRI, Trends in International Arms Transfers 2019 (fiche de mars 2020), période 2015-19 — https://www.sipri.org/sites/default/files/2020-03/fs_2003_at_2019.pdf"], verified: 2026-09,
-     note: "Opérations militaires conjointes contre l'Iran depuis le 28 février 2026"}
+     note: "Opérations militaires conjointes contre l'Iran depuis le 28 février 2026",
+     why: "Un « engagement inébranlable » envers la sécurité d'Israël et le maintien de sa supériorité militaire qualitative dans la région, selon la Maison-Blanche (protocole d'accord de 2016)"}
   - {from: DE, to: IL, since: "2015", types: [arms], status: active, confidence: high,
      sources: ["SIPRI, réponses des exportateurs à la guerre à Gaza : Allemagne = 33 % des importations d'armes d'Israël (2020-24) — https://www.sipri.org/commentary/topical-backgrounder/2025/how-top-arms-exporters-have-responded-war-gaza-2025-update",
                "Al Jazeera, levée des restrictions allemandes (nov. 2025) — https://www.aljazeera.com/news/2025/11/17/germany-lifts-curbs-on-arms-exports-to-israel-citing-gaza-ceasefire",
+               "Qantara, James Jackson : la sécurité d'Israël, « raison d'État » allemande depuis le discours d'Angela Merkel à la Knesset en 2008 (déc. 2024) — https://qantara.de/en/article/israel-new-merkel-memoir-freedom-merkels-reason-state",
                "SIPRI, Trends in International Arms Transfers 2019 (fiche de mars 2020), période 2015-19 — https://www.sipri.org/sites/default/files/2020-03/fs_2003_at_2019.pdf"],
      verified: 2026-09,
-     note: "Exportations utilisables à Gaza suspendues d'août à novembre 2025, reprises au cas par cas après le cessez-le-feu"}
+     note: "Exportations utilisables à Gaza suspendues d'août à novembre 2025, reprises au cas par cas après le cessez-le-feu",
+     why: "Une « responsabilité historique » issue de la Shoah : depuis le discours d'Angela Merkel à la Knesset en 2008, la sécurité d'Israël est présentée comme une raison d'État allemande (Qantara)"}
   - {from: US, to: TW, since: "1979", types: [arms], status: active, confidence: high,
      sources: ["Taiwan Relations Act ; notifications DSCA",
                "Taiwan Relations Act, 22 U.S.C. § 3302 — https://www.law.cornell.edu/uscode/text/22/3302"], verified: 2026-06}

@@ -171,3 +171,36 @@ terms:
   - id: csis
     term: CSIS
     definition: Le Center for Strategic and International Studies, un centre de recherche américain.
+
+  # ---------- Iran, Liban, Yémen ----------
+  - id: axe-resistance
+    term: axe de la résistance
+    definition: Le nom donné au réseau de partenaires hostiles à Israël que l'Iran arme et finance, dont le Hezbollah libanais, les Houthis du Yémen, des milices irakiennes, le Hamas et le Jihad islamique palestinien.
+  - id: guide-supreme
+    term: Guide suprême
+    definition: Le plus haut dirigeant de l'Iran, au-dessus du président. Il a le dernier mot sur l'armée, la justice et la politique étrangère.
+  - id: uranium-enrichi
+    term: uranium enrichi
+    aliases: [enrichissement d'uranium, enrichissement]
+    definition: De l'uranium dont on a augmenté la part d'atomes fissiles. Faiblement enrichi, il alimente des centrales ; très enrichi, il peut servir à fabriquer une bombe atomique.
+  - id: ormuz
+    term: détroit d'Ormuz
+    aliases: [Ormuz]
+    definition: Le passage maritime étroit entre l'Iran et la péninsule arabique, par lequel sortent du golfe Persique les pétroliers des pays de la région.
+  - id: hezbollah
+    term: Hezbollah
+    definition: Un mouvement chiite libanais, à la fois parti politique et milice armée, soutenu par l'Iran depuis sa création en 1982.
+  - id: houthis
+    term: Houthis
+    definition: Un mouvement armé qui contrôle le nord du Yémen et sa capitale Sanaa, soutenu par l'Iran.
+
+  # ---------- Gaza ----------
+  - id: hamas
+    term: Hamas
+    definition: Un mouvement islamiste palestinien fondé en 1987, qui gouverne Gaza depuis 2007. De nombreux pays, dont les États-Unis, le classent comme organisation terroriste.
+  - id: fatah
+    term: Fatah
+    definition: Le principal parti palestinien laïque, rival du Hamas, qui dirige l'Autorité palestinienne en Cisjordanie.
+  - id: board-of-peace
+    term: Board of Peace
+    definition: Le « Conseil de la paix » créé par le plan américain pour Gaza, présidé par Donald Trump, qui supervise la reconstruction et la transition du territoire.

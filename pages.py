@@ -59,31 +59,22 @@ def page(title, body, current, desc=brand.BASELINE, extra=""):
     return style.head(title, desc, f"<style>{CSS}</style>") + f"""<body><div class="wrap">{style.top(current)}
 {body}</div>{style.foot(page=title.split(" — ")[0])}{extra}</body></html>"""
 
-def countries(ids, d):
-    """Pays d'un ensemble d'acteurs : l'État lui-même, le pays d'ancrage d'un groupe ou d'une personne,
-    les membres d'un bloc (groupe d'alignments.yaml rattaché au bloc, le plus haut niveau)."""
-    out = set()
-    for i in ids:
-        a = d["actors"].get(i, {})
-        if a.get("kind") == "state":
-            out.add(i)
-        elif a.get("kind") == "bloc":
-            gs = [g for g in d["align"]["groups"] if g.get("entity") == i]
-            if gs:
-                out |= set(max(gs, key=lambda g: g.get("level") or 0)["members"])
-        elif a.get("base"):
-            out.add(a["base"])
-    return out
-
 def conflict_map(x, d):
     """Données de la petite carte du monde : codes numériques ISO (ceux de Natural Earth) par rôle, et le lieu du conflit."""
     sides = [set(sd["actors"]) for sd in x["sides"]]
     backers = [{ed["from"] for ed in d["edges"] if ed["to"] in sd and ed["from"] not in sd and ed["status"] != "ended"} for sd in sides]
     num = lambda isos: sorted(str(int(d["geo"][i]["iso_numeric"])) for i in isos if d["geo"].get(i, {}).get("iso_numeric"))
-    a, b = countries(sides[0], d), countries(sides[1], d)
-    ba, bb = countries(backers[0], d) - a - b, countries(backers[1], d) - a - b
-    where = d["geo"].get(sorted(a)[0] if a else "", {})
-    return {"a": num(a), "b": num(b), "ba": num(ba), "bb": num(bb), "pin": [where.get("lon"), where.get("lat")]}
+    fixed = (x.get("map") or {}).get("countries")   # pays précisés dans le dossier (Gaza n'est pas la Cisjordanie)
+    a, b = (set(fixed[0]), set(fixed[1])) if fixed else (dossier.side_countries(sides[0], d), dossier.side_countries(sides[1], d))
+    ba, bb = dossier.side_countries(backers[0], d) - a - b, dossier.side_countries(backers[1], d) - a - b
+    # lieu du conflit : centre du cadre de la carte d'ouverture du dossier, sinon le pays du premier camp
+    if (x.get("map") or {}).get("bounds"):
+        (s_lat, w_lon), (n_lat, e_lon) = x["map"]["bounds"]
+        pin = [(w_lon + e_lon)/2, (s_lat + n_lat)/2]
+    else:
+        where = d["geo"].get(sorted(a)[0] if a else "", {})
+        pin = [where.get("lon"), where.get("lat")]
+    return {"a": num(a), "b": num(b), "ba": num(ba), "bb": num(bb), "pin": pin}
 
 def conflict_row(x, d):
     names = [s["name"] for s in x["sides"]]

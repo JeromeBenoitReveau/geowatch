@@ -4,6 +4,7 @@
 #
 # id        : nom de la page (site/<id>.html)
 # sides     : les camps ; actors = ids de network.yaml. Soutiens ET dirigeant (champ leader) lus dans le graphe.
+# map       : carte d'ouverture ; sans « regions », les pays de chaque camp sont colorés (map.countries pour les préciser)
 # stakes    : les enjeux concrets ; timeline : dates AAAA ou AAAA-MM
 # history   : parallèles historiques ET leurs limites, attribués à des historiens (facultatif)
 # (vocabulaire : glossaire.yaml, commun à tout le site ; les termes y sont expliqués au survol partout)
@@ -325,3 +326,273 @@ dossiers:
         text: Émissaires américains à Moscou et à Kyiv ; trêve de trois jours sur les capitales
         source: "Al Jazeera (sept. 2026) — https://www.aljazeera.com/news/2026/9/5/russias-putin-meets-us-envoys-to-discuss-trump-proposal-to-end-ukraine-war"
 
+
+  - id: iran
+    title: La guerre entre Israël, les États-Unis et l'Iran
+    since: "2026-02"
+    verified: 2026-09
+
+    # Carte d'ouverture. Coordonnées des lieux : Wikidata (P625).
+    map:
+      bounds: [[12, 30], [42, 64]]
+      anchors: [[32.08, 34.78], [35.689, 51.39]]   # Tel Aviv, Téhéran
+      countries: [[IL, US], [IR]]   # les alliés de l'Iran ne sont pas l'État du pays où ils agissent : Liban, Yémen, Irak non colorés
+      pins:
+        - {label: Téhéran, at: [35.689, 51.39], text: "La capitale iranienne. Le Guide suprême Ali Khamenei a été tué lors des premières frappes, le 28 février 2026.",
+           source: "Bibliothèque de la Chambre des communes, guerre et cessez-le-feu États-Unis–Iran en 2026 (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"}
+        - {label: Fordo, at: [34.886, 50.997], text: "Site d'enrichissement d'uranium enterré, frappé par les États-Unis en juin 2025, avec ceux de Natanz et d'Ispahan.",
+           source: "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran", dir: left}
+        - {label: Détroit d'Ormuz, at: [26.6, 56.5], text: "L'Iran l'a fermé pendant la guerre, provoquant un choc énergétique mondial ; sa réouverture est au cœur des négociations.",
+           source: "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"}
+        - {label: Beyrouth, at: [33.887, 35.513], text: "Capitale du Liban. Le Hezbollah y est entré en guerre contre Israël en mars 2026 ; au moins 3 696 morts au Liban au 10 juin, selon le ministère libanais de la Santé.",
+           source: "Al Jazeera, bilan des attaques américano-israéliennes contre l'Iran (juin 2026) — https://www.aljazeera.com/news/2026/3/1/us-israel-attacks-on-iran-death-toll-and-injuries-live-tracker", dir: left}
+        - {label: Sanaa, at: [15.35, 44.2], text: "Capitale tenue par les Houthis, qui ont tiré des missiles sur Israël et menacent la navigation en mer Rouge.",
+           source: "FDD's Long War Journal, les Houthis attaquent Israël et annoncent un blocus des navires israéliens (juin 2026) — https://www.longwarjournal.org/archives/2026/06/houthis-attack-israel-and-announce-ban-on-israeli-vessels-in-the-red-sea.php"}
+    lede: >-
+      Le 28 février 2026, Israël et les États-Unis ont lancé une guerre aérienne contre l'Iran, visant ses programmes
+      nucléaire et de missiles ; le Guide suprême Ali Khamenei a été tué. L'Iran a riposté contre Israël et les bases
+      américaines du Golfe, et fermé le détroit d'Ormuz. Un cessez-le-feu fragile tient depuis avril ; les négociations
+      continuent, sans accord.
+    lede_sources:
+      - "Bibliothèque de la Chambre des communes, guerre et cessez-le-feu États-Unis–Iran en 2026 (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"
+      - "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"
+
+    origins:
+      text: >-
+        Depuis la révolution islamique de 1979, l'Iran et les États-Unis sont adversaires. Le programme nucléaire iranien
+        est au cœur du conflit : l'accord de 2015 limitait l'enrichissement d'uranium en échange d'une levée des
+        sanctions, mais Donald Trump en est sorti en 2018. En juin 2025, Israël puis les États-Unis frappent des sites
+        nucléaires iraniens. Fin 2025, l'effondrement économique déclenche des manifestations, réprimées au prix de plus
+        de 6 000 morts selon le CFR.
+      sources:
+        - "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"
+
+    sides:
+      - name: Israël et les États-Unis
+        actors: [IL, US]
+        text: >-
+          Ils mènent ensemble les frappes contre l'Iran depuis le 28 février 2026, avec pour cibles affichées ses
+          programmes nucléaire et de missiles. Israël combat aussi le Hezbollah au Liban.
+        sources:
+          - "Bibliothèque de la Chambre des communes (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"
+      - name: L'Iran et ses alliés
+        actors: [IR, hezbollah, houthis, kataib_hezbollah]
+        text: >-
+          L'Iran est désormais dirigé par Mojtaba Khamenei, fils de l'ancien Guide suprême. Autour de lui, l'« axe de la
+          résistance » : le Hezbollah libanais, les Houthis du Yémen et des milices irakiennes, que Téhéran arme et finance.
+        sources:
+          - "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"
+          - "Council on Foreign Relations, « What Is Hamas? » (oct. 2025) — https://www.cfr.org/backgrounders/what-hamas"
+
+    stakes:
+      - label: La bombe nucléaire
+        icon: gem
+        text: >-
+          Empêcher l'Iran d'avoir l'arme nucléaire est l'objectif affiché de Washington. Le sort de l'uranium enrichi
+          iranien divise les négociateurs.
+        sources:
+          - "Bibliothèque de la Chambre des communes (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"
+      - label: Le pétrole et le détroit d'Ormuz
+        icon: waves
+        text: >-
+          En fermant le détroit d'Ormuz, l'Iran a provoqué un choc énergétique mondial. Sa réouverture progressive est sa
+          principale carte dans les négociations.
+        sources:
+          - "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"
+          - "Times of Israel, l'Iran attend la réponse américaine à sa proposition sur Ormuz (sept. 2026) — https://timesofisrael.com/liveblog-september-26-2026"
+      - label: L'avenir du régime iranien
+        icon: anchor
+        text: >-
+          La mort d'Ali Khamenei, les frappes et l'effondrement économique fragilisent la République islamique, déjà
+          contestée par les manifestations de fin 2025.
+        sources:
+          - "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"
+      - label: Le Liban et le Hezbollah
+        icon: route
+        text: >-
+          Un accord de juin 2026 lie le retrait israélien du Sud-Liban au désarmement du Hezbollah, qui le rejette.
+        sources:
+          - "Al Jazeera, l'accord Israël–Liban lie cessez-le-feu et désarmement du Hezbollah (juin 2026) — https://www.aljazeera.com/features/2026/6/27/israel-lebanon-deal-ties-ceasefire-to-hezbollah-disarmament-will-it-work"
+      - label: Une aubaine pour la Russie
+        icon: wheat
+        text: >-
+          La flambée du pétrole renfloue le budget russe et donc sa guerre en Ukraine, selon Timothy Ash (Chatham House).
+        sources:
+          - "Chatham House, Timothy Ash (avr. 2026) — https://www.chathamhouse.org/2026/04/iran-war-has-been-economic-gift-putin"
+
+    toll:
+      text: >-
+        Selon le ministère iranien de la Santé, les frappes ont tué au moins 3 468 personnes en Iran entre le 28 février et
+        le 10 juin 2026 ; l'ONG iranienne de défense des droits humains HRANA recense 1 701 civils tués. Au Liban, 3 696
+        personnes ont été tuées selon le ministère libanais de la Santé ; en Israël, au moins 26. Treize militaires
+        américains sont morts au combat. Jusqu'à 3,2 millions d'Iraniens ont dû quitter leur foyer, au moins temporairement.
+      sources:
+        - "Al Jazeera, bilan des attaques américano-israéliennes contre l'Iran (juin 2026) — https://www.aljazeera.com/news/2026/3/1/us-israel-attacks-on-iran-death-toll-and-injuries-live-tracker"
+        - "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"
+
+    history:
+      text: >-
+        On compare souvent cette guerre à l'invasion de l'Irak en 2003, ou au renversement du Premier ministre iranien
+        Mossadegh, organisé par la CIA en 1953. Pour Randall Fowler (Abilene Christian University), ces deux analogies
+        trompent : 1953 était une opération secrète de la guerre froide, et en 2003 les États-Unis avaient envahi le pays
+        au sol. Il juge plus éclairante la guerre Iran-Irak des années 1980, quand Washington a accru la pression navale
+        jusqu'à ce que Téhéran accepte un cessez-le-feu. C'est une lecture parmi d'autres, et toute analogie a ses limites.
+      sources:
+        - "Randall Fowler, « Iran in 2026 Is Neither Iran in 1953 nor Iraq in 2003 », Providence (févr. 2026) — https://providencemag.com/2026/02/iran-in-2026-is-neither-iran-in-1953-nor-iraq-in-2003/"
+
+    now:
+      text: >-
+        Le cessez-le-feu conclu le 8 avril sous médiation pakistanaise a été violé à plusieurs reprises ; un protocole
+        d'accord signé en juin a ouvert 60 jours de négociations. Fin septembre 2026, les frappes ont cessé depuis plusieurs
+        semaines, mais le détroit d'Ormuz n'est pas rouvert. Le 26 septembre, Donald Trump a rejeté une proposition
+        iranienne tout en poursuivant les discussions, menées par l'intermédiaire du Qatar.
+      sources:
+        - "Bibliothèque de la Chambre des communes (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"
+        - "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"
+        - "GlobalSecurity.org, guerre en Iran, point du 30 septembre 2026 — https://www.globalsecurity.org/military/ops/iran-war-oprep.htm"
+
+    timeline:
+      - date: "1979"
+        text: Révolution islamique ; l'Iran et les États-Unis deviennent adversaires
+        source: "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"
+      - date: "2015"
+        text: Accord sur le nucléaire iranien
+        source: "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"
+      - date: "2018"
+        text: Les États-Unis sortent de l'accord et rétablissent leurs sanctions
+        source: "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"
+      - date: "2025-06"
+        text: Frappes israéliennes puis américaines sur les sites nucléaires iraniens
+        source: "Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran"
+      - date: "2026-02"
+        text: Début de la guerre ; Ali Khamenei est tué
+        source: "Bibliothèque de la Chambre des communes (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"
+      - date: "2026-04"
+        text: Cessez-le-feu sous médiation pakistanaise
+        source: "Bibliothèque de la Chambre des communes (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"
+      - date: "2026-06"
+        text: Protocole d'accord ouvrant 60 jours de négociations
+        source: "Bibliothèque de la Chambre des communes (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"
+      - date: "2026-09"
+        text: Négociations via le Qatar ; Donald Trump rejette une proposition iranienne
+        source: "Times of Israel, 26 septembre 2026 — https://timesofisrael.com/liveblog-september-26-2026"
+
+  - id: gaza
+    title: La guerre à Gaza
+    since: "2023-10"
+    verified: 2026-09
+
+    # Carte d'ouverture. Coordonnées des lieux : Wikidata (P625).
+    map:
+      bounds: [[30.7, 33.4], [32.6, 35.8]]
+      anchors: [[32.08, 34.78], [31.508, 34.46]]   # Tel Aviv, Gaza
+      countries: [[IL], []]   # le Hamas tient Gaza, pas la Cisjordanie : la Palestine n'est pas colorée, Gaza est épinglée
+      pins:
+        - {label: Gaza, at: [31.508, 34.46], text: "La principale ville d'un territoire de 2 millions d'habitants, gouverné par le Hamas depuis 2007.",
+           source: "Council on Foreign Relations, « What Is Hamas? » (oct. 2025) — https://www.cfr.org/backgrounders/what-hamas"}
+        - {label: Rafah, at: [31.289, 34.252], text: "Au sud, à la frontière égyptienne : le plan de reconstruction de septembre 2026 doit commencer par Rafah.",
+           source: "FDD's Long War Journal, le Board of Peace présente un plan de reconstruction de Gaza (sept. 2026) — https://www.longwarjournal.org/archives/2026/09/board-of-peace-unveils-gaza-recovery-plan-israel-reports-18-ceasefire-violations-sept-15-29.php", dir: left}
+    lede: >-
+      Le 7 octobre 2023, le Hamas attaque Israël : plus de 1 200 personnes sont tuées et 251 prises en otage. Israël
+      répond par une guerre à Gaza qui a fait plus de 70 000 morts selon le ministère de la Santé de Gaza, contrôlé par le
+      Hamas. Un cessez-le-feu tient en grande partie depuis octobre 2025, mais le désarmement du Hamas et le retrait
+      israélien restent bloqués.
+    lede_sources:
+      - "Council on Foreign Relations, Global Conflict Tracker : le conflit israélo-palestinien (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/israeli-palestinian-conflict"
+      - "Chatham House, Julie Norman : en acceptant de désarmer, le Hamas met Israël au pied du mur (août 2026) — https://www.chathamhouse.org/2026/08/agreeing-disarm-hamas-trying-call-israels-bluff-gaza"
+
+    origins:
+      text: >-
+        Le Hamas, mouvement islamiste fondé en 1987, remporte les élections palestiniennes de 2006 puis chasse son rival,
+        le Fatah, de Gaza en 2007. L'Égypte et Israël ferment alors leurs frontières avec ce territoire de 2 millions
+        d'habitants. Plusieurs guerres suivent, jusqu'à l'attaque du 7 octobre 2023 et l'offensive israélienne qui y répond.
+      sources:
+        - "Council on Foreign Relations, « What Is Hamas? » (oct. 2025) — https://www.cfr.org/backgrounders/what-hamas"
+        - "Council on Foreign Relations, Global Conflict Tracker : le conflit israélo-palestinien (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/israeli-palestinian-conflict"
+
+    sides:
+      - name: Israël
+        actors: [IL]
+        text: >-
+          Dirigé par le Premier ministre Benyamin Netanyahou. Son armée contrôle près de 70 % de Gaza, contre 53 % au
+          moment du cessez-le-feu, et Israël exige le désarmement complet du Hamas avant tout retrait, selon Chatham House.
+        sources:
+          - "Chatham House, Julie Norman (août 2026) — https://www.chathamhouse.org/2026/08/agreeing-disarm-hamas-trying-call-israels-bluff-gaza"
+      - name: Le Hamas et le Jihad islamique
+        actors: [hamas, pij]
+        text: >-
+          Le Hamas gouverne Gaza depuis 2007. Fin juillet 2026, il a accepté un plan de désarmement par étapes, à condition
+          qu'Israël se retire au même rythme. Il est dirigé par Khalil al-Hayya.
+        sources:
+          - "Al Jazeera, le Board of Peace annonce un accord de désarmement du Hamas (juill. 2026) — https://www.aljazeera.com/news/2026/7/31/gaza-board-of-peace-announces-hamas-disarmament-agreement-what-we-know"
+          - "Chatham House, Julie Norman (août 2026) — https://www.chathamhouse.org/2026/08/agreeing-disarm-hamas-trying-call-israels-bluff-gaza"
+
+    stakes:
+      - label: Désarmer d'abord, ou se retirer d'abord ?
+        icon: gem
+        text: >-
+          Israël veut que le Hamas désarme avant tout retrait ; le Hamas conditionne chaque étape au retrait israélien.
+          Cet ordre des étapes bloque l'application du plan de paix.
+        sources:
+          - "Chatham House, Julie Norman (août 2026) — https://www.chathamhouse.org/2026/08/agreeing-disarm-hamas-trying-call-israels-bluff-gaza"
+          - "FDD's Long War Journal (sept. 2026) — https://www.longwarjournal.org/archives/2026/09/board-of-peace-unveils-gaza-recovery-plan-israel-reports-18-ceasefire-violations-sept-15-29.php"
+      - label: Qui gouvernera Gaza ?
+        icon: anchor
+        text: >-
+          Un comité palestinien doit administrer le territoire sans le Hamas, sous la supervision du Board of Peace, présidé
+          par Donald Trump. Une force internationale doit être déployée jusqu'en 2027.
+        sources:
+          - "Al Jazeera (juill. 2026) — https://www.aljazeera.com/news/2026/7/31/gaza-board-of-peace-announces-hamas-disarmament-agreement-what-we-know"
+          - "Council on Foreign Relations, Global Conflict Tracker : le conflit israélo-palestinien (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/israeli-palestinian-conflict"
+      - label: La reconstruction
+        icon: route
+        text: >-
+          En septembre 2026, le Board of Peace a présenté un plan de 2,45 milliards de dollars sur six mois. Il dépend du
+          désarmement du Hamas et du retrait israélien.
+        sources:
+          - "FDD's Long War Journal (sept. 2026) — https://www.longwarjournal.org/archives/2026/09/board-of-peace-unveils-gaza-recovery-plan-israel-reports-18-ceasefire-violations-sept-15-29.php"
+      - label: La survie des habitants
+        icon: wheat
+        text: >-
+          Deux millions de personnes restent piégées dans le territoire. Selon l'ONU, environ deux tiers de Gaza restent
+          inaccessibles à l'aide, ou très difficiles d'accès.
+        sources:
+          - "Conseil de sécurité de l'ONU, séance du 26 août 2026 (SC/16440) — https://press.un.org/en/2026/sc16440.doc.htm"
+
+    toll:
+      text: >-
+        Selon le ministère de la Santé de Gaza, contrôlé par le Hamas, plus de 70 000 Palestiniens ont été tués depuis
+        octobre 2023, dont au moins 1 100 depuis le cessez-le-feu d'octobre 2025. L'attaque du 7 octobre a tué plus de 1 200
+        personnes en Israël. En août 2025, 1,9 million de Gazaouis, soit 90 % de la population, avaient été déplacés.
+      sources:
+        - "Council on Foreign Relations, Global Conflict Tracker : le conflit israélo-palestinien (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/israeli-palestinian-conflict"
+        - "Al Jazeera (juill. 2026) — https://www.aljazeera.com/news/2026/7/31/gaza-board-of-peace-announces-hamas-disarmament-agreement-what-we-know"
+
+    now:
+      text: >-
+        Le cessez-le-feu d'octobre 2025 tient en grande partie, mais les frappes continuent : Israël a mené 18 opérations
+        contre des responsables du Hamas entre le 15 et le 29 septembre 2026. Le plan de reconstruction reste suspendu au
+        désarmement et au retrait, et les négociations sont difficiles avant les élections israéliennes du 27 octobre.
+      sources:
+        - "FDD's Long War Journal (sept. 2026) — https://www.longwarjournal.org/archives/2026/09/board-of-peace-unveils-gaza-recovery-plan-israel-reports-18-ceasefire-violations-sept-15-29.php"
+        - "Council on Foreign Relations, Global Conflict Tracker : le conflit israélo-palestinien (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/israeli-palestinian-conflict"
+
+    timeline:
+      - date: "2007"
+        text: Le Hamas prend le contrôle de Gaza ; l'Égypte et Israël ferment leurs frontières
+        source: "Council on Foreign Relations, « What Is Hamas? » (oct. 2025) — https://www.cfr.org/backgrounders/what-hamas"
+      - date: "2023-10"
+        text: Attaque du Hamas contre Israël ; début de la guerre à Gaza
+        source: "Council on Foreign Relations, Global Conflict Tracker : le conflit israélo-palestinien (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/israeli-palestinian-conflict"
+      - date: "2025-08"
+        text: 90 % des Gazaouis déplacés ; l'ONU alerte sur un risque de famine
+        source: "Council on Foreign Relations, Global Conflict Tracker : le conflit israélo-palestinien (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/israeli-palestinian-conflict"
+      - date: "2025-10"
+        text: Cessez-le-feu et libération des otages (plan de Donald Trump)
+        source: "Council on Foreign Relations, Global Conflict Tracker : le conflit israélo-palestinien (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/israeli-palestinian-conflict"
+      - date: "2026-07"
+        text: Le Hamas accepte un plan de désarmement par étapes
+        source: "Al Jazeera (juill. 2026) — https://www.aljazeera.com/news/2026/7/31/gaza-board-of-peace-announces-hamas-disarmament-agreement-what-we-know"
+      - date: "2026-09"
+        text: Plan de reconstruction de 2,45 milliards de dollars du Board of Peace
+        source: "FDD's Long War Journal (sept. 2026) — https://www.longwarjournal.org/archives/2026/09/board-of-peace-unveils-gaza-recovery-plan-israel-reports-18-ceasefire-violations-sept-15-29.php"

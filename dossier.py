@@ -103,7 +103,7 @@ def backers_block(bs, d, g, cite):
         groups.setdefault(x.get("why") or x["from"], []).append(x)
     rows = []
     for why, xs in groups.items():
-        names = [e(d["actors"][x["from"]]["name"]) for x in xs]
+        names = list(dict.fromkeys(e(d["actors"][x["from"]]["name"]) for x in xs))   # un pays qui soutient deux acteurs d'un camp : cité une fois
         kinds = sorted({TYPES_FR.get(t, t) for x in xs for t in x["types"]})
         alleged = any(x["status"] == "alleged" for x in xs)
         notes = [x for x in xs if x.get("note")]
@@ -136,6 +136,22 @@ SIDE_COLORS = ["#2a78d6", "#eb6834"]   # camp 1, camp 2 (palette catégorielle d
 CONTESTED = "#9ca3af"
 MAPS = Path(__file__).with_name("data") / "maps"
 
+def side_countries(ids, d):
+    """Pays d'un camp : l'État lui-même, le pays d'ancrage d'un groupe ou d'une personne, les membres d'un bloc
+    (groupe d'alignments.yaml rattaché au bloc, le plus haut niveau)."""
+    out = set()
+    for i in ids:
+        a = d["actors"].get(i, {})
+        if a.get("kind") == "state":
+            out.add(i)
+        elif a.get("kind") == "bloc":
+            gs = [g for g in d["align"]["groups"] if g.get("entity") == i]
+            if gs:
+                out |= set(max(gs, key=lambda g: g.get("level") or 0)["members"])
+        elif a.get("base"):
+            out.add(a["base"])
+    return out
+
 def hero_map(dos, d, backers, cite):
     """Carte d'ouverture : zones de contrôle par région, soutiens étrangers en flèches vers chaque camp, lieux clés,
     routes d'approvisionnement et flux. Tout est sourcé ; les textes sont insérés côté navigateur sans HTML."""
@@ -144,6 +160,8 @@ def hero_map(dos, d, backers, cite):
         return ""
     geo = d["geo"]
     (s_lat, w_lon), (n_lat, e_lon) = m["bounds"]
+    # marges et décalages proportionnels au cadre (1,5° sur une grande carte, bien moins sur Gaza)
+    in_lat, in_lon = min(1.5, (n_lat - s_lat)*.08), min(1.5, (e_lon - w_lon)*.06)
     def place(aid):
         """Position d'un soutien : son pays (Wikidata) ou les coords d'un bloc ; ramenée au bord du cadre si elle en sort,
         pour garder la région du conflit lisible (le nom le signale alors « hors carte »)."""
@@ -151,18 +169,22 @@ def hero_map(dos, d, backers, cite):
         lat, lon = (g.get("lat"), g.get("lon")) if g.get("lat") else (d["actors"][aid].get("coords") or [None, None])
         if lat is None:
             return None, False
-        inset = 1.5
-        c = [min(max(lat, s_lat + inset), n_lat - inset), min(max(lon, w_lon + inset), e_lon - inset)]
+        c = [min(max(lat, s_lat + in_lat), n_lat - in_lat), min(max(lon, w_lon + in_lon), e_lon - in_lon)]
         return c, c != [lat, lon]
     arrows, taken = [], []
     for side, bs in enumerate(backers):
+        seen = set()
         for x in bs:
+            if x["from"] in seen:   # un même pays qui soutient deux acteurs d'un camp : une seule flèche
+                continue
+            seen.add(x["from"])
             at, off = place(x["from"])
             if not at:
                 continue
             # deux drapeaux ramenés au même endroit du bord : on décale le second le long du bord
-            while off and any(abs(at[0] - t[0]) < 2 and abs(at[1] - t[1]) < 3 for t in taken):
-                at = [at[0], at[1] - 3.5] if at[0] <= s_lat + 1.6 or at[0] >= n_lat - 1.6 else [at[0] - 2.5, at[1]]
+            while off and any(abs(at[0] - t[0]) < in_lat*1.3 and abs(at[1] - t[1]) < in_lon*2 for t in taken):
+                at = ([at[0], at[1] - in_lon*2.3] if at[0] <= s_lat + in_lat*1.1 or at[0] >= n_lat - in_lat*1.1
+                      else [at[0] - in_lat*1.7, at[1]])
             taken.append(at)
             flag = x["from"].lower() if d["actors"][x["from"]]["kind"] == "state" else ("eu" if x["from"] == "EU" else "")
             arrows.append({"side": side, "at": at, "iso": flag,
@@ -171,7 +193,12 @@ def hero_map(dos, d, backers, cite):
                            "source": x["sources"]})
     flows = [{**f, "to": [geo[f["to_actor"]]["lat"], geo[f["to_actor"]]["lon"]]} for f in m.get("flows", [])
              if geo.get(f.get("to_actor"), {}).get("lat")]
-    payload = {"bounds": m["bounds"], "regions": m.get("regions"), "anchors": m["anchors"],
+    # sans zones de contrôle régionales : les pays de chaque camp sont colorés (codes numériques ISO de Natural Earth)
+    num = lambda isos: sorted(str(int(geo[i]["iso_numeric"])) for i in isos if geo.get(i, {}).get("iso_numeric"))
+    # (map.countries : liste explicite par camp, quand le pays entier ne correspond pas au camp — Gaza n'est pas la Cisjordanie)
+    camps = [] if m.get("regions") else [num(m["countries"][i] if "countries" in m else side_countries(sd["actors"], d))
+                                          for i, sd in enumerate(dos["sides"])]
+    payload = {"bounds": m["bounds"], "regions": m.get("regions"), "anchors": m["anchors"], "camps": camps,
                "sides": [s["name"] for s in dos["sides"]], "colors": SIDE_COLORS, "contested": CONTESTED,
                "arrows": arrows, "pins": m.get("pins", []), "routes": m.get("routes", []), "flows": flows}
     data = json.dumps(payload, ensure_ascii=False).replace("</", "<\\/")
@@ -186,7 +213,7 @@ def hero_map(dos, d, backers, cite):
   {'<span><b class="ln" style="border-color:#b7791f"></b>Flux (or)</span>' if m.get("flows") else ""}
 </div>
 <p class="map-note">Cliquez sur un élément pour son explication et ses sources. {glossed(reg.get("note", ""), glossary.Glosser())}{cite(reg.get("sources"))}</p>
-<p class="map-note">Fond de carte Natural Earth ; {e(reg.get("credit", ""))} ; villes : Wikidata.</p>
+<p class="map-note">Fond de carte Natural Earth{" ; " + e(reg["credit"]) if reg.get("credit") else ""} ; lieux : Wikidata.</p>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
@@ -210,6 +237,12 @@ const pop = (title, text, source) => {{ const div = document.createElement("div"
 const world = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json").then(r => r.json());
 L.geoJSON(topojson.feature(world, world.objects.countries), {{interactive:false,
   style: {{color: css("--line"), weight:.8, fillColor: css("--land"), fillOpacity:1}}}}).addTo(map);
+// pas de zones de contrôle : chaque pays d'un camp prend sa couleur (dans les deux camps : couleur « disputé »)
+if(M.camps.length){{ const inC = (k, id) => M.camps[k].includes(String(+id));
+  L.geoJSON(topojson.feature(world, world.objects.countries), {{filter: f => inC(0, f.id) || inC(1, f.id),
+    style: f => ({{color: css("--card"), weight:1, fillOpacity:.5, fillColor: inC(0, f.id) && inC(1, f.id) ? M.contested : M.colors[inC(0, f.id) ? 0 : 1]}}),
+    onEachFeature: (f, l) => l.bindTooltip(inC(0, f.id) && inC(1, f.id) ? "dans les deux camps" : "camp : " + M.sides[inC(0, f.id) ? 0 : 1].toLowerCase(), {{sticky:true}})
+  }}).addTo(map); }}
 if(M.regions){{
   const control = n => M.regions.sides[0].includes(n) ? 0 : M.regions.sides[1].includes(n) ? 1 : M.regions.contested.includes(n) ? 2 : -1;
   const reg = await fetch("maps/" + M.regions.file + ".geojson").then(r => r.json());
@@ -256,7 +289,7 @@ def page(dos, d):
   <div class="who">{f'<img src="{e(pic["thumb"])}" alt="">' if pic else ""}<div><h3>{glossed(s["name"], g)}</h3>
   {f'<div class="lead">{e(lead["name"])}</div>' if lead else ""}</div></div>
   <p>{glossed(s["text"], g)}{cite(s.get("sources"))}</p>
-  <p class="backers-title">{len(bs)} soutien{"s" if len(bs) > 1 else ""} étranger{"s" if len(bs) > 1 else ""}</p>
+  <p class="backers-title">{(n := len({x["from"] for x in bs}))} soutien{"s" if n > 1 else ""} étranger{"s" if n > 1 else ""}</p>
   {backers_block(bs, d, g, cite) or '<p style="color:var(--graphite)">Aucun soutien documenté.</p>'}</div>"""
 
     events = [(str(t["date"]), glossed(t["text"], g) + cite([t["source"]])) for t in dos.get("timeline", [])]
@@ -266,7 +299,7 @@ def page(dos, d):
             if x.get("since"):
                 by_date.setdefault(str(x["since"]), []).append(x)
         for dt, xs in by_date.items():
-            names = [e(d["actors"][x["from"]]["name"]) for x in xs]
+            names = list(dict.fromkeys(e(d["actors"][x["from"]]["name"]) for x in xs))
             who = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " et " + names[-1]
             what = "premier soutien documenté" if len(xs) == 1 else "premiers soutiens documentés"
             events.append((dt, f"{who} : {what} à {e(s['name'][:1].lower() + s['name'][1:])}" + cite([xs[0]["sources"][0]])))
