@@ -42,6 +42,10 @@ def formal_ties(al):
             ties.setdefault(iso, []).append(g)
     return ties
 
+def org_countries(al):
+    """Tous les pays membres (actuels ou passés) d'une organisation d'alignments.yaml."""
+    return {iso for g in al["groups"] for iso in [*g["members"], *(g.get("left") or {})]}
+
 def influence(actors, edges, al):
     """Bloc d'influence et niveau de chaque pays ou acteur — déduits, jamais attribués à la main.
     member    : lien formel (alignments.yaml) ; level = niveau le plus élevé, par bloc

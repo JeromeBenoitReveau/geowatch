@@ -10,6 +10,7 @@ def run_profiles(c):
     isos = {a for a, v in actors.items() if v["kind"] == "state"}
     isos |= {v["base"] for v in actors.values() if v.get("base")}  # pays hôtes des proxies
     isos |= {a for a, v in actors.items() if v["kind"] == "bloc" and a in profiles.WB_CODES}
+    isos |= network.org_countries(network.alignments())  # membres des organisations (tailles de la vue Organisations)
     print(f"→ profils : {', '.join(sorted(isos))}")
     for iso, p in profiles.fetch(sorted(isos)).items():
         db.save_profile(c, iso, p)

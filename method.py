@@ -203,8 +203,9 @@ Sud global (développement, décolonisation) coïncident avec ceux de la Chine :
 à l'axe. Les votes adoptés par consensus, sans scrutin, ne sont pas comptés.</p>
 
 <h2 id="taille">Taille des acteurs</h2>
-<p>Sur le graphe, au choix : dépenses militaires en dollars (Banque mondiale <code>MS.MIL.XPND.CD</code>), PIB en dollars
-(<code>NY.GDP.MKTP.CD</code>), ou nombre de soutiens accordés dans le graphe. Échelle en racine carrée ; l'UE utilise l'agrégat
+<p>Sur le graphe et dans la vue Organisations, au choix : dépenses militaires en dollars (Banque mondiale <code>MS.MIL.XPND.CD</code>), PIB en dollars
+(<code>NY.GDP.MKTP.CD</code>), population (<code>SP.POP.TOTL</code>), nombre de soutiens accordés dans le graphe, ou même taille pour tous. Dans la vue Organisations,
+la taille est relative au plus grand pays affiché, et le panneau donne le total de chaque organisation et la part de ses trois premiers membres. Échelle en racine carrée ; l'UE utilise l'agrégat
 Banque mondiale « EUU ». Sur la carte : dépenses militaires. Sans donnée (Taïwan, que la Banque mondiale ne couvre pas ; groupes armés) : taille minimale.</p>
 
 <h2 id="profils">Profils pays</h2>

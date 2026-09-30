@@ -206,6 +206,7 @@ def hero_map(dos, d, backers, cite):
 <script>
 (async () => {{
 const M = {data};
+window.THEME_RELOAD = true;  // couleurs de la carte lues au chargement
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const map = L.map("dmap", {{zoomSnap:.25, scrollWheelZoom:false, attributionControl:false}});
 map.fitBounds(M.bounds);

@@ -4,6 +4,11 @@ en encre et gris, et l'espace sépare les sections plutôt que des cadres."""
 from html import escape as e
 import brand
 
+DARK = ("color-scheme:dark;--paper:#141821;--ink:#e8ebf0;--graphite:#9ba3b0;--mist:#29303b;"
+        "--ocean:#0d131b;--land:#1b212b;--peach:#f4b393;--a:#3987e5;--b:#d95926")
+# appliqué avant le premier affichage, pour éviter un flash du mauvais thème
+THEME_INIT = '<script>try{const t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(_){}</script>'
+
 FONTS = ("https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500"
          "&family=Public+Sans:wght@400;500;600&display=swap")
 
@@ -11,9 +16,11 @@ CSS = """
 :root{--paper:#f7f8f7;--ink:#16181d;--graphite:#5f6670;--mist:#e3e6e9;--ocean:#e6ebef;--land:#fdfdfc;
   --peach:#e3936c;--a:#2a78d6;--b:#eb6834;--line:var(--mist);--card:var(--land);--fg:var(--ink);--bg:var(--paper);--mute:var(--graphite);
   --serif:"Newsreader",Georgia,serif;--sans:"Public Sans",system-ui,sans-serif}
-/* sombre : gris très légèrement bleutés ; la pêche s'éclaircit pour rester lisible */
-@media (prefers-color-scheme:dark){:root{--paper:#141821;--ink:#e8ebf0;--graphite:#9ba3b0;--mist:#29303b;
-  --ocean:#0d131b;--land:#1b212b;--peach:#f4b393;--a:#3987e5;--b:#d95926}}
+/* sombre : gris très légèrement bleutés ; la pêche s'éclaircit pour rester lisible.
+   Thème du système par défaut ; l'interrupteur du menu le force (attribut data-theme, gardé dans le navigateur) */
+:root{color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){__DARK__}}
+:root[data-theme=dark]{__DARK__}
 /* la pêche est l'accent de l'interface (liens, onglet actif, survol, focus, logo) ; jamais une couleur de données */
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
@@ -24,7 +31,7 @@ a:focus-visible,summary:focus-visible,button:focus-visible,input:focus-visible,s
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:22px 0 0;font-size:15px}
 .top a{text-decoration:none}
 /* menus déroulants de l'en-tête */
-.menus{display:flex;gap:26px}.menu{position:relative}
+.menus{display:flex;gap:26px;align-items:center}.menu{position:relative}
 .menu summary{list-style:none;cursor:pointer;color:var(--graphite);padding:4px 0;border-bottom:2px solid transparent;display:flex;align-items:center;gap:6px}
 .menu summary::-webkit-details-marker{display:none}
 .menu summary::after{content:"";width:6px;height:6px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:translateY(-2px) rotate(45deg);opacity:.7}
@@ -35,6 +42,10 @@ a:focus-visible,summary:focus-visible,button:focus-visible,input:focus-visible,s
 .dd a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;color:var(--ink);white-space:nowrap}
 .dd a:hover,.dd a:focus-visible{background:color-mix(in srgb,var(--ink) 6%,var(--land))}.dd a[aria-current]{box-shadow:inset 2px 0 0 var(--peach)}
 .dd .ico,.explore .ico{color:var(--peach);flex:none}
+.theme{background:none;border:0;color:var(--graphite);cursor:pointer;padding:4px;border-radius:3px;display:flex;align-items:center}
+.theme:hover{color:var(--ink)}.theme .sun{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .theme .sun{display:block}:root:not([data-theme=light]) .theme .moon{display:none}}
+:root[data-theme=dark] .theme .sun{display:block}:root[data-theme=dark] .theme .moon{display:none}
 .brand{font-family:var(--serif);font-size:20px;display:inline-flex;align-items:center;gap:9px}.brand .logo{flex:none}
 h1{font:400 44px/1.1 var(--serif);letter-spacing:-.01em;margin:0 0 14px}
 h2{font:400 26px/1.25 var(--serif);margin:0 0 18px}
@@ -86,7 +97,7 @@ def head(title, desc=brand.BASELINE, extra=""):
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>{e(title)}</title>
 <meta name="description" content="{e(desc)}">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="{FONTS}">
-<link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.svg" type="image/svg+xml">{extra}</head>"""
+<link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.svg" type="image/svg+xml">{THEME_INIT}{extra}</head>"""
 
 def top(current=""):
     """En-tête commun : trois menus déroulants (Conflits, Explorer, À propos), identiques sur toutes les pages.
@@ -102,10 +113,18 @@ def top(current=""):
     return f"""<div class="top"><a class="brand" href="index.html">{LOGO}{e(brand.NAME)}</a><nav class="menus">
 {menu("Conflits", conflicts, current in dict(conflicts))}
 <details class="menu"{" data-active" if current == "explorer.html" else ""}><summary>Explorer</summary><div class="dd">{explore}</div></details>
-{menu("À propos", about, current in dict(about))}</nav></div>
+{menu("À propos", about, current in dict(about))}
+<button class="theme" id="theme-toggle" type="button" title="Mode clair / mode sombre" aria-label="Basculer entre mode clair et mode sombre">
+<svg class="moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+<svg class="sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></button></nav></div>
 <script>
 // un seul menu ouvert à la fois ; un clic ailleurs ou Échap les ferme
 document.addEventListener("click", ev => document.querySelectorAll("details.menu[open]").forEach(d => {{ if(!d.contains(ev.target) || ev.target.closest(".dd a")) d.open = false; }}));
+// thème : bascule entre clair et sombre ; les pages qui calculent leurs couleurs en JS (cartes, graphe) se rechargent
+document.getElementById("theme-toggle").addEventListener("click", () => {{ const r = document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme = dark ? "light" : "dark"; try {{ localStorage.setItem("theme", r.dataset.theme); }} catch(_) {{}}
+  if(window.THEME_RELOAD) location.reload(); }});
 document.addEventListener("keydown", ev => {{ if(ev.key === "Escape") document.querySelectorAll("details.menu[open]").forEach(d => d.open = false); }});
 // à l'ouverture : on ferme les autres menus et on garde la liste dans l'écran, quelle que soit sa largeur
 document.querySelectorAll("details.menu").forEach(d => d.addEventListener("toggle", () => {{ if(!d.open) return;
@@ -120,5 +139,5 @@ def foot(extra=""):
 textes et données sous licence CC BY 4.0. <a href="{brand.REPO}">Proposer une correction</a>.</div></footer>"""
 
 def write(out):
-    (out / "style.css").write_text(CSS.strip() + "\n", encoding="utf-8")
+    (out / "style.css").write_text(CSS.replace("__DARK__", DARK).strip() + "\n", encoding="utf-8")
     (out / "favicon.svg").write_text(FAVICON, encoding="utf-8")
