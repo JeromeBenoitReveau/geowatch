@@ -16,17 +16,15 @@ CSS = """
 .conflict h3{font-size:25px;margin:0 0 6px}
 .conflict .vs{margin:0 0 10px;font-size:15px}.conflict .vs span{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 6px 0 0}
 .conflict p{margin:0;max-width:40em}.conflict .go{margin-top:14px;font-size:15px;text-decoration:underline;text-decoration-color:var(--peach);text-decoration-thickness:1.5px;text-underline-offset:3px;width:max-content}
-.odds{padding:12px 14px;margin-top:16px;display:flex;align-items:center;gap:12px}
-.odds b{font:400 34px/1 var(--serif);font-variant-numeric:tabular-nums}
-.odds span{font-size:14px;line-height:1.35}.odds small{display:block;font-size:13px;color:var(--graphite)}
 .conflict .key{font-size:12.5px;color:var(--graphite);margin:8px 0 0}.conflict .go{margin-top:auto;padding-top:14px}
 .explore{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .explore .card{padding:22px}.explore .ico{display:block;margin-bottom:12px}
 .explore p.use{margin:0 0 14px;font-size:16px;color:var(--ink)}.explore .count{font-size:13px;color:var(--graphite)}
-.cta{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:26px}
-.btn{display:inline-block;background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:6px;text-decoration:none;font-weight:500}
-.btn:hover{background:color-mix(in srgb,var(--ink) 85%,var(--peach))}.cta .alt{color:var(--graphite);font-size:15px}
-.hero .updated{margin-top:18px;font-size:14px}
+/* étiquette discrète (date de mise à jour) : filet fin, coins à peine arrondis */
+.hero .updated{margin:22px 0 0}
+.tag{display:inline-flex;align-items:center;gap:7px;padding:3px 9px;border:1px solid var(--mist);border-radius:3px;
+  background:var(--land);font-size:12.5px;letter-spacing:.01em;color:var(--graphite);font-variant-numeric:tabular-nums}
+.tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--peach)}
 .page{padding:64px 0 0}.page h2{margin-top:40px}.page ol li,.page ul li{margin-bottom:10px}
 @media (max-width:760px){.hero{padding:48px 0 28px}.hero h1{font-size:34px}.conflicts{grid-template-columns:1fr}
   .explore{grid-template-columns:1fr}}
@@ -89,29 +87,20 @@ def conflict_map(x, d):
 
 def conflict_row(x, d):
     names = [s["name"] for s in x["sides"]]
-    # encart : les soutiens étrangers de chaque camp, lus dans le graphe (pas de cote ni de probabilité)
-    ids = [set(sd["actors"]) for sd in x["sides"]]
-    per_side = [len({ed["from"] for ed in d["edges"] if ed["to"] in i and ed["from"] not in i and ed["status"] != "ended"}) for i in ids]
-    short = lambda n: n[:1].lower() + n[1:]
-    odds = (f'<div class="odds tint"><b>{sum(per_side)}</b><span>puissances étrangères impliquées'
-            f'<small>{per_side[0]} {"soutient" if per_side[0] == 1 else "soutiennent"} {e(short(names[0]))}, {per_side[1]} {e(short(names[1]))}</small></span></div>')
     first = " ".join(x["lede"].split()).split(". ")[0].rstrip(".") + "."
     return f"""<a class="card conflict" href="{e(x['id'])}.html">
 <svg class="wm" viewBox="0 0 600 300" role="img" aria-label="Carte : pays des deux camps et de leurs soutiens étrangers" data-map='{e(json.dumps(conflict_map(x, d)))}'></svg>
 <div class="body"><h3>{e(x['title'])}</h3>
 <p class="vs"><span style="background:var(--a)"></span>{e(names[0])} contre <span style="background:var(--b);margin-left:4px"></span>{e(names[1][:1].lower() + names[1][1:])}</p>
-<p>{e(first)}</p><p class="key">Sur la carte, en teinte claire : leurs soutiens étrangers.</p>{odds}<p class="go">Lire le dossier</p></div></a>"""
+<p>{e(first)}</p><p class="key">Sur la carte, en teinte claire : leurs soutiens étrangers.</p><p class="go">Lire le dossier</p></div></a>"""
 
 def home(d, dossiers):
     groups = d["align"]["groups"]
-    first = dossiers[0]
     built = "/".join(reversed(d["built"][:10].split("-")))
     body = f"""<section class="hero"><h1>{e(brand.BASELINE)}</h1>
 <p>Guerres, alliances, sanctions, rivalités : qui s'oppose à qui, qui soutient qui, et pour quelles raisons.
 Les rapports de force du monde rendus lisibles, sans prérequis. Chaque affirmation est sourcée.</p>
-<div class="cta"><a class="btn" href="{e(first['id'])}.html">Commencer par une guerre : {e(first['title'][:1].lower() + first['title'][1:])}</a>
-<a class="alt" href="explorer.html">ou explorer la carte et le graphe</a></div>
-<p class="meta updated">Mis à jour le {built}</p></section>
+<p class="updated"><span class="tag">Mis à jour le {built}</span></p></section>
 
 <section id="conflits"><h2>Comprendre les conflits en cours</h2>
 <div class="conflicts">{"".join(conflict_row(x, d) for x in dossiers)}</div>
