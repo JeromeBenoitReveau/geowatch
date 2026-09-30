@@ -72,16 +72,13 @@ footer{border-top:1px solid var(--mist);margin-top:64px;padding:20px 0 40px;font
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 """
 
-# Logo « le méridien » : un globe traversé d'une ligne tendue (la géopolitique en cartes, et le fil qui relie)
-LOGO = ('<svg class="logo" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true">'
-        '<circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="1.8" fill="none"/>'
-        '<path d="M5.5 19C11 12 21 12 26.5 13" stroke="var(--peach)" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>')
-# icône d'onglet : mêmes tracés, couleurs fixes adaptées au thème du navigateur
-FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-<style>circle{stroke:#16181d}path{stroke:#e3936c}@media (prefers-color-scheme:dark){circle{stroke:#e8ebf0}path{stroke:#f4b393}}</style>
-<circle cx="16" cy="16" r="11" stroke-width="2.4" fill="none"/>
-<path d="M5.5 19C11 12 21 12 26.5 13" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>
-"""
+# Logo « le méridien » : un globe traversé d'une ligne tendue, sur une pastille pêche (dessin fourni par Jérôme)
+_MARK = ('<rect width="205" height="205" rx="52" fill="#F4B393"/>'
+         '<circle cx="102.5" cy="102.5" r="61.1909" stroke="#2B313B" stroke-width="18"/>'
+         '<path d="M156.857 81.9434C148.569 79.6244 139.83 78.3844 130.802 78.3844C95.6414 78.3844 64.8735 97.1899 48.0073 125.291" stroke="#2B313B" stroke-width="18"/>')
+LOGO = f'<svg class="logo" viewBox="0 0 205 205" width="26" height="26" fill="none" aria-hidden="true">{_MARK}</svg>'
+# icône d'onglet : le même dessin (couleurs fixes, lisible sur fond clair comme sombre)
+FAVICON = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 205 205" fill="none">{_MARK}</svg>\n'
 
 # Icônes des trois vues de l'explorateur (Lucide, ISC ; « orgs » dessiné pour le site : deux cercles qui se recoupent)
 ICONS = {
