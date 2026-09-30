@@ -30,6 +30,9 @@ def run_profiles(c):
     qids = {a: v["wikidata"] for a, v in actors.items() if v.get("wikidata")}
     qids |= {f"leader:{a}": v["leader"]["wikidata"] for a, v in actors.items()
              if isinstance(v.get("leader"), dict) and v["leader"].get("wikidata")}
+    # personnes citées dans les dossiers (registre people de dossiers.yaml), hors acteurs du graphe : clé « p:<id> »
+    import dossier
+    qids |= {f"p:{k}": v["wikidata"] for k, v in dossier.registry().items() if v.get("wikidata") and not v.get("actor")}
     db.save_people(profiles.people(qids))
 
 if __name__ == "__main__":

@@ -1,4 +1,18 @@
 {
+ "leader:IL": {
+  "artist": "Avi Ohayon",
+  "file": "Benjamin Netanyahu, February 2023.jpg",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Benjamin_Netanyahu,_February_2023.jpg",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Benjamin_Netanyahu%2C_February_2023.jpg/250px-Benjamin_Netanyahu%2C_February_2023.jpg"
+ },
+ "leader:IR": {
+  "artist": "khamenei.ir",
+  "file": "Portrait of Mojtaba Khamenei.jpg",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Portrait_of_Mojtaba_Khamenei.jpg",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Portrait_of_Mojtaba_Khamenei.jpg/250px-Portrait_of_Mojtaba_Khamenei.jpg"
+ },
  "leader:RU": {
   "artist": "Пресс-служба Президента России",
   "file": "Putin V 2026 08 10.png",
@@ -33,6 +47,41 @@
   "license": "CC BY-SA 4.0",
   "page": "https://commons.wikimedia.org/wiki/File:Elon_Musk_(54816836217)_(cropped_2)_(b).jpg",
   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Elon_Musk_%2854816836217%29_%28cropped_2%29_%28b%29.jpg/250px-Elon_Musk_%2854816836217%29_%28cropped_2%29_%28b%29.jpg"
+ },
+ "p:araghchi": {
+  "artist": "kremlin.ru",
+  "file": "Meeting with Foreign Minister of Iran Abbas Araghchi.png",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Meeting_with_Foreign_Minister_of_Iran_Abbas_Araghchi.png",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Meeting_with_Foreign_Minister_of_Iran_Abbas_Araghchi.png/250px-Meeting_with_Foreign_Minister_of_Iran_Abbas_Araghchi.png"
+ },
+ "p:kushner": {
+  "artist": "U.S. Embassy Jerusalem",
+  "file": "Jared Kushner 2018.jpg",
+  "license": "CC BY 2.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Jared_Kushner_2018.jpg",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Jared_Kushner_2018.jpg/250px-Jared_Kushner_2018.jpg"
+ },
+ "p:ouchakov": {
+  "artist": "Presidential Executive Office of Russia",
+  "file": "Yuri Ushakov (2023-05-23).jpg",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Yuri_Ushakov_(2023-05-23).jpg",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/Yuri_Ushakov_%282023-05-23%29.jpg/250px-Yuri_Ushakov_%282023-05-23%29.jpg"
+ },
+ "p:sharif": {
+  "artist": "Press Service of the President of the Republic of Azerbaijan",
+  "file": "Shehbaz Sharif in 2024.jpg",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Shehbaz_Sharif_in_2024.jpg",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4b/Shehbaz_Sharif_in_2024.jpg/250px-Shehbaz_Sharif_in_2024.jpg"
+ },
+ "p:witkoff": {
+  "artist": "The White House",
+  "file": "A swearing-in ceremony for Senior Adviser and Special Envoy Steve Witkoff, May 6, 2025 (cropped).jpg",
+  "license": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File:A_swearing-in_ceremony_for_Senior_Adviser_and_Special_Envoy_Steve_Witkoff,_May_6,_2025_(cropped).jpg",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/A_swearing-in_ceremony_for_Senior_Adviser_and_Special_Envoy_Steve_Witkoff%2C_May_6%2C_2025_%28cropped%29.jpg/250px-A_swearing-in_ceremony_for_Senior_Adviser_and_Special_Envoy_Steve_Witkoff%2C_May_6%2C_2025_%28cropped%29.jpg"
  },
  "trump": {
   "artist": "Daniel Torok",

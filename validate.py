@@ -213,6 +213,17 @@ def check_dossiers(dossiers, actors, edges):
                     for name in [n for grp in (reg.get("sides") or []) for n in grp] + (reg.get("contested") or []):
                         if name not in known:
                             errors.append(f"dossier {k} : carte, région « {name} » absente de {f.name}")
+        import dossier as _dossier
+        reg = _dossier.registry()
+        for pp in x.get("people") or []:
+            if pp.get("who") not in reg:
+                errors.append(f"dossier {k} : personne « {pp.get('who')} » absente du registre people de dossiers.yaml")
+            elif reg[pp["who"]].get("actor") and reg[pp["who"]]["actor"] not in actors:
+                errors.append(f"dossier {k} : personne « {pp['who']} » : acteur « {reg[pp['who']]['actor']} » inconnu")
+            if not pp.get("role") or not pp.get("text"):
+                errors.append(f"dossier {k} : personne « {pp.get('who')} » sans role ou sans text")
+            if not has_url(pp.get("sources")):
+                errors.append(f"dossier {k} : personne « {pp.get('who')} » sans source avec URL (une action documentée)")
         for sd in x.get("sides") or []:
             ids = set(sd.get("actors") or [])
             for a in ids - set(actors):
@@ -223,6 +234,28 @@ def check_dossiers(dossiers, actors, edges):
                 if e["to"] in ids and e["from"] not in ids and e["status"] != "ended" and not e.get("why"):
                     warnings.append(f"dossier {k} : soutien {e['from']} → {e['to']} sans « why »")
     return errors, warnings
+
+def check_mediations(meds, actors):
+    """Médiations : acteurs connus, deux parties distinctes du médiateur, statut, dates et sources avec URL."""
+    errors = []
+    for i, m in enumerate(meds):
+        where = f"médiation {i} ({m.get('mediator')} entre {', '.join(m.get('between') or [])})"
+        between = m.get("between") or []
+        for a in [m.get("mediator"), *between]:
+            if a not in actors:
+                errors.append(f"{where} : acteur inconnu « {a} »")
+        if len(set(between)) != 2 or m.get("mediator") in between:
+            errors.append(f"{where} : il faut deux parties distinctes du médiateur (between)")
+        if m.get("status") not in ("active", "reduced", "ended"):
+            errors.append(f"{where} : status « {m.get('status')} » invalide (active, reduced, ended)")
+        if m.get("confidence") not in CONFIDENCES:
+            errors.append(f"{where} : confidence « {m.get('confidence')} » invalide")
+        if not any("http" in str(s) for s in m.get("sources") or []):
+            errors.append(f"{where} : aucune source avec URL")
+        for k in ("since", "until"):
+            if m.get(k) and not re.fullmatch(r"\d{4}(-\d{2})?", str(m[k])):
+                errors.append(f"{where} : {k} au format AAAA ou AAAA-MM")
+    return errors
 
 def check_glossary(terms):
     """glossaire.yaml : ids uniques et en forme d'ancre, champs obligatoires, aucune forme (terme ou variante) partagée."""
@@ -300,6 +333,7 @@ if __name__ == "__main__":
     te, tw = check_tensions(network.tensions(), actors)
     de, dw = de + te, dw + tw
     ge, gw = check_glossary(glossary.load())
+    ge += check_mediations(network.mediations(), actors)
     ge += check_term_refs(glossary.load())
     pe, pw = check_presets(presets.load(), actors, network.alignments(), dossier.load())
     de, dw = de + ge + pe, dw + gw + pw

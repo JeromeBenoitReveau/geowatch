@@ -68,7 +68,7 @@ nav.toc{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px;color:var(--grap
 <p class="meta">Page générée automatiquement le {_date(d["built"])} à partir des données publiées. Code sous licence MIT,
 données du graphe sous CC BY 4.0 — <a href="{brand.REPO}">dépôt GitHub</a>.</p>
 <nav class="toc"><a href="#principe">Principe</a><a href="#chaine">Chaîne de données</a><a href="#graphe">Graphe</a>
-<a href="#dossiers">Dossiers</a><a href="#tensions">Tensions</a><a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a>
+<a href="#dossiers">Dossiers</a><a href="#tensions">Tensions</a><a href="#mediations">Médiations</a><a href="#personnes">Personnes</a><a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a>
 <a href="#profils">Profils</a><a href="#carte">Carte</a><a href="#explorateur">Explorateur</a><a href="#glossaire">Glossaire</a><a href="#limites">Limites</a><a href="#contribuer">Contribuer</a></nav>
 
 <div class="kpi">
@@ -161,6 +161,22 @@ guerre ouverte, sanctions, revendication territoriale, rivalité stratégique sa
 comme les soutiens, mais tenues à part : elles <b>n'entrent pas</b> dans le calcul des blocs d'influence ni dans la
 liste des soutiens d'un dossier, et ne modifient pas la disposition du graphe. Une tension en trêve ou cessez-le-feu
 est affichée atténuée. {len(d.get("tensions", []))} tension(s) recensée(s).</p>
+
+<h2 id="mediations">Médiations</h2>
+<p>Un acteur qui négocie entre deux camps, ou accueille leurs pourparlers, est un <b>médiateur</b> (clé <code>mediations</code>
+de <code>network.yaml</code>). Une médiation n'est ni un soutien ni une tension : elle est tenue à part, n'entre pas dans le
+calcul des blocs, et suit les mêmes règles (sources avec URL, dates, statut, confiance ; « pourquoi » attribué).
+Sur le graphe, elle se dessine en pointillé neutre du médiateur vers chaque partie. {len(d.get("mediations", []))} médiation(s) recensée(s).</p>
+
+<h2 id="personnes">Les personnes qui comptent</h2>
+<p>Un dossier présente les personnes qui pèsent sur un conflit : les <b>dirigeants</b> des deux camps (lus dans le graphe),
+les <b>médiations</b> qui les concernent, et les personnes listées par le dossier (émissaires, négociateurs, médiateurs).
+Une personne n'y figure que pour une <b>action documentée</b> (négocier, financer, armer, fournir un service stratégique,
+diriger une délégation), jamais pour une simple opinion, et chaque ligne est sourcée ; <code>validate.py</code> refuse une
+personne sans source. Aucune note d'influence n'est attribuée : on décrit ce que la personne a fait. Photos Wikimedia Commons
+via Wikidata, créditées en bas de page.</p>
+<p>Une personne devient un nœud du graphe seulement si elle a une relation sourcée qui lui est propre, distincte de
+l'institution qu'elle dirige (voir plus haut).</p>
 
 <h2 id="blocs">Blocs d'influence</h2>
 <p>Deux blocs : {" et ".join(f'<b style="color:{b["color"]}">{e(b["name"])}</b>' for b in blocs.values())}.

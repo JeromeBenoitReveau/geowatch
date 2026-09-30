@@ -22,9 +22,10 @@
 
 actors:
   IR: {name: Iran, kind: state,
+       leader: {name: Mojtaba Khamenei, wikidata: Q2919350, role: "Guide suprême de l'Iran, successeur de son père Ali Khamenei"},
        note: "Ali Khamenei tué le 28 février 2026 lors des frappes américano-israéliennes ; Mojtaba Khamenei lui a succédé. Cessez-le-feu le 8 avril, mémorandum États-Unis–Iran le 17 juin 2026, échanges de frappes depuis",
        sources: ["Bibliothèque de la Chambre des communes, guerre et cessez-le-feu États-Unis–Iran en 2026 (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"]}
-  IL: {name: Israël, kind: state}
+  IL: {name: Israël, kind: state, leader: {name: Benyamin Netanyahou, wikidata: Q43723, role: "Premier ministre d'Israël"}}
   US: {name: États-Unis, kind: state, leader: trump}
   RU: {name: Russie, kind: state, leader: {name: Vladimir Poutine, wikidata: Q7747, role: "Président de la Russie"}}
   UA: {name: Ukraine, kind: state, leader: {name: Volodymyr Zelensky, wikidata: Q3874799, role: "Président de l'Ukraine depuis 2019"}}
@@ -42,6 +43,7 @@ actors:
   TR: {name: Turquie, kind: state}
   VE: {name: Venezuela, kind: state}
   CU: {name: Cuba, kind: state}
+  QA: {name: Qatar, kind: state}
   GY: {name: Guyana, kind: state}
   SD: {name: Soudan (armée et gouvernement de Port-Soudan), kind: state,
        leader: {name: Abdel Fattah al-Burhan, wikidata: Q63111184, role: "Général, chef de l'armée et du Conseil de souveraineté"}}
@@ -439,3 +441,27 @@ tensions:
      sources: ["Commission du Congrès américain sur la Chine (USCC), fiche sur la relation Chine-Russie (août 2026) — https://www.uscc.gov/research/china-russia-fact-sheet-short-primer-relationship",
                "Council on Foreign Relations, Global Conflict Tracker : la confrontation autour de Taïwan (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-over-taiwan"],
      verified: 2026-09, note: "Rivalité stratégique, dont Taïwan est le principal point de friction"}
+
+# Médiations : un acteur qui négocie ou accueille des pourparlers entre deux autres. Ni soutien ni tension :
+# hors calcul des blocs. Mêmes règles que les arêtes (sources avec URL, dates, statut, confiance) ; « why » attribué.
+mediations:
+  - {mediator: US, between: [UA, RU], since: "2025", status: active, confidence: high,
+     sources: ["Bibliothèque de la Chambre des communes, « Ukraine : a new push for peace » (sept. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-12198/",
+               "Al Jazeera, Poutine reçoit les émissaires américains (sept. 2026) — https://www.aljazeera.com/news/2026/9/5/russias-putin-meets-us-envoys-to-discuss-trump-proposal-to-end-ukraine-war"],
+     verified: 2026-09,
+     note: "Les émissaires Steve Witkoff et Jared Kushner rencontrent Vladimir Poutine à Moscou le 5 septembre 2026, puis Volodymyr Zelensky à Kyiv ; les États-Unis soutiennent aussi l'Ukraine, de moins en moins"}
+  - {mediator: AE, between: [UA, RU], since: "2026", status: active, confidence: medium,
+     sources: ["Bibliothèque de la Chambre des communes, « Ukraine : a new push for peace » (sept. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-12198/"],
+     verified: 2026-09,
+     note: "Pourparlers prévus aux Émirats, reportés à la mi-2026 ; des pourparlers à trois y sont envisagés pour octobre 2026"}
+  - {mediator: PK, between: [US, IR], since: "2026-04", status: active, confidence: high,
+     sources: ["Al Jazeera, comment le Pakistan a obtenu un accord États-Unis–Iran (juin 2026) — https://www.aljazeera.com/news/2026/6/15/how-pakistan-mediated-a-us-iran-agreement-after-more-than-100-days-of-war",
+               "Bibliothèque de la Chambre des communes, guerre et cessez-le-feu États-Unis–Iran en 2026 (juill. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10637/"],
+     verified: 2026-09,
+     note: "Cessez-le-feu du 8 avril, pourparlers d'Islamabad des 11 et 12 avril, protocole d'accord de juin ; menée par le Premier ministre Shehbaz Sharif et le chef de l'armée Asim Munir",
+     why: "Un « intermédiaire honnête, respecté des deux côtés », selon le diplomate pakistanais Jauhar Saleem (Al Jazeera)"}
+  - {mediator: QA, between: [US, IR], since: "2026-09", status: active, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : le conflit avec l'Iran (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/confrontation-between-united-states-and-iran",
+               "Al Jazeera, comment le Pakistan a obtenu un accord États-Unis–Iran (juin 2026) — https://www.aljazeera.com/news/2026/6/15/how-pakistan-mediated-a-us-iran-agreement-after-more-than-100-days-of-war"],
+     verified: 2026-09,
+     note: "A aidé la médiation pakistanaise au printemps ; fin septembre 2026, les négociateurs américains et iraniens rencontrent séparément les médiateurs qataris"}

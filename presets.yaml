@@ -15,6 +15,7 @@
 # colormode : carte — formal (liens formels) | votes (votes à l'ONU)
 # orgs      : organisations — ids de groupes d'alignments.yaml (2 à 6)
 # highlight : organisations — crossing = mettre en avant les pays membres de plusieurs organisations affichées
+# mediations : graphe et carte — true = afficher les médiations (network.yaml, clé mediations)
 
 presets:
   - id: armer-ukraine
@@ -37,6 +38,22 @@ presets:
     focus: IR
     around: [IR]
     tensions: []
+
+  - id: negocier-iran
+    question: Qui négocie entre les États-Unis et l'Iran ?
+    view: graphe
+    around: [US, IR]
+    mediations: true
+    types: []
+    tensions: [war]
+
+  - id: negocier-ukraine
+    question: Qui négocie la paix en Ukraine ?
+    view: graphe
+    around: [UA, RU]
+    mediations: true
+    types: []
+    tensions: [war]
 
   - id: otan-axe
     question: L'OTAN face à l'axe Russie–Chine–Iran–Corée du Nord

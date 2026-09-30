@@ -4,6 +4,8 @@
 #
 # id        : nom de la page (site/<id>.html)
 # sides     : les camps ; actors = ids de network.yaml. Soutiens ET dirigeant (champ leader) lus dans le graphe.
+# people    : « Les personnes qui comptent » : [{who: id du registre people (fin du fichier), role, text, sources}] ;
+#             les dirigeants des camps et les médiations (network.yaml) s'y ajoutent d'eux-mêmes
 # map       : carte d'ouverture ; sans « regions », les pays de chaque camp sont colorés (map.countries pour les préciser)
 # stakes    : les enjeux concrets ; timeline : dates AAAA ou AAAA-MM
 # history   : parallèles historiques ET leurs limites, attribués à des historiens (facultatif)
@@ -326,6 +328,27 @@ dossiers:
         text: Émissaires américains à Moscou et à Kyiv ; trêve de trois jours sur les capitales
         source: "Al Jazeera (sept. 2026) — https://www.aljazeera.com/news/2026/9/5/russias-putin-meets-us-envoys-to-discuss-trump-proposal-to-end-ukraine-war"
 
+    people:
+      - who: witkoff
+        role: Émissaire spécial de Donald Trump
+        text: >-
+          Négocie pour Washington avec les deux camps : il a rencontré Vladimir Poutine à Moscou le 5 septembre 2026, puis
+          Volodymyr Zelensky à Kyiv le lendemain.
+        sources:
+          - "Al Jazeera (sept. 2026) — https://www.aljazeera.com/news/2026/9/5/russias-putin-meets-us-envoys-to-discuss-trump-proposal-to-end-ukraine-war"
+      - who: kushner
+        role: Gendre de Donald Trump, émissaire
+        text: >-
+          Accompagne Steve Witkoff dans les négociations de septembre 2026, à Moscou puis à Kyiv.
+        sources:
+          - "Bibliothèque de la Chambre des communes, « Ukraine : a new push for peace » (sept. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-12198/"
+      - who: ouchakov
+        role: Conseiller diplomatique de Vladimir Poutine
+        text: >-
+          A reçu les émissaires américains avec Vladimir Poutine, et rappelé ensuite que Moscou maintenait ses exigences,
+          notamment territoriales.
+        sources:
+          - "Bibliothèque de la Chambre des communes, « Ukraine : a new push for peace » (sept. 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-12198/"
 
   - id: iran
     title: La guerre entre Israël, les États-Unis et l'Iran
@@ -477,6 +500,35 @@ dossiers:
         text: Négociations via le Qatar ; Donald Trump rejette une proposition iranienne
         source: "Times of Israel, 26 septembre 2026 — https://timesofisrael.com/liveblog-september-26-2026"
 
+    people:
+      - who: vance
+        role: Vice-président des États-Unis
+        text: >-
+          A conduit la délégation américaine aux pourparlers d'Islamabad, en avril 2026 : la rencontre directe de plus haut
+          niveau entre les deux pays depuis 1979.
+        sources:
+          - "Al Jazeera, comment le Pakistan a obtenu un accord États-Unis–Iran (juin 2026) — https://www.aljazeera.com/news/2026/6/15/how-pakistan-mediated-a-us-iran-agreement-after-more-than-100-days-of-war"
+      - who: araghchi
+        role: Ministre iranien des Affaires étrangères
+        text: >-
+          Négocie pour Téhéran. Fin septembre 2026, il attend la réponse américaine à une proposition de réouverture
+          progressive du détroit d'Ormuz.
+        sources:
+          - "Times of Israel, 26 septembre 2026 — https://timesofisrael.com/liveblog-september-26-2026"
+      - who: sharif
+        role: Premier ministre du Pakistan
+        text: >-
+          Principal médiateur entre Washington et Téhéran : c'est lui qui a annoncé l'accord de juin 2026.
+        sources:
+          - "Al Jazeera (juin 2026) — https://www.aljazeera.com/news/2026/6/15/how-pakistan-mediated-a-us-iran-agreement-after-more-than-100-days-of-war"
+      - who: munir
+        role: Chef de l'armée pakistanaise
+        text: >-
+          A joué un rôle central dans la médiation : il « a veillé jour et nuit » pendant la négociation finale, selon
+          Shehbaz Sharif.
+        sources:
+          - "Al Jazeera (juin 2026) — https://www.aljazeera.com/news/2026/6/15/how-pakistan-mediated-a-us-iran-agreement-after-more-than-100-days-of-war"
+
   - id: gaza
     title: La guerre à Gaza
     since: "2023-10"
@@ -596,3 +648,14 @@ dossiers:
       - date: "2026-09"
         text: Plan de reconstruction de 2,45 milliards de dollars du Board of Peace
         source: "FDD's Long War Journal (sept. 2026) — https://www.longwarjournal.org/archives/2026/09/board-of-peace-unveils-gaza-recovery-plan-israel-reports-18-ceasefire-violations-sept-15-29.php"
+
+# Registre des personnes citées dans les dossiers (hors dirigeants, déjà décrits dans network.yaml) :
+# wikidata → photo Wikimedia Commons (data/people.json, clé « p:<id> ») ; actor = id d'un acteur « person » du graphe.
+people:
+  witkoff: {name: Steve Witkoff, wikidata: Q16189572}
+  kushner: {name: Jared Kushner, wikidata: Q13628723}
+  ouchakov: {name: Iouri Ouchakov, wikidata: Q4479563}
+  vance: {name: JD Vance, actor: vance}
+  araghchi: {name: Abbas Araghchi, wikidata: Q7459020}
+  sharif: {name: Shehbaz Sharif, wikidata: Q2096387}
+  munir: {name: Asim Munir, wikidata: Q4806973}

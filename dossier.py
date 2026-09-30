@@ -29,6 +29,14 @@ header.doc{padding:72px 0 28px;max-width:760px}.doc .meta{margin:0 0 26px}
 .leaflet-tooltip.pin-label{background:transparent;border:0;box-shadow:none;font:500 13px var(--sans);color:var(--ink);
   text-shadow:0 0 3px var(--land),0 0 3px var(--land),0 0 3px var(--land)}.leaflet-tooltip.pin-label::before{display:none}
 .camps{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+/* les personnes qui comptent : médiations, dirigeants (filet de la couleur de leur camp), autres personnes */
+h3.sub{font:500 17px/1.3 var(--serif);margin:0 0 10px}.meds{display:grid;gap:10px;margin-bottom:26px}
+.med{display:flex;gap:12px;align-items:flex-start}.med>img,.med>span{width:28px;height:28px;border-radius:50%;flex:none;margin-top:2px}
+.med p{margin:4px 0 0;font-size:15.5px}.med .quiet{margin-left:6px}
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.person{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--mist);border-left:3px solid var(--c,var(--mist));border-radius:6px;background:var(--land)}
+.person img,.person .nopic{width:44px;height:44px;border-radius:50%;object-fit:cover;flex:none;background:var(--mist)}
+.person b{display:block;font-weight:600}.person .quiet{display:block;font-size:13.5px}.person p{margin:6px 0 0;font-size:14.5px;line-height:1.45}
 .camp{border-top:3px solid var(--c);border-radius:4px 4px 6px 6px}
 .camp .who{display:flex;gap:14px;align-items:center;margin-bottom:12px}
 .camp .who img{width:52px;height:52px;border-radius:50%;object-fit:cover}
@@ -56,6 +64,49 @@ header.doc{padding:72px 0 28px;max-width:760px}.doc .meta{margin:0 0 26px}
 
 def load():
     return (yaml.safe_load(PATH.read_text(encoding="utf-8")) or {}).get("dossiers", [])
+
+def registry():
+    """Personnes citées dans les dossiers (clé people de dossiers.yaml) : {id: {name, wikidata | actor}}."""
+    return (yaml.safe_load(PATH.read_text(encoding="utf-8")) or {}).get("people") or {}
+
+def photo_key(pid, reg):
+    """Clé de la photo dans data/people.json : l'acteur « person » du graphe, sinon « p:<id> »."""
+    return reg[pid].get("actor") or f"p:{pid}"
+
+def people_block(dos, d, g, cite):
+    """« Les personnes qui comptent » : qui négocie (médiations entre les deux camps, lues dans network.yaml), puis
+    les dirigeants des camps et les personnes du dossier. Une personne n'y figure que pour une action documentée."""
+    sides = [set(s["actors"]) for s in dos["sides"]]
+    both = sides[0] | sides[1]
+    meds = [m for m in d.get("mediations", []) if m["status"] != "ended"
+            and any(a in sides[0] for a in m["between"]) and any(a in sides[1] for a in m["between"])]
+    name = lambda a: e(d["actors"][a]["name"])
+    med_rows = "".join(f"""<div class="med">{flag(m["mediator"], d)}<div><b>{name(m["mediator"])}</b>
+  <span class="quiet">entre {name(m["between"][0])} et {name(m["between"][1])}{f", depuis {e(fr_date(m['since']))}" if m.get("since") else ""}</span>
+  <p>{glossed(m.get("why") or m.get("note", ""), g)}{cite(m["sources"])}</p>
+  {f'<p class="quiet">{glossed(m["note"], g)}</p>' if m.get("why") and m.get("note") else ""}</div></div>""" for m in meds)
+    cards, seen = [], set()
+    def card(photo, who, role, text, side=None):
+        pic = d["people"].get(photo)
+        return f"""<div class="person"{f' style="--c:var(--{"ab"[side]})"' if side is not None else ""}>
+  {f'<img src="{e(pic["thumb"])}" alt="">' if pic else '<span class="nopic"></span>'}<div><b>{e(who)}</b><span class="quiet">{e(role)}</span>
+  {f"<p>{text}</p>" if text else ""}</div></div>"""
+    for i, s in enumerate(dos["sides"]):
+        for a in s["actors"]:
+            ld = network.leader(d["actors"], a)
+            if ld and ld["name"] not in seen:
+                seen.add(ld["name"])
+                role = ld.get("role") or f"Dirigeant : {d['actors'][a]['name']}"
+                cards.append(card(ld["photo_key"], ld["name"], role, cite(ld["sources"]) if ld.get("sources") else "", i))
+    reg = registry()
+    for x in dos.get("people", []):
+        r = reg[x["who"]]
+        cards.append(card(photo_key(x["who"], reg), r["name"], x["role"], glossed(x["text"], g) + cite(x.get("sources"))))
+    if not (med_rows or cards):
+        return ""
+    return f"""<section class="s"><h2>Les personnes qui comptent</h2>
+{f'<h3 class="sub">Qui négocie</h3><div class="meds">{med_rows}</div>' if med_rows else ""}
+<div class="people">{"".join(cards)}</div></section>"""
 
 def fr_date(d):
     d = str(d)
@@ -306,8 +357,11 @@ def page(dos, d):
     events.sort(key=lambda ev: ev[0])
 
     frac = fractures(dos, d, g, cite)
-    credits = [d["people"][ld["photo_key"]] for s in dos["sides"] for a in s["actors"]
-               if (ld := network.leader(d["actors"], a)) and ld["photo_key"] in d["people"]]
+    ppl = people_block(dos, d, g, cite)
+    reg = registry()
+    keys = [ld["photo_key"] for s in dos["sides"] for a in s["actors"] if (ld := network.leader(d["actors"], a))]
+    keys += [photo_key(x["who"], reg) for x in dos.get("people", [])]
+    credits = [d["people"][k] for k in dict.fromkeys(keys) if k in d["people"]]
 
     body = f"""<div class="wrap">
 {style.top(f"{dos['id']}.html")}
@@ -320,6 +374,8 @@ def page(dos, d):
 
 <section class="s"><h2>Qui s'affronte, et qui les soutient</h2>
 <div class="camps">{camp(0, dos["sides"][0], backers[0])}{camp(1, dos["sides"][1], backers[1])}</div></section>
+
+{ppl}
 
 {f'<section class="s frac">{frac}</section>' if frac else ""}
 

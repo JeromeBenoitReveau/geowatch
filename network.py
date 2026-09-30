@@ -15,6 +15,10 @@ def tensions():
     """Guerres, sanctions, revendications et rivalités (clé tensions de network.yaml), hors soutiens."""
     return _data().get("tensions") or []
 
+def mediations():
+    """Médiations (clé mediations de network.yaml) : qui négocie entre qui. Ni soutien ni tension, hors calcul des blocs."""
+    return _data().get("mediations") or []
+
 TENSION_TYPES = {"war": "guerre", "sanctions": "sanctionne", "claims": "revendique un territoire de", "rivalry": "rivalité avec"}
 
 def leader(actors, aid):

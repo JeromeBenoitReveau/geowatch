@@ -204,3 +204,14 @@ terms:
   - id: board-of-peace
     term: Board of Peace
     definition: Le « Conseil de la paix » créé par le plan américain pour Gaza, présidé par Donald Trump, qui supervise la reconstruction et la transition du territoire.
+
+  # ---------- Médiations et personnes ----------
+  - id: mediation
+    term: médiation
+    aliases: [médiateur, médiateurs, médiatrice]
+    definition: L'intervention d'un pays ou d'une personne qui négocie entre deux camps, ou accueille leurs pourparlers, pour obtenir un cessez-le-feu ou un accord. Ce n'est ni un soutien ni une tension.
+    example: Le Pakistan, médiateur entre les États-Unis et l'Iran en 2026.
+  - id: emissaire
+    term: émissaire
+    aliases: [émissaires]
+    definition: Une personne envoyée par un dirigeant pour négocier en son nom.
