@@ -109,6 +109,13 @@ body.map #controls .graph-only,body.venn #controls .graph-only,body.map #control
 #stagebar>*{pointer-events:auto}
 #views{display:flex;padding:3px;gap:2px;
   background:var(--land);border:1px solid var(--mist);border-radius:8px;box-shadow:0 2px 10px #0000001a;max-width:100%}
+.bar-row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;max-width:100%}
+#search{position:relative}#search input{width:290px;max-width:100%;font:inherit;font-size:14px;padding:7px 12px;border:1px solid var(--mist);
+  border-radius:8px;background:var(--land);color:var(--ink)}#search input:focus{outline:2px solid var(--peach);outline-offset:1px}
+#sugg{position:absolute;top:calc(100% + 4px);left:0;right:0;min-width:290px;z-index:2000;list-style:none;margin:0;padding:4px;background:var(--land);
+  border:1px solid var(--mist);border-radius:8px;box-shadow:0 8px 24px #0000002a;max-height:320px;overflow:auto}
+#sugg li{padding:7px 10px;border-radius:5px;cursor:pointer;display:flex;justify-content:space-between;gap:10px}
+#sugg li small{color:var(--graphite);white-space:nowrap}#sugg li[aria-selected="true"],#sugg li:hover{background:color-mix(in srgb,var(--ink) 8%,var(--land))}
 #presets{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:760px}
 #presets a{background:var(--land);border:1px solid var(--mist);border-radius:18px;padding:6px 13px;font-size:13.5px;color:var(--ink);
   text-decoration:none;box-shadow:0 1px 4px #00000012}
@@ -179,7 +186,9 @@ aside p{margin:0 0 10px}.keys{display:grid;grid-template-columns:78px 1fr;gap:6p
   <div id="rel-filters" class="no-venn"></div>
   </div>
 </nav>
-<div id="stage"><div id="stagebar"><nav id="views" aria-label="Vues">__VIEWS__</nav>
+<div id="stage"><div id="stagebar"><div class="bar-row"><nav id="views" aria-label="Vues">__VIEWS__</nav>
+<div id="search"><input type="search" autocomplete="off" placeholder="Chercher un pays, un groupe, une question" aria-label="Chercher un pays, un groupe ou une question"
+  role="combobox" aria-expanded="false" aria-controls="sugg"><ul id="sugg" role="listbox" hidden></ul></div></div>
 <div id="presets" aria-label="Questions pour commencer"></div><div id="viewnote"></div></div><div id="graph"></div><div id="map"></div><div id="venn"></div></div>
 <aside id="side" aria-label="Détails"><div class="ctl-head"><span>Détails</span><button id="side-toggle" class="toggle" type="button" aria-expanded="true" aria-controls="panel" title="Replier">
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m8 9 3 3-3 3"/></svg></button></div>
@@ -924,7 +933,7 @@ function legend(){
   $("#panel").innerHTML = `<h1>Carte &amp; graphe</h1>
   <p>Pour commencer simplement, lisez un dossier : il raconte un conflit, ses camps et leurs soutiens.</p>
   <div class="dossiers">${(D.dossiers||[]).map(x => `<a class="btn-dossier" href="${esc(x.id)}.html">${esc(x.title)}</a>`).join("")}</div>
-  <p>Ou posez une des questions en haut de la carte. Cliquez sur un ${T("acteur")}, un pays ou un lien pour voir ce qui
+  <p>Ou, en haut de la vue, choisissez une question ou cherchez un pays, un groupe, une organisation. Cliquez sur un ${T("acteur")}, un pays ou un lien pour voir ce qui
   les relie, avec les sources.</p>
   <p class="mute">La légende est dans les filtres, à gauche : chaque case affiche ou masque un type de ${T("relation")} ou
   d'acteur. Taille des acteurs : au choix sur le graphe (${T("depenses-militaires")}, ${T("pib")}, population…) ; dépenses
@@ -939,14 +948,17 @@ new ResizeObserver(() => { $("#stage").style.setProperty("--bar", $("#stagebar")
   if(map) map.invalidateSize(); }).observe($("#stagebar"));
 // ---------- Vues préréglées (presets.yaml) : une question, un état complet, une URL (?vue=<id>) ----------
 const PRESETS = D.presets || [], VIEW_OF = {carte:"map", organisations:"venn", graphe:"graph"};
-$("#presets").innerHTML = PRESETS.map(p => `<a href="?vue=${esc(p.id)}#${esc(p.view)}" data-preset="${esc(p.id)}">${esc(p.question)}</a>`).join("");
+// chaque question appartient à un onglet et ne s'affiche que dans celui-ci : elle ne change jamais d'onglet
+const TAB = () => document.body.classList.contains("map") ? "carte" : document.body.classList.contains("venn") ? "organisations" : "graphe";
+function renderPresets(){ const tab = TAB();
+  $("#presets").innerHTML = PRESETS.filter(p => p.view === tab).map(p => `<a href="?vue=${esc(p.id)}#${esc(p.view)}" data-preset="${esc(p.id)}"${PRESET && PRESET.id === p.id ? ' aria-current="true"' : ""}>${esc(p.question)}</a>`).join(""); }
 $("#presets").addEventListener("click", ev => { const a = ev.target.closest("a[data-preset]"); if(!a) return; ev.preventDefault();
   history.pushState(null, "", a.getAttribute("href")); route(); });
 function applyPreset(p){ PRESET = p;
   setChecks("type", p.types); setChecks("tension", p.tensions); setChecks("kind", p.kinds || SIMPLE.kind);
   if(p.colormode){ $("#colormode").value = p.colormode; $("#colormode").dispatchEvent(new Event("change")); }
   if(p.orgs){ document.querySelectorAll("#orgs input").forEach(i => i.checked = p.orgs.includes(i.value)); SEL.clear(); syncOrgs(); }
-  setView(VIEW_OF[p.view]); applyFilters();
+  setView(VIEW_OF[p.view]); applyFilters(); renderPresets();
   document.querySelectorAll("#presets a").forEach(a => a.dataset.preset === p.id ? a.setAttribute("aria-current", "true") : a.removeAttribute("aria-current"));
   if(p.focus && D.actors[p.focus]) show(p.focus); else legend();
   // cadrage sur les acteurs affichés, une fois le graphe stabilisé
@@ -968,6 +980,44 @@ $("#viewnote").addEventListener("click", ev => { const b = ev.target.closest("bu
   if(b.dataset.note === "all"){ setChecks("type", null); setChecks("tension", null); userChanged(); return; }
   clearPreset(); ["type", "tension", "kind"].forEach(g => setChecks(g, SIMPLE[g])); legend(); applyFilters(); });
 
+// ---------- Recherche : un pays, un groupe, une organisation ou une question de l'onglet ouvert ----------
+const norm = t => String(t).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const KIND_S = {state:"État", bloc:"bloc", non_state:"groupe armé", party:"parti", person:"personnalité"};
+function suggestions(q){ const n = norm(q.trim()); if(n.length < 2) return [];
+  const hit = t => { const x = norm(t); return x.startsWith(n) ? 0 : x.includes(" " + n) ? 1 : x.includes(n) ? 2 : -1; };
+  const out = [];
+  PRESETS.filter(p => p.view === TAB()).forEach(p => { const h = hit(p.question); if(h >= 0) out.push({h, label: p.question, kind: "question", go: () => {
+    history.pushState(null, "", `?vue=${p.id}#${p.view}`); route(); }}); });
+  Object.entries(D.actors).forEach(([id, a]) => { const h = hit(a.name); if(h >= 0) out.push({h, label: a.name, kind: KIND_S[a.kind] || a.kind, go: () => findActor(id)}); });
+  Object.entries(D.geo).forEach(([iso, g]) => { if(D.actors[iso] || !g.name) return; const h = hit(g.name);
+    if(h >= 0) out.push({h, label: g.name, kind: "pays", go: () => findCountry(iso)}); });
+  D.align.groups.forEach(g => { const h = Math.max(hit(g.name), hit(shortName(g.name))); if(h >= 0) out.push({h, label: g.name, kind: "organisation", go: () => showGroup(g.id)}); });
+  return out.sort((a, b) => a.h - b.h || a.label.localeCompare(b.label)).slice(0, 8); }
+// un acteur trouvé : sa fiche, et on le met en avant dans la vue ouverte (sans changer d'onglet)
+function findActor(id){ show(id);
+  if(TAB() === "graphe") net.focus(id, {scale: 1.3, animation: {duration: 500}});
+  if(TAB() === "carte" && map && POS[id]) map.setView(POS[id], 4);
+  if(TAB() === "organisations") findCountry(id, true); }
+function findCountry(iso, keepPanel){ if(!keepPanel) D.actors[iso] ? show(iso) : showCountry(iso);
+  if(TAB() === "carte" && map && D.geo[iso]) map.setView([D.geo[iso].lat, D.geo[iso].lon], 4);
+  if(TAB() === "organisations" && VENN && VENN.P[iso]){ const p = VENN.P[iso];   // zoom sur le drapeau dans le diagramme
+    const C = VENN.C, cx = (Math.min(...C.map(c => c.x - c.r)) + Math.max(...C.map(c => c.x + c.r)))/2, cy = (Math.min(...C.map(c => c.y - c.r)) + Math.max(...C.map(c => c.y + c.r)))/2;
+    VZ = {k: 3, x: p.x - cx, y: p.y - cy}; renderVenn(); } }
+(() => { const input = $("#search input"), list = $("#sugg"); let items = [], sel = -1;
+  const close = () => { list.hidden = true; input.setAttribute("aria-expanded", "false"); sel = -1; };
+  const draw = () => { list.innerHTML = items.map((s, i) => `<li role="option" id="sg${i}" data-i="${i}" aria-selected="${i === sel}">${esc(s.label)}<small>${esc(s.kind)}</small></li>`).join("");
+    list.hidden = !items.length; input.setAttribute("aria-expanded", String(!!items.length));
+    sel >= 0 ? input.setAttribute("aria-activedescendant", "sg" + sel) : input.removeAttribute("aria-activedescendant"); };
+  const pick = i => { const s = items[i]; if(!s) return; input.value = ""; close(); input.blur(); s.go(); };
+  input.addEventListener("input", () => { items = suggestions(input.value); sel = items.length ? 0 : -1; draw(); });
+  input.addEventListener("keydown", ev => { if(list.hidden) return;
+    if(ev.key === "ArrowDown"){ ev.preventDefault(); sel = (sel + 1) % items.length; draw(); }
+    else if(ev.key === "ArrowUp"){ ev.preventDefault(); sel = (sel - 1 + items.length) % items.length; draw(); }
+    else if(ev.key === "Enter"){ ev.preventDefault(); pick(sel); }
+    else if(ev.key === "Escape") close(); });
+  list.addEventListener("mousedown", ev => { const li = ev.target.closest("li[data-i]"); if(li){ ev.preventDefault(); pick(+li.dataset.i); } });
+  input.addEventListener("blur", () => setTimeout(close, 100)); })();
+
 // Liens directs (accueil, dossiers, contrôle segmenté) : #graphe, #carte, #organisations, #graphe:<id acteur>,
 // et ?vue=<preset> ; aussi quand on est déjà sur la page (l'ancre change sans recharger)
 function route(){ const q = new URLSearchParams(location.search).get("vue"), p = q && PRESETS.find(x => x.id === q);
@@ -977,7 +1027,7 @@ function route(){ const q = new URLSearchParams(location.search).get("vue"), p =
   if(PRESET && v !== PRESET.view) clearPreset();   // changer de vue quitte la vue préréglée
   setView(VIEW_OF[v] || "graph");
   if(id && D.actors[id]) show(id);
-  viewNote(); }
+  renderPresets(); viewNote(); }
 route();
 addEventListener("hashchange", route);
 addEventListener("popstate", route);

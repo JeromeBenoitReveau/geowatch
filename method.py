@@ -228,10 +228,11 @@ d'origine même s'il agit ailleurs. Seule l'UE a une position fixée à la main 
 <p><b>Vue simplifiée</b> : au premier chargement, le graphe et la carte n'affichent que les guerres et les troupes engagées
 (moins de 15 relations), pour être lisibles sans rien toucher. « Tout afficher » rétablit toutes les relations ; la légende,
 dans les filtres, sert aussi de filtre. Un acteur sans aucune relation affichée est masqué.</p>
-<p><b>Questions pour commencer</b> (<code>presets.yaml</code>) : chacune fixe un état complet (vue, filtres, acteur
+<p><b>Questions pour commencer</b> (<code>presets.yaml</code>) : chacune appartient à un onglet et ne s'affiche que dans celui-ci (elle ne change jamais d'onglet) ; changer d'onglet revient à la vue simplifiée. Elle fixe un état complet (vue, filtres, acteur
 sélectionné, cadrage) et a sa propre adresse, partageable : {", ".join(f'<a href="explorer.html?vue={e(x["id"])}#{e(x["view"])}">{e(x["question"])}</a>' for x in d.get("presets", []))}.
 Une question qui porte sur un conflit prend ses acteurs dans les camps du dossier, eux-mêmes lus dans le graphe : elle ne
 peut pas contredire les données. <code>validate.py</code> contrôle les vues, acteurs, types et organisations cités.</p>
+<p><b>Recherche</b> : un champ en haut de la vue retrouve un pays, un groupe, une organisation ou une question de l'onglet ouvert (sans accents ni majuscules), et met l'élément en avant dans la vue ouverte, sans changer d'onglet. Tout est calculé dans la page, sans serveur.</p>
 <p><b>Vue Organisations</b> : chaque pays est placé dans la zone exacte de ses appartenances (cercle privé de ses
 intersections), en occupant toute la surface de cette zone (échantillonnage puis relaxation de Lloyd). Une zone trop serrée
 réduit ses drapeaux ; au-delà de 24 pays, les plus petits sont regroupés en une pastille « +N ». Zoom et déplacement : les

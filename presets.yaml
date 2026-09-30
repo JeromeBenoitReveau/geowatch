@@ -1,4 +1,5 @@
 # Vues préréglées de l'explorateur (« Carte & graphe ») : des questions qui donnent une vue lisible en un clic.
+# Chaque question appartient à un onglet (view) et ne s'affiche que dans celui-ci : elle ne change jamais d'onglet.
 # URL partageable : explorer.html?vue=<id> rejoue exactement l'état décrit ici. Contrôlé par validate.py.
 #
 # id        : identifiant dans l'URL
@@ -30,10 +31,25 @@ presets:
     dossier: soudan
     tensions: [war]
 
+  - id: soutiens-iran
+    question: Qui soutient l'Iran ?
+    view: graphe
+    focus: IR
+    around: [IR]
+    tensions: []
+
   - id: otan-axe
     question: L'OTAN face à l'axe Russie–Chine–Iran–Corée du Nord
     view: carte
     colormode: formal
+    types: []
+    tensions: []
+    kinds: [core]
+
+  - id: vote-russie-chine
+    question: Qui vote comme la Russie et la Chine à l'ONU ?
+    view: carte
+    colormode: votes
     types: []
     tensions: []
     kinds: [core]
@@ -43,3 +59,8 @@ presets:
     view: organisations
     orgs: [nato, csto, brics, sco]
     highlight: crossing
+
+  - id: brics-g7
+    question: BRICS face au G7
+    view: organisations
+    orgs: [brics, g7]
