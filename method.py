@@ -157,7 +157,7 @@ source de la relation. Quand les analyses divergent, le dossier doit le dire plu
 
 <h2 id="tensions">Tensions</h2>
 <p>À côté des soutiens, le graphe recense des <b>tensions</b> (clé <code>tensions</code> de <code>network.yaml</code>) :
-guerre ouverte, sanctions, revendication territoriale, rivalité stratégique sans guerre. Elles sont sourcées et datées
+guerre ouverte, sanctions, revendication territoriale, rivalité stratégique sans guerre, guerre commerciale (droits de douane et représailles). Elles sont sourcées et datées
 comme les soutiens, mais tenues à part : elles <b>n'entrent pas</b> dans le calcul des blocs d'influence ni dans la
 liste des soutiens d'un dossier, et ne modifient pas la disposition du graphe. Une tension en trêve ou cessez-le-feu
 est affichée atténuée. {len(d.get("tensions", []))} tension(s) recensée(s).</p>

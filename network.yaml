@@ -45,6 +45,7 @@ actors:
   CU: {name: Cuba, kind: state}
   QA: {name: Qatar, kind: state}
   GY: {name: Guyana, kind: state}
+  CA: {name: Canada, kind: state}
   SD: {name: Soudan (armée et gouvernement de Port-Soudan), kind: state,
        leader: {name: Abdel Fattah al-Burhan, wikidata: Q63111184, role: "Général, chef de l'armée et du Conseil de souveraineté"}}
   AE: {name: Émirats arabes unis, kind: state}
@@ -413,6 +414,21 @@ edges:
      note: "Selon CNN, le Kyiv Post et le Wall Street Journal, des forces spéciales ukrainiennes ont combattu en 2023-2024 aux côtés de l'armée contre les FSR et le groupe Wagner ; aucune confirmation officielle. En 2026, CNN mentionne encore « plusieurs spécialistes » ukrainiens au Soudan, sans préciser leur camp",
      why: "Selon The New Arab, frapper les intérêts russes et le groupe Wagner hors d'Ukraine"}
 
+  # --- Canada : entre les États-Unis et l'Europe ---
+  - {from: CA, to: UA, since: "2022", types: [arms, financial, training], status: active, confidence: high,
+     sources: ["Gouvernement du Canada, soutien à l'Ukraine quatre ans après l'invasion (févr. 2026) — https://www.canada.ca/en/department-national-defence/news/2026/02/government-of-canada-reaffirms-unwavering-support-for-ukraine-four-years-into-russias-full-scale-invasion.html",
+               "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/"],
+     verified: 2026-10,
+     note: "Plus de 25,5 milliards de dollars canadiens d'aide depuis 2022, dont 8,5 milliards d'aide militaire ; mission d'entraînement UNIFIER prolongée jusqu'en 2029",
+     why: "Selon le gouvernement canadien, aider l'Ukraine à défendre sa souveraineté et à obtenir une paix durable"}
+  - {from: EU, to: CA, since: "2025-06", types: [political, economic], status: active, confidence: high,
+     sources: ["Conseil de l'UE, les États membres approuvent la participation du Canada à SAFE (déc. 2025) — https://www.consilium.europa.eu/en/press/press-releases/2025/12/19/safe-member-states-endorse-agreement-on-the-participation-of-canada/",
+               "PBS, Carney accueille la proposition de statut de membre associé (sept. 2026) — https://www.pbs.org/newshour/world/carney-embraces-eu-associate-membership-proposal-as-trump-pushes-canada-closer-to-europe",
+               "Al Jazeera, Carney salue la proposition européenne (sept. 2026) — https://www.aljazeera.com/news/2026/9/17/canadas-carney-welcomes-eus-associated-membership-proposal"],
+     verified: 2026-10,
+     note: "Partenariat de sécurité et de défense signé le 23 juin 2025 ; participation au programme européen d'achats de défense SAFE (150 milliards d'euros) approuvée en décembre 2025, le Canada étant le premier pays non européen à y entrer. Le 16 septembre 2026, Ursula von der Leyen propose un statut inédit de « membre associé », absent des traités ; Mark Carney l'accueille favorablement mais ne vise pas l'adhésion pleine. Donald Trump y voit un possible « acte hostile »",
+     why: "Selon PBS, la pression commerciale américaine pousse le Canada vers l'Europe ; Mark Carney dit chercher à ne plus dépendre d'un seul marché"}
+
 tensions:
   - {from: RU, to: UA, type: war, since: "2022-02", status: active, confidence: high,
      sources: ["Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"],
@@ -436,6 +452,11 @@ tensions:
      sources: ["ONU, Groupe d'experts sur la RD Congo, rapport final S/2025/446 (juill. 2025) — https://documents.un.org/doc/undoc/gen/n25/124/40/pdf/n2512440.pdf",
                "Al Jazeera, feuille de route RDC–M23 pour les négociations (août 2026) — https://www.aljazeera.com/news/2026/8/23/dr-congo-m23-rebels-agree-on-roadmap-for-peace-talks"],
      verified: 2026-09, note: "Feuille de route pour des négociations adoptée en août 2026"}
+  - {from: US, to: CA, type: trade_war, since: "2025-02", status: active, confidence: high,
+     sources: ["Al Jazeera, 50 % de droits de douane américains après l'échec des négociations (août 2026) — https://www.aljazeera.com/news/2026/8/22/us-imposes-50-tariffs-on-20bn-worth-of-canadian-goods-after-talks-fail",
+               "NPR, la riposte canadienne (août 2026) — https://www.npr.org/2026/08/25/nx-s1-5944240/canada-us-tariffs",
+               "Al Jazeera, Carney et le risque d'un conflit avec les États-Unis (sept. 2026) — https://www.aljazeera.com/news/2026/9/25/why-canada-is-not-ruling-out-a-possible-war-with-the-us"],
+     verified: 2026-10, note: "Droits de douane américains à partir de février-mars 2025. Échec des négociations le 21 août 2026 : 50 % de droits américains sur 20 milliards de dollars de produits canadiens, riposte canadienne équivalente en vigueur depuis le 8 septembre. Donald Trump évoque à plusieurs reprises le Canada comme « 51e État » ; Mark Carney dit avoir examiné le risque d'une attaque américaine, qu'il juge extrême et très peu probable"}
   - {from: jnim, to: ML, type: war, since: "2017", status: active, confidence: high,
      sources: ["Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel",
                "Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region",
@@ -596,3 +617,5 @@ dependencies:
   - {from: TR, supplier: EU, type: trade, direction: imports, share: 28.3, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les importations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/tur/year/2023/partner/all/indicator/MPRT-PRTNR-SHR"], verified: 2026-10, note: "Part de l'UE calculée en additionnant ses 27 membres"}
   - {from: UA, supplier: EU, type: trade, direction: exports, share: 54.3, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les exportations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/ukr/year/2023/partner/all/indicator/XPRT-PRTNR-SHR"], verified: 2026-10, note: "Part de l'UE calculée en additionnant ses 27 membres"}
   - {from: UA, supplier: EU, type: trade, direction: imports, share: 48.6, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les importations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/ukr/year/2023/partner/all/indicator/MPRT-PRTNR-SHR"], verified: 2026-10, note: "Part de l'UE calculée en additionnant ses 27 membres"}
+  - {from: CA, supplier: US, type: trade, direction: exports, share: 77.3, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les exportations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/can/year/2023/partner/all/indicator/XPRT-PRTNR-SHR"], verified: 2026-10}
+  - {from: CA, supplier: US, type: trade, direction: imports, share: 49.6, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les importations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/can/year/2023/partner/all/indicator/MPRT-PRTNR-SHR"], verified: 2026-10}

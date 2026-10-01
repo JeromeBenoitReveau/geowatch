@@ -178,14 +178,14 @@ def fractures(dos, d, g, cite):
     if not ts:
         return ""
     name = lambda a: e(d["actors"][a]["name"])
-    label = {"war": "Guerre", "sanctions": "Sanctions", "claims": "Revendication territoriale", "rivalry": "Rivalité"}
+    label = {"war": "Guerre", "sanctions": "Sanctions", "claims": "Revendication territoriale", "rivalry": "Rivalité", "trade_war": "Guerre commerciale"}
     link = lambda t: f"{name(t['from'])} {'→' if t['type'] in ('sanctions', 'claims') else 'et'} {name(t['to'])}"
     when = lambda t: ", ".join(x for x in (f"depuis {fr_date(t['since'])}" if t.get("since") else "",
                                             "trêve ou cessez-le-feu" if t["status"] == "reduced" else "") if x)
     rows = "".join(f"""<div class="row"><div><b>{label[t["type"]]}</b> {link(t)}{f'<span class="quiet">, {e(when(t))}</span>' if when(t) else ""}</div>
   {f'<p>{glossed(t["note"], g)}{cite(t["sources"])}</p>' if t.get("note") else cite(t["sources"])}</div>""" for t in ts)
     return f"""<h2>Les autres lignes de fracture</h2>
-<p class="quiet intro">Guerres, sanctions, revendications et rivalités qui touchent aussi les deux camps.</p><div class="card">{rows}</div>"""
+<p class="quiet intro">Guerres, sanctions, revendications, rivalités et guerres commerciales qui touchent aussi les deux camps.</p><div class="card">{rows}</div>"""
 
 SIDE_COLORS = ["#2a78d6", "#eb6834"]   # camp 1, camp 2 (palette catégorielle du site)
 CONTESTED = "#9ca3af"

@@ -12,7 +12,7 @@ def load():
     return data["actors"], data["edges"]
 
 def tensions():
-    """Guerres, sanctions, revendications et rivalités (clé tensions de network.yaml), hors soutiens."""
+    """Guerres, sanctions, revendications, rivalités et guerres commerciales (clé tensions de network.yaml), hors soutiens."""
     return _data().get("tensions") or []
 
 def mediations():
@@ -26,7 +26,8 @@ def dependencies():
 
 DEPENDENCY_TYPES = {"arms": "armes", "gas": "gaz", "oil": "pétrole", "minerals": "minerais", "food": "denrées", "debt": "dette", "trade": "commerce"}
 
-TENSION_TYPES = {"war": "guerre", "sanctions": "sanctionne", "claims": "revendique un territoire de", "rivalry": "rivalité avec"}
+TENSION_TYPES = {"war": "guerre", "sanctions": "sanctionne", "claims": "revendique un territoire de", "rivalry": "rivalité avec",
+                 "trade_war": "guerre commerciale avec"}
 
 def leader(actors, aid):
     """Dirigeant d'un acteur : {name, role, sources, photo_key, actor} ou None. Le champ leader est soit un dict

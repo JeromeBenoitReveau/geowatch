@@ -159,7 +159,8 @@ const TYPES_FR = {arms:"armes", troops:"troupes", financial:"argent", training:"
 const TENSION = {war:{label:"Guerre", color:"#b91c1c", width:4, dash:null, arrow:false},
   sanctions:{label:"Sanctions", color:"#7c3aed", width:2, dash:"8 5", arrow:true},
   claims:{label:"Revendication", color:"#d97706", width:2, dash:"3 4", arrow:true},
-  rivalry:{label:"Rivalité", color:"#64748b", width:2, dash:"10 6", arrow:false}};
+  rivalry:{label:"Rivalité", color:"#64748b", width:2, dash:"10 6", arrow:false},
+  trade_war:{label:"Guerre commerciale", color:"#be185d", width:2, dash:"12 4 2 4", arrow:false}};
 const STATUS_FR = {active:"actif", reduced:"en baisse", alleged:"allégué"};
 const CONF_FR = {high:"documenté officiellement", medium:"sources concordantes", low:"allégations"};
 const WIDTH = {high: 3.2, medium: 2.2, low: 1.3}, DEP = "#b08968";

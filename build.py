@@ -420,14 +420,15 @@ const edgeList = D.edges.map((e,i) => ({id:"e"+i, from:e.from, to:e.to, arrows:"
 const anchors = Object.entries(D.actors).filter(([id,a])=>DETAIL.has(a.kind) && D.actors[a.base])
   .map(([id,a]) => ({id:"b-"+id, from:id, to:a.base, dashes:[2,4], color:"#999", width:1, title:"rattaché à"}));
 
-// ---------- Tensions : guerres, sanctions, revendications, rivalités — hors soutiens ----------
+// ---------- Tensions : guerres, sanctions, revendications, rivalités, guerres commerciales — hors soutiens ----------
 // Tracées sans effet sur la disposition du graphe (physics:false) ; atténuées si trêve ou cessez-le-feu.
 const TENSION = {war:{label:"guerre", color:"#b91c1c", width:3.2, dashes:false, arrows:""},
   sanctions:{label:"sanctionne", color:"#7c3aed", width:1.8, dashes:[8,5], arrows:"to"},
   claims:{label:"revendique", color:"#d97706", width:1.8, dashes:[3,4], arrows:"to"},
-  rivalry:{label:"rivalité", color:"#64748b", width:1.8, dashes:[10,6], arrows:""}};
+  rivalry:{label:"rivalité", color:"#64748b", width:1.8, dashes:[10,6], arrows:""},
+  trade_war:{label:"guerre commerciale", color:"#be185d", width:1.8, dashes:[12,4,2,4], arrows:""}};
 const TS = D.tensions || [], BG = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
-const tensionTitle = t => `${(D.actors[t.from]||{}).name||t.from} ${t.type==="war"||t.type==="rivalry" ? "⟷" : "→"} ${(D.actors[t.to]||{}).name||t.to} : ${TENSION[t.type].label}${t.status==="reduced" ? " (trêve ou cessez-le-feu)" : ""} (${dated(t)})`;
+const tensionTitle = t => `${(D.actors[t.from]||{}).name||t.from} ${t.type==="war"||t.type==="rivalry"||t.type==="trade_war" ? "⟷" : "→"} ${(D.actors[t.to]||{}).name||t.to} : ${TENSION[t.type].label}${t.status==="reduced" ? " (trêve ou cessez-le-feu)" : ""} (${dated(t)})`;
 const tensionEdges = TS.map((t,i) => { const s = TENSION[t.type];
   return {id:"t"+i, from:t.from, to:t.to, arrows:s.arrows, physics:false, width:s.width, label:s.label,
     color:{color:s.color, opacity: t.status==="active" ? 1 : .55}, dashes: t.status==="active" ? s.dashes : [2,6],
@@ -465,7 +466,7 @@ const Q = id => GL[id] ? `<a class="term q" href="glossaire.html#${id}" target="
 // ---------- Légende-filtres (barre de gauche) : soutiens, tensions, acteurs ----------
 const TYPES_FR = {arms:"armes", troops:"troupes", financial:"argent", training:"entraînement", intelligence:"renseignement",
   political:"politique", economic:"économique", dual_use:"double usage"};
-const TYPE_TERM = {dual_use:"double-usage"}, TENSION_TERM = {war:"guerre", sanctions:"sanctions", claims:"revendication", rivalry:"rivalite"};
+const TYPE_TERM = {dual_use:"double-usage"}, TENSION_TERM = {war:"guerre", sanctions:"sanctions", claims:"revendication", rivalry:"rivalite", trade_war:"guerre-commerciale"};
 // vue simplifiée par défaut (lisible au premier coup d'œil) ; « tout afficher » en un clic
 // (moins de 15 relations : les guerres et les troupes engagées ; les questions en haut de la vue mènent plus loin)
 const SIMPLE = {type: ["troops"], tension: ["war"], kind: ["core", "non_state"], med: [], dep: []};

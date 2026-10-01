@@ -31,7 +31,7 @@ terms:
     term: tension
     aliases: [tensions]
     auto: false
-    definition: Une opposition entre deux acteurs (guerre, sanctions, revendication territoriale ou rivalité). Les tensions sont affichées à part et ne comptent pas dans le calcul des blocs.
+    definition: Une opposition entre deux acteurs (guerre, sanctions, revendication territoriale, rivalité ou guerre commerciale). Les tensions sont affichées à part et ne comptent pas dans le calcul des blocs.
   - id: double-usage
     term: double usage
     definition: Des biens civils qui peuvent aussi servir à faire la guerre, comme des composants électroniques, des moteurs ou des machines-outils.
@@ -69,6 +69,11 @@ terms:
     term: rivalité
     aliases: [rivalités]
     definition: Une concurrence stratégique durable, sans guerre ouverte, qui porte sur l'influence, les armements ou les alliances.
+  - id: guerre-commerciale
+    term: guerre commerciale
+    aliases: [guerres commerciales]
+    definition: Deux pays se frappent l'un l'autre de droits de douane, des taxes sur les produits importés, chacun répondant aux mesures de l'autre. Ce n'est pas une guerre armée.
+    example: Depuis 2025, les États-Unis et le Canada taxent chacun une partie des produits de l'autre.
   - id: cessez-le-feu
     term: cessez-le-feu
     aliases: [trêve, trêves]
