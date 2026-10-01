@@ -13,7 +13,20 @@ CSS = """
 .chip img,.fact img,.ex img{width:16px;height:16px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px var(--mist);flex:none}
 .chip button{background:none;border:0;color:var(--graphite);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;border-radius:3px}
 .chip button:hover{color:var(--ink)}
-.pick select{font:15px var(--sans);color:var(--ink);background:var(--land);border:1px solid var(--mist);border-radius:4px;padding:6px 8px;max-width:260px}
+#addbtn{font:15px var(--sans);color:var(--ink);background:none;border:1px dashed var(--graphite);border-radius:4px;padding:5px 12px;cursor:pointer}
+#addbtn::before{content:"+ ";color:var(--graphite)}#addbtn:hover,#addbtn[aria-expanded=true]{border-color:var(--peach);border-style:solid}
+/* panneau de choix : tout est visible d'un coup, rangé par catégorie ; le champ ne fait que filtrer cette liste */
+.picker{position:relative}.pick{position:relative;z-index:1002}
+#panel{position:absolute;left:0;right:0;top:100%;z-index:1002;border:1px solid var(--mist);border-radius:6px;background:var(--land);padding:14px 16px 6px;margin:8px 0 4px;
+  max-height:70vh;overflow:auto;box-shadow:0 12px 32px #0003}
+/* voile derrière le panneau ouvert : le reste de la page s'efface, la sélection reste lisible au-dessus */
+#veil{position:fixed;inset:0;z-index:1001;background:color-mix(in srgb,var(--paper) 78%,transparent)}
+#q{font:15px var(--sans);color:var(--ink);background:var(--paper);border:1px solid var(--mist);border-radius:4px;padding:7px 10px;width:100%;max-width:340px}
+#groups h3{font:500 13.5px var(--sans);color:var(--graphite);margin:14px 0 7px}
+#groups .g{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
+#groups button{display:inline-flex;align-items:center;gap:6px;font:14px var(--sans);color:var(--ink);background:none;border:1px solid var(--mist);border-radius:4px;padding:4px 9px;cursor:pointer}
+#groups button:hover{border-color:var(--peach)}#groups button:disabled{color:var(--graphite);opacity:.45;cursor:default;border-color:var(--mist)}
+#groups img{width:15px;height:15px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px var(--mist)}
 .scope{font-size:13.5px;color:var(--graphite);margin:0;min-height:1.6em}
 .scope button{display:inline;text-align:left;background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-decoration:underline;text-decoration-color:var(--peach);text-underline-offset:3px}
 .sug{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13.5px;color:var(--graphite);margin:10px 0 0}
@@ -168,7 +181,7 @@ const card = f => `<div class="fact">${f.html}</div>`;
 
 function render(){ const ids = scope(), ok = SEL.length >= 2 && ids.length >= 2;
   $("#chips").innerHTML = SEL.map((t, i) => `<span class="chip">${DOS[t] ? "" : img(t)}${label(t)}<button type="button" data-rm="${i}" aria-label="Retirer ${label(t)}">×</button></span>`).join("");
-  [...$("#add").options].forEach(o => o.disabled = SEL.includes(o.value));
+  panel();
   const dos = SEL.filter(t => DOS[t]);
   $("#scope").innerHTML = (dos.length ? dos.map(t => `${label(t)} apporte ses camps : ${DOS[t].sides.flat().map(nm).join(", ")}. `).join("") : "")
     + (ok ? '<button type="button" id="copy">Copier le lien</button>' : "");
@@ -203,10 +216,24 @@ function detail(){ const F = window.FACTS, svg = $("#schema"), box = $("#detail"
   box.innerHTML = (on.length ? on.map(card).join("") : `<p class="none" style="margin:0 0 12px">Aucun fait entre ${nm(PICK.n)} et les autres acteurs choisis.</p>`)
     + (PICK.n ? `<p class="fact m"><a href="explorer.html#graphe:${esc(PICK.n)}">Voir toutes les relations de ${nm(PICK.n)} dans Carte &amp; graphe</a></p>` : ""); }
 
-$("#add").addEventListener("change", ev => { const v = ev.target.value; ev.target.value = ""; if(v && !SEL.includes(v)){ SEL.push(v); PICK = null; render(); } });
+// ---------- Panneau de choix : catégories visibles d'un coup, champ qui filtre (sans accents ni casse) ----------
+const flat = v => String(v).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const byName = ks => ks.sort((a, b) => D.actors[a].name.localeCompare(D.actors[b].name, "fr"));
+const kindIs = (...k) => byName(Object.keys(D.actors).filter(id => k.includes(D.actors[id].kind)));
+const CATS = [["Conflits", Object.keys(DOS)], ["Pays et blocs", kindIs("state", "bloc")], ["Groupes armés", kindIs("non_state")], ["Partis et personnalités", kindIs("party", "person")]];
+function panel(){ const q = flat($("#q").value.trim()); let shown = 0;
+  $("#groups").innerHTML = CATS.map(([t, items]) => { const hit = items.filter(k => !q || flat(DOS[k] ? DOS[k].title : D.actors[k].name).includes(q)); shown += hit.length;
+    return hit.length ? `<h3>${t}</h3><div class="g">${hit.map(k => `<button type="button" data-add="${esc(k)}"${SEL.includes(k) ? " disabled" : ""}>${DOS[k] ? "" : img(k)}${label(k)}</button>`).join("")}</div>` : ""; }).join("");
+  $("#noq").hidden = shown > 0; }
+function toggle(open){ $("#panel").hidden = !open; $("#veil").hidden = !open; $("#addbtn").setAttribute("aria-expanded", open); if(open){ $("#q").value = ""; panel(); $("#q").focus(); } }
+$("#addbtn").addEventListener("click", () => toggle($("#panel").hidden));
+$("#q").addEventListener("input", panel);
+$("#q").addEventListener("keydown", ev => { if(ev.key === "Escape"){ toggle(false); $("#addbtn").focus(); }
+  if(ev.key === "Enter"){ const b = $("#groups button:not(:disabled)"); if(b && $("#q").value.trim()){ b.click(); $("#q").value = ""; panel(); } } });
 document.addEventListener("click", ev => { const t = ev.target;
   if(t.dataset && t.dataset.rm != null){ SEL.splice(+t.dataset.rm, 1); PICK = null; return render(); }
-  const add = t.closest && t.closest("[data-add]"); if(add){ SEL.push(add.dataset.add); PICK = null; return render(); }
+  const add = t.closest && t.closest("[data-add]"); if(add){ if(!SEL.includes(add.dataset.add)) SEL.push(add.dataset.add); PICK = null; return render(); }
+  if(!$("#panel").hidden && !(t.closest && (t.closest("#panel") || t.closest("#addbtn") || t.closest(".pick") || t.closest("#sug")))) toggle(false);
   if(t.id === "copy"){ navigator.clipboard && navigator.clipboard.writeText(location.href).then(() => t.textContent = "Lien copié"); return; }
   const ex = t.closest && t.closest("[data-ex]"); if(ex){ ev.preventDefault(); SEL = ex.dataset.ex.split(","); PICK = null; return render(); }
   if(t.dataset && t.dataset.fact != null){ PICK = {f: +t.dataset.fact}; return detail(); }
@@ -225,13 +252,7 @@ EXAMPLES = [("US,d:ukraine,CN", "Les États-Unis, la Chine et la guerre en Ukrai
 
 def page(d):
     x = data(d)
-    kinds = [("Conflits", [("d:" + t["id"], t["title"]) for t in x["dossiers"]]),
-             ("Pays et blocs", sorted(((k, a["name"]) for k, a in x["actors"].items() if a["kind"] in ("state", "bloc")), key=lambda p: p[1])),
-             ("Groupes armés", sorted(((k, a["name"]) for k, a in x["actors"].items() if a["kind"] == "non_state"), key=lambda p: p[1])),
-             ("Partis et personnalités", sorted(((k, a["name"]) for k, a in x["actors"].items() if a["kind"] in ("party", "person")), key=lambda p: p[1]))]
-    options = "".join(f'<optgroup label="{e(g)}">' + "".join(f'<option value="{e(v)}">{e(t)}</option>' for v, t in items) + "</optgroup>"
-                      for g, items in kinds if items)
-    valid = {v for _, items in kinds for v, _ in items}
+    valid = set(x["actors"]) | {"d:" + t["id"] for t in x["dossiers"]}
     examples = "".join(f'<a href="croiser.html?e={e(q)}" data-ex="{e(q)}">{e(t)}</a>' for q, t in EXAMPLES
                        if all(tok in valid for tok in q.split(",")))
     script = (SCRIPT.replace("__DATA__", json.dumps(x, ensure_ascii=False, default=str).replace("</", "<\\/"))
@@ -240,8 +261,10 @@ def page(d):
     body = f"""<main class="cross">
 <h1>Croiser des acteurs</h1>
 <p class="lede">Choisissez au moins deux pays, groupes ou conflits : le schéma montre ce qui les relie, fait par fait.</p>
-<div class="pick"><span id="chips" style="display:contents"></span>
-<select id="add" aria-label="Ajouter un pays, un groupe ou un conflit"><option value="">Ajouter…</option>{options}</select></div>
+<div class="picker"><div id="veil" hidden></div><div class="pick"><span id="chips" style="display:contents"></span>
+<button type="button" id="addbtn" aria-expanded="false" aria-controls="panel">Ajouter</button></div>
+<div id="panel" hidden><input type="search" id="q" placeholder="Filtrer : un pays, un groupe, un conflit" aria-label="Filtrer la liste" autocomplete="off">
+<div id="groups"></div><p class="none" id="noq" hidden>Aucun acteur ne correspond.</p></div></div>
 <p class="scope" id="scope"></p>
 <p class="sug" id="sug"></p>
 <div id="empty"><div class="ex"><span class="quiet">Pour commencer :</span>{examples}</div></div>
