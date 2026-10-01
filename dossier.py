@@ -378,7 +378,7 @@ def page(dos, d):
 
 <section class="s"><h2>Qui s'affronte, et qui les soutient</h2>
 <div class="camps">{camp(0, dos["sides"][0], backers[0])}{camp(1, dos["sides"][1], backers[1])}</div>
-<p class="quiet" style="margin:16px 0 0"><a href="croiser.html?e=d:{e(dos["id"])}">Croiser ce conflit avec d'autres acteurs</a> : schéma, carte, frise et points communs.</p></section>
+<p class="quiet" style="margin:16px 0 0"><a href="relations.html?e=d:{e(dos["id"])}">Croiser ce conflit avec d'autres acteurs</a> : schéma, carte, frise et points communs.</p></section>
 
 {ppl}
 
@@ -412,7 +412,8 @@ def page(dos, d):
           "mainEntityOfPage": f"{brand.SITE}{dos['id']}.html"}
     # titre de l'onglet : on ajoute la promesse du dossier tant que l'ensemble reste court (les moteurs coupent vers 60 caractères)
     tail = " : qui s'affronte, qui soutient qui" if len(dos["title"]) <= 24 else ""
-    return style.head(f"{dos['title']}{tail} — {brand.NAME}", desc, extra, path=f"{dos['id']}.html", kind="article", ld=ld) + f"<body>{body}</body></html>"
+    return style.head(f"{dos['title']}{tail} — {brand.NAME}", desc, extra, path=f"{dos['id']}.html", kind="article", ld=ld,
+                      image=f"partage-{dos['id']}.png" if (Path("assets") / f"partage-{dos['id']}.png").exists() else "partage.png") + f"<body>{body}</body></html>"
 
 def write(out, data):
     dossiers = load()

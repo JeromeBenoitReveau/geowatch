@@ -109,7 +109,7 @@ def cross_links(d):
                         for t in toks if d["actors"].get(t, {}).get("kind") in ("state", "bloc"))
         marks = flags + "".join(f'<span class="ns">{SWORDS}</span>' for t in toks if t.startswith("d:")) \
             + "".join(style.dep_icon(t[2:], 16) for t in toks if t.startswith("r:"))
-        out.append(f'<a class="card" href="croiser.html?e={e(q)}"><div class="marks">{marks}</div><h3>{e(title)}</h3></a>')
+        out.append(f'<a class="card" href="relations.html?e={e(q)}"><div class="marks">{marks}</div><h3>{e(title)}</h3></a>')
     return "".join(out)
 
 def home(d, dossiers):
@@ -126,16 +126,16 @@ Les rapports de force du monde rendus lisibles, sans prérequis.</p>
 <section class="s"><h2>Croiser des acteurs</h2>
 <p class="quiet" style="margin:-8px 0 18px">Choisissez des pays, un conflit ou une ressource : un schéma montre ce qui les relie, fait par fait.</p>
 <div class="crossq">{cross_links(d)}
-<a class="card pick" href="croiser.html"><h3>Choisir moi-même</h3><p>Pays, groupes armés, conflits, ressources.</p></a></div></section>
+<a class="card pick" href="relations.html"><h3>Choisir moi-même</h3><p>Pays, groupes armés, conflits, ressources.</p></a></div></section>
 
 <section class="s"><h2>La vue d'ensemble</h2>
 <p class="quiet" style="margin:-8px 0 18px">Tous les acteurs d'un coup : alliances, soutiens et dépendances, pays par pays.</p>
 <div class="explore">
-<a class="card" href="explorer.html#organisations">{svg("orgs")}<h3>Les organisations</h3>
+<a class="card" href="vue-d-ensemble.html#organisations">{svg("orgs")}<h3>Les organisations</h3>
 <p class="use">Voir qui appartient à quoi (OTAN, BRICS, Union européenne…), et quels pays sont à la croisée de plusieurs camps.</p></a>
-<a class="card" href="explorer.html#carte">{svg("map")}<h3>La carte du monde</h3>
+<a class="card" href="vue-d-ensemble.html#carte">{svg("map")}<h3>La carte du monde</h3>
 <p class="use">Voir de quel côté penche chaque pays, et depuis quand.</p></a>
-<a class="card" href="explorer.html#graphe">{svg("graph")}<h3>Le graphe des soutiens</h3>
+<a class="card" href="vue-d-ensemble.html#graphe">{svg("graph")}<h3>Le graphe des soutiens</h3>
 <p class="use">Suivre qui arme, qui finance et qui affronte qui.</p></a>
 </div></section>
 <p class="quiet" style="margin-top:56px">Pourquoi vulgariser la géopolitique, et comment ce site est fait : <a href="manifeste.html">le manifeste</a>.

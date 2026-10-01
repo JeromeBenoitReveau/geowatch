@@ -1,6 +1,6 @@
 # Vues préréglées de l'explorateur (« Carte & graphe ») : des questions qui donnent une vue lisible en un clic.
 # Chaque question appartient à un onglet (view) et ne s'affiche que dans celui-ci : elle ne change jamais d'onglet.
-# URL partageable : explorer.html?vue=<id> rejoue exactement l'état décrit ici. Contrôlé par validate.py.
+# URL partageable : vue-d-ensemble.html?vue=<id> rejoue exactement l'état décrit ici. Contrôlé par validate.py.
 #
 # id        : identifiant dans l'URL
 # question  : libellé du bouton, formulé comme une question

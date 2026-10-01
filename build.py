@@ -13,10 +13,20 @@ TYPE_COLORS = {"arms": "#d64545", "troops": "#8b1e1e", "financial": "#2f8f5b", "
 EXPLORER_DESC = ("Alliances, soutiens, tensions et dépendances d’un coup d’œil : une carte du monde, un graphe "
                  "et des cercles d’organisations. Données sourcées.")
 
+# Anciennes adresses (avant le 2026-10-02) : une page de redirection garde les liens déjà partagés, avec leur sélection et leur ancre
+MOVED = {"explorer.html": "vue-d-ensemble.html", "croiser.html": "relations.html"}
+def redirects(out):
+    for old, new in MOVED.items():
+        (out / old).write_text(f"""<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>{brand.NAME}</title>
+<meta name="robots" content="noindex"><link rel="canonical" href="{brand.SITE}{new}">
+<script>location.replace("{new}" + location.search + location.hash)</script>
+<meta http-equiv="refresh" content="0; url={new}"></head><body><p><a href="{new}">Cette page a changé d'adresse.</a></p></body></html>
+""", encoding="utf-8")
+
 def sitemap(out):
     """sitemap.xml : toutes les pages publiées, datées du jour de construction (à déclarer dans la Search Console)."""
     day = db.now()[:10]
-    pages = sorted(p.name for p in out.glob("*.html"))
+    pages = sorted(p.name for p in out.glob("*.html") if p.name not in MOVED)
     urls = "".join(f"<url><loc>{brand.SITE}{'' if p == 'index.html' else p}</loc><lastmod>{day}</lastmod></url>" for p in pages)
     (out / "sitemap.xml").write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n', encoding="utf-8")
 
@@ -56,7 +66,7 @@ def build():
             "glossary": glossary.for_js(), "presets": presets.load(), "correction": style.correction_url("Vue d'ensemble"), "dep_icons": style.DEP_ICONS}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
                             .replace("</", "<\\/"))
-    (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS).replace("__TOP__", style.top("explorer.html")).replace("__THEME__", style.THEME_INIT).replace("__DESC__", EXPLORER_DESC).replace("__SEO__", style.seo("explorer.html", f"Vue d'ensemble : carte, graphe, organisations — {brand.NAME}", EXPLORER_DESC)).replace("__VIEWS__", "".join(
+    (OUT / "vue-d-ensemble.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS).replace("__TOP__", style.top("vue-d-ensemble.html")).replace("__THEME__", style.THEME_INIT).replace("__DESC__", EXPLORER_DESC).replace("__SEO__", style.seo("vue-d-ensemble.html", f"Vue d'ensemble : carte, graphe, organisations — {brand.NAME}", EXPLORER_DESC)).replace("__VIEWS__", "".join(
         f'<a href="#{a}" data-view="{a}" title="{t}">{style.icon(k, 16)}<span>{t}</span></a>' for a, k, t in style.VIEWS)), encoding="utf-8")
     export_data(actors, edges)
     method.write(OUT, data)
@@ -65,9 +75,11 @@ def build():
     pages.write(OUT, data)
     cross.write(OUT, data)
     glossary.write(OUT)
+    redirects(OUT)
     sitemap(OUT)
-    shutil.copy(Path("assets") / "partage.png", OUT / "partage.png")  # image de partage (og:image), produite depuis assets/partage.html
-    print(f"→ {OUT}/ : index.html (accueil), explorer.html, croiser.html, manifeste.html, glossaire.html, methode.html, dossiers, network.json, network.csv")
+    for png in Path("assets").glob("partage*.png"):  # images de partage (og:image) : site et dossiers, produites par share.py
+        shutil.copy(png, OUT / png.name)
+    print(f"→ {OUT}/ : index.html (accueil), vue-d-ensemble.html, relations.html, manifeste.html, glossaire.html, methode.html, dossiers, network.json, network.csv")
     return data
 
 TEMPLATE = r"""<!doctype html><html lang="fr"><head><meta charset="utf-8">

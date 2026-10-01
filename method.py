@@ -273,7 +273,7 @@ d'origine même s'il agit ailleurs. Seule l'UE a une position fixée à la main 
 (moins de 15 relations), pour être lisibles sans rien toucher. « Tout afficher » rétablit toutes les relations ; la légende,
 dans les filtres, sert aussi de filtre. Un acteur sans aucune relation affichée est masqué.</p>
 <p><b>Questions pour commencer</b> (<code>presets.yaml</code>) : chacune appartient à un onglet et ne s'affiche que dans celui-ci (elle ne change jamais d'onglet) ; changer d'onglet revient à la vue simplifiée. Elle fixe un état complet (vue, filtres, acteur
-sélectionné, cadrage) et a sa propre adresse, partageable : {", ".join(f'<a href="explorer.html?vue={e(x["id"])}#{e(x["view"])}">{e(x["question"])}</a>' for x in d.get("presets", []))}.
+sélectionné, cadrage) et a sa propre adresse, partageable : {", ".join(f'<a href="vue-d-ensemble.html?vue={e(x["id"])}#{e(x["view"])}">{e(x["question"])}</a>' for x in d.get("presets", []))}.
 Une question qui porte sur un conflit prend ses acteurs dans les camps du dossier, eux-mêmes lus dans le graphe : elle ne
 peut pas contredire les données. <code>validate.py</code> contrôle les vues, acteurs, types et organisations cités.</p>
 <p><b>Vue Organisations</b> : chaque pays est placé dans la zone exacte de ses appartenances (cercle privé de ses
@@ -282,7 +282,7 @@ réduit ses drapeaux ; au-delà de 24 pays, les plus petits sont regroupés en u
 textes gardent une taille constante, et un nom qui chevaucherait un drapeau n'est affiché qu'au survol.</p>
 
 <h2 id="croiser">Croiser des acteurs</h2>
-<p>La page <a href="croiser.html">Relations</a> affiche ce que le graphe contient entre les pays, groupes ou conflits choisis :
+<p>La page <a href="relations.html">Relations</a> affiche ce que le graphe contient entre les pays, groupes ou conflits choisis :
 tensions, soutiens, médiations et dépendances dont les deux acteurs font partie de la sélection. Un conflit apporte les acteurs
 de ses camps. Une ressource (pétrole, armes, dette…) ajoute les pays liés aux acteurs choisis par une dépendance chiffrée de ce type. Rien n'y est rédigé automatiquement : chaque trait est un fait du graphe, avec sa date, son statut et ses sources.
 Une paire sans trait signifie seulement qu'aucune relation n'est sourcée ici.</p>

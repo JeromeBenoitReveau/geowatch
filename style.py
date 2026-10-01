@@ -127,34 +127,34 @@ def clip(text, n=158):
     t = " ".join(str(text).split())
     return t if len(t) <= n else t[:n].rsplit(" ", 1)[0].rstrip(",;:") + "…"
 
-def seo(path, title, desc, kind="website", ld=None):
+def seo(path, title, desc, kind="website", ld=None, image="partage.png"):
     """Balises de référencement et de partage : adresse canonique, Open Graph, carte Twitter, données structurées (JSON-LD).
-    path = nom du fichier (« » pour l'accueil). Image de partage : assets/partage.png, la même pour toutes les pages."""
+    path = nom du fichier (« » pour l'accueil). Image de partage : assets/partage.png par défaut, assets/partage-<id>.png pour un dossier (share.py)."""
     import json
     url = brand.SITE + ("" if path in ("", "index.html") else path)
     tags = [f'<link rel="canonical" href="{e(url)}">',
             f'<meta property="og:type" content="{kind}">', f'<meta property="og:site_name" content="{e(brand.NAME)}">',
             f'<meta property="og:title" content="{e(title)}">', f'<meta property="og:description" content="{e(desc)}">',
             f'<meta property="og:url" content="{e(url)}">', '<meta property="og:locale" content="fr_FR">',
-            f'<meta property="og:image" content="{brand.SITE}partage.png">', '<meta property="og:image:width" content="1200">',
+            f'<meta property="og:image" content="{brand.SITE}{image}">', '<meta property="og:image:width" content="1200">',
             '<meta property="og:image:height" content="630">', f'<meta property="og:image:alt" content="{e(brand.NAME)} — {e(brand.BASELINE)}">',
-            '<meta name="twitter:card" content="summary_large_image">', f'<meta name="twitter:image" content="{brand.SITE}partage.png">', f'<meta name="twitter:title" content="{e(title)}">',
+            '<meta name="twitter:card" content="summary_large_image">', f'<meta name="twitter:image" content="{brand.SITE}{image}">', f'<meta name="twitter:title" content="{e(title)}">',
             f'<meta name="twitter:description" content="{e(desc)}">']
     if ld:
         tags.append('<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace("</", "<\\/") + "</script>")
     return "\n".join(tags)
 
-def head(title, desc=brand.BASELINE, extra="", path=None, kind="website", ld=None):
+def head(title, desc=brand.BASELINE, extra="", path=None, kind="website", ld=None, image="partage.png"):
     desc = clip(desc)
     return f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>{e(title)}</title>
 <meta name="description" content="{e(desc)}">
-{seo(path, title, desc, kind, ld) if path is not None else ""}
+{seo(path, title, desc, kind, ld, image) if path is not None else ""}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="{FONTS}">
 <link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.svg" type="image/svg+xml">{THEME_INIT}{extra}</head>"""
 
 def top(current=""):
-    """En-tête commun, tout en noms : Conflits (menu), Relations (croiser.html), Vue d'ensemble (explorer.html), À propos (menu).
+    """En-tête commun, tout en noms : Conflits (menu), Relations (relations.html), Vue d'ensemble (vue-d-ensemble.html), À propos (menu).
     current = nom du fichier de la page, pour signaler la rubrique et la page actives."""
     import dossier  # import tardif : dossier importe style
     conflicts = [(f"{x['id']}.html", x["title"]) for x in dossier.load()]
@@ -165,8 +165,8 @@ def top(current=""):
         return f'<details class="menu"{" data-active" if active else ""}><summary>{label}</summary><div class="dd">{links}</div></details>'
     return f"""<div class="top"><a class="brand" href="index.html">{LOGO}{e(brand.NAME)}</a><nav class="menus">
 {menu("Conflits", conflicts, current in dict(conflicts))}
-<a class="menu-link" href="croiser.html"{' aria-current="page"' if current == "croiser.html" else ""}>Relations</a>
-<a class="menu-link" href="explorer.html"{' aria-current="page"' if current == "explorer.html" else ""}>Vue d'ensemble</a>
+<a class="menu-link" href="relations.html"{' aria-current="page"' if current == "relations.html" else ""}>Relations</a>
+<a class="menu-link" href="vue-d-ensemble.html"{' aria-current="page"' if current == "vue-d-ensemble.html" else ""}>Vue d'ensemble</a>
 {menu("À propos", about, current in dict(about))}
 <button class="theme" id="theme-toggle" type="button" title="Mode clair / mode sombre" aria-label="Basculer entre mode clair et mode sombre">
 <svg class="moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>

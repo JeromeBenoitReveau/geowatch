@@ -1,7 +1,7 @@
-"""Page « Croiser » (site/croiser.html) : on choisit au moins deux entités (pays, groupe, conflit) et la page dessine
+"""Page « Croiser » (site/relations.html) : on choisit au moins deux entités (pays, groupe, conflit) et la page dessine
 ce que le graphe contient ENTRE elles — tensions, soutiens, médiations, leviers. Aucun texte rédigé : chaque trait
 est un fait de network.yaml, affiché avec sa date, son statut et ses sources. Un conflit apporte les acteurs de ses camps.
-État dans l'URL (croiser.html?e=US,d:ukraine,CN), donc partageable."""
+État dans l'URL (relations.html?e=US,d:ukraine,CN), donc partageable."""
 from html import escape as e
 import json
 import brand, dossier, glossary, style
@@ -49,7 +49,7 @@ CSS = """
 #schema.ghosted .rel{opacity:.18}#schema .gl{font-size:13px;paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
 #schema .rel{transition:opacity .15s}#schema.focus .rel:not(.on){opacity:.14}#schema.focus .node:not(.on){opacity:.35}
 .bar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:26px 0 0;min-height:30px}
-/* contrôle segmenté Schéma / Carte : même dessin que celui de la vue d'ensemble (explorer.html) */
+/* contrôle segmenté Schéma / Carte : même dessin que celui de la vue d'ensemble (vue-d-ensemble.html) */
 .seg{display:inline-flex;flex-wrap:wrap;padding:3px;gap:2px;border:1px solid var(--mist);border-radius:7px;background:var(--land)}
 .seg button{display:flex;align-items:center;gap:7px;padding:6px 12px;border:0;border-radius:5px;background:none;font:14px var(--sans);color:var(--graphite);cursor:pointer;white-space:nowrap}
 .seg button:hover{color:var(--ink)}.seg button[aria-pressed=true]{background:color-mix(in srgb,var(--ink) 8%,var(--land));color:var(--ink)}
@@ -442,7 +442,7 @@ function detail(){ const F = window.FACTS, svg = $("#schema"), box = $("#detail"
   if(!PICK){ box.innerHTML = `<p class="none" style="margin:0">${F.length ? "Cliquez un trait ou un acteur pour lire le fait, sa date et ses sources." : "Aucun fait entre ces acteurs dans le graphe."}</p>`; return; }
   box.innerHTML = (camp ? `<p class="none" style="margin:0 0 12px">${esc(camp.name)} : ${camp.members.map(nm).join(", ")}. Les faits entre eux sont listés ici, pas dessinés.</p>` : "")
     + (on.length ? on.map(card).join("") : `<p class="none" style="margin:0 0 12px">Aucun fait entre ${camp ? "ce camp" : nm(PICK.n)} et les autres acteurs choisis.</p>`)
-    + (PICK.n && !camp ? `<p class="fact m"><a href="explorer.html#graphe:${esc(PICK.n)}">Voir toutes les relations de ${nm(PICK.n)} dans la vue d'ensemble</a></p>` : ""); }
+    + (PICK.n && !camp ? `<p class="fact m"><a href="vue-d-ensemble.html#graphe:${esc(PICK.n)}">Voir toutes les relations de ${nm(PICK.n)} dans la vue d'ensemble</a></p>` : ""); }
 
 // ---------- Panneau de choix : catégories visibles d'un coup, champ qui filtre (sans accents ni casse) ----------
 const flat = v => String(v).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -493,7 +493,7 @@ EXAMPLES = [("US,d:ukraine,CN", "Les États-Unis, la Chine et la guerre en Ukrai
 def page(d):
     x = data(d)
     valid = set(x["actors"]) | {"d:" + t["id"] for t in x["dossiers"]} | {"r:" + t["type"] for t in x["dependencies"]}
-    examples = "".join(f'<a href="croiser.html?e={e(q)}" data-ex="{e(q)}">{e(t)}</a>' for q, t in EXAMPLES
+    examples = "".join(f'<a href="relations.html?e={e(q)}" data-ex="{e(q)}">{e(t)}</a>' for q, t in EXAMPLES
                        if all(tok in valid for tok in q.split(",")))
     script = (SCRIPT.replace("__DATA__", json.dumps(x, ensure_ascii=False, default=str).replace("</", "<\\/"))
               .replace("__DEP_ICONS__", json.dumps(style.DEP_ICONS))
@@ -527,8 +527,8 @@ def page(d):
     body = body.replace("__ICO_GRAPH__", style.icon("graph", 16)).replace("__ICO_MAP__", style.icon("map", 16)).replace("__ICO_ORGS__", style.icon("orgs", 16))
     title = f"Croiser des acteurs : ce qui relie deux pays — {brand.NAME}"
     return (style.head(title, "Choisissez des pays, des groupes ou un conflit : ce qui les relie, fait par fait, avec les sources.",
-                       f"<style>{CSS}</style>", path="croiser.html")
-            + f'<body><div class="wrap">{style.top("croiser.html")}\n{body}</div>{style.foot(page="Croiser des acteurs")}{LIBS}{script}</body></html>')
+                       f"<style>{CSS}</style>", path="relations.html")
+            + f'<body><div class="wrap">{style.top("relations.html")}\n{body}</div>{style.foot(page="Croiser des acteurs")}{LIBS}{script}</body></html>')
 
 def write(out, d):
-    (out / "croiser.html").write_text(page(d), encoding="utf-8")
+    (out / "relations.html").write_text(page(d), encoding="utf-8")
