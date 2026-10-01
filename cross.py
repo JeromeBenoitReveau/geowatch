@@ -15,6 +15,8 @@ CSS = """
 .chip button{background:none;border:0;color:var(--graphite);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;border-radius:3px}
 .chip button:hover{color:var(--ink)}
 #addbtn{font:15px var(--sans);color:var(--ink);background:none;border:1px dashed var(--graphite);border-radius:4px;padding:5px 12px;cursor:pointer}
+#reset{font:14px var(--sans);color:var(--graphite);background:none;border:0;padding:5px 4px;cursor:pointer;text-decoration:underline;text-decoration-color:var(--mist);text-underline-offset:3px}
+#reset:hover{color:var(--ink);text-decoration-color:var(--peach)}#reset[hidden]{display:none}
 #addbtn::before{content:"+ ";color:var(--graphite)}#addbtn:hover,#addbtn[aria-expanded=true]{border-color:var(--peach);border-style:solid}
 /* panneau de choix : tout est visible d'un coup, rangé par catégorie ; le champ ne fait que filtrer cette liste */
 .picker{position:relative}.pick{position:relative;z-index:1002}
@@ -122,7 +124,7 @@ def data(d):
     unga = d.get("unga") or {}
     agree = {f"{min(by3[a], by3[b])}|{max(by3[a], by3[b])}": v for a, row in (unga.get("pairs") or {}).items()
              for b, v in row.items() if a in by3 and b in by3}
-    return {"actors": {k: {"name": a["name"], "kind": a["kind"]} for k, a in d["actors"].items()}, "pos": pos, "num": num,
+    return {"actors": {k: {"name": a["name"], "kind": a["kind"], **({"flag": a["flag"]} if a.get("flag") else {})} for k, a in d["actors"].items()}, "pos": pos, "num": num,
             "orgs": [o for o in orgs if len(o["members"]) >= 2], "agree": agree, "agree_year": unga.get("agreement_year"),
             "edges": live(d["edges"]), "tensions": live(d["tensions"]), "mediations": live(d["mediations"]),
             "dependencies": live(d["dependencies"]), "colors": d["colors"], "people": people,
@@ -135,7 +137,7 @@ const $ = s => document.querySelector(s);
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const nm = id => esc((D.actors[id] || {}).name || id);
 const isFlag = id => ["state", "bloc"].includes((D.actors[id] || {}).kind);
-const flag = id => `https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/${id.toLowerCase()}.svg`;
+const flag = id => (D.actors[id] || {}).flag || `https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/${id.toLowerCase()}.svg`;
 // Sans drapeau ni photo : même pictogramme que dans la vue d'ensemble (Lucide, ISC) — épées = groupe armé, urne = parti, silhouette = personne
 const GLYPH = {
   non_state: '<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/>',
@@ -360,7 +362,8 @@ function render(){ const ids = scope(), {F, extra} = facts(ids), ok = ids.length
   $("#scope").innerHTML = (dos.length ? dos.map(t => `${label(t)} apporte ses camps : ${DOS[t].sides.flat().map(nm).join(", ")}. `).join("") : "")
     + rs.map(t => !ids.length ? `${label(t)} : ajoutez un pays pour voir ses dépendances. `
         : F.some(f => f.dep === RES[t]) ? `${label(t)} ajoute les pays liés à la sélection par cette ressource (contour pointillé). ` : `${label(t)} : aucune dépendance chiffrée pour cette sélection. `).join("")
-    + (ok ? '<button type="button" id="copy">Copier le lien</button>' : "");
+    ;
+  $("#reset").hidden = SEL.length < 2;
   const sug = ids.length ? suggest(ids) : [];
   $("#sug").innerHTML = sug.length ? "À croiser aussi : " + sug.map(x => `<button type="button" data-add="${esc(x.t)}">${mark(x.t)}${label(x.t)} <small>${x.n} lien${x.n > 1 ? "s" : ""}</small></button>`).join("") : "";
   $("#empty").hidden = ok; $("#out").hidden = !ok;
@@ -462,7 +465,7 @@ document.addEventListener("click", ev => { const t = ev.target;
   if($("#schema").dataset.dragged){ delete $("#schema").dataset.dragged; if(t.closest && t.closest("#schema")) return; }
   const add = t.closest && t.closest("[data-add]"); if(add){ ZM = null; if(!SEL.includes(add.dataset.add)) SEL.push(add.dataset.add); PICK = null; return render(); }
   if(!$("#panel").hidden && !(t.closest && (t.closest("#panel") || t.closest("#addbtn") || t.closest(".pick") || t.closest("#sug")))) toggle(false);
-  if(t.id === "copy"){ navigator.clipboard && navigator.clipboard.writeText(location.href).then(() => t.textContent = "Lien copié"); return; }
+  if(t.id === "reset"){ SEL = []; PICK = null; ZM = null; GRP = undefined; toggle(false); return render(); }
   const ex = t.closest && t.closest("[data-ex]"); if(ex){ ev.preventDefault(); ZM = null; SEL = ex.dataset.ex.split(","); PICK = null; return render(); }
   if(t.dataset && t.dataset.fact != null){ PICK = {f: +t.dataset.fact}; return detail(); }
   const row = t.closest && t.closest("#frise .row"); if(row){ PICK = PICK && PICK.f === +row.dataset.f ? null : {f: +row.dataset.f}; return detail(); }
@@ -501,7 +504,8 @@ def page(d):
 <h1>Croiser des acteurs</h1>
 <p class="lede">Choisissez des pays, des groupes, un conflit ou une ressource : le schéma montre ce qui les relie, fait par fait.</p>
 <div class="picker"><div id="veil" hidden></div><div class="pick"><span id="chips" style="display:contents"></span>
-<button type="button" id="addbtn" aria-expanded="false" aria-controls="panel">Ajouter</button></div>
+<button type="button" id="addbtn" aria-expanded="false" aria-controls="panel">Ajouter</button>
+<button type="button" id="reset" hidden>Tout effacer</button></div>
 <div id="panel" hidden><input type="search" id="q" placeholder="Filtrer : un pays, un groupe, un conflit, une ressource" aria-label="Filtrer la liste" autocomplete="off">
 <div id="groups"></div><p class="none" id="noq" hidden>Aucun acteur ne correspond.</p></div></div>
 <p class="scope" id="scope"></p>

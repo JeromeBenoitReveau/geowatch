@@ -22,8 +22,11 @@ def check(actors, edges, today=None, aligns=None):
             errors.append(f"acteur {aid} : name manquant")
         if a.get("kind") not in KINDS:
             errors.append(f"acteur {aid} : kind « {a.get('kind')} » invalide ({', '.join(sorted(KINDS))})")
-        if a.get("kind") == "state" and not re.fullmatch(r"[A-Z]{2}", aid):
-            errors.append(f"acteur {aid} : un État doit avoir un id ISO2 en majuscules")
+        # un territoire sans code pays (Somaliland) est admis s'il fournit lui-même son drapeau et ses coordonnées
+        if a.get("kind") == "state" and not re.fullmatch(r"[A-Z]{2}", aid) and not (a.get("flag") and a.get("coords")):
+            errors.append(f"acteur {aid} : un État doit avoir un id ISO2 en majuscules, ou des champs flag et coords")
+        if a.get("flag") is not None and not str(a["flag"]).startswith("https://"):
+            errors.append(f"acteur {aid} : flag doit être une URL https")
         if a.get("kind") == "non_state" and not re.fullmatch(r"[A-Z]{2}", str(a.get("base", ""))):
             warnings.append(f"acteur {aid} : non étatique sans base ISO2 (pas de fiche pays hôte)")
         if a.get("kind") in ("party", "person") and not re.fullmatch(r"[A-Z]{2}", str(a.get("base", ""))):

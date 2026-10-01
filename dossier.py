@@ -145,8 +145,8 @@ class Notes:
 
 def flag(aid, d):
     kind = d["actors"][aid]["kind"]
-    code = aid.lower() if kind == "state" else "eu" if aid == "EU" else None
-    return f'<img src="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/{code}.svg" alt="">' if code else '<span></span>'
+    ok = kind == "state" or aid == "EU"
+    return f'<img src="{e(style.flag_url(aid, d["actors"][aid]))}" alt="">' if ok else '<span></span>'
 
 def backers_block(bs, d, g, cite):
     """Une ligne par soutien ; ceux qui partagent le même « pourquoi » sont regroupés sur une ligne."""

@@ -112,6 +112,10 @@ def dep_icon(t, size=14):
     return (f'<svg class="dep-ico" viewBox="0 0 24 24" width="{size}" height="{size}" fill="none" stroke="{DEP_COLOR}" '
             f'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{DEP_ICONS.get(t, "")}</svg>')
 
+def flag_url(aid, actor=None):
+    """Drapeau d'un acteur : champ `flag` (territoire sans code pays, ex. Somaliland), sinon flag-icons d'après le code ISO2."""
+    return (actor or {}).get("flag") or f"https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/{aid.lower()}.svg"
+
 def icon(k, size=18):
     return (f'<svg class="ico" viewBox="0 0 24 24" width="{size}" height="{size}" fill="none" stroke="currentColor" '
             f'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[k]}</svg>')

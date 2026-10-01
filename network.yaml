@@ -59,6 +59,11 @@ actors:
        note: "Gouvernement d'Ahmed al-Charaa, au pouvoir depuis la chute de Bachar al-Assad en décembre 2024",
        sources: ["Belfer Center, les États extérieurs et la réunification de la Syrie (oct. 2025) — https://www.belfercenter.org/research-analysis/external-states-and-syrias-challenge-reunification-under-transitional-president"]}
   MA: {name: Maroc, kind: state}
+  SO: {name: Somalie (gouvernement fédéral), kind: state}
+  somaliland: {name: Somaliland, kind: state, coords: [9.56, 44.06],
+               flag: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Flag_of_Somaliland.svg",
+               note: "Région du nord de la Somalie, indépendante de fait depuis 1991 mais non reconnue, sauf par Israël depuis le 26 décembre 2025. La Somalie la considère comme une partie de son territoire",
+               sources: ["Atlantic Council, « After Israel's recognition of Somaliland, what comes next? » — https://www.atlanticcouncil.org/blogs/menasource/after-israels-recognition-of-somaliland-what-comes-next/"]}
   DZ: {name: Algérie, kind: state}
   SD: {name: Soudan (armée et gouvernement de Port-Soudan), kind: state,
        leader: {name: Abdel Fattah al-Burhan, wikidata: Q63111184, role: "Général, chef de l'armée et du Conseil de souveraineté"}}
@@ -101,6 +106,9 @@ actors:
   lna: {name: Armée nationale libyenne (Haftar), kind: non_state, base: LY,
         note: "Coalition de groupes armés de l'est de la Libye, dirigée par Khalifa Haftar ; elle appuie le gouvernement rival de l'est",
         sources: ["Council on Foreign Relations, Global Conflict Tracker : l'instabilité en Libye (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/civil-war-libya", "Service de recherche du Congrès américain, « Libya and U.S. Policy » (juill. 2026) — https://www.congress.gov/crs_external_products/IF/PDF/IF11556/IF11556.36.pdf"]}
+  alshabab: {name: Al-Shabab, kind: non_state, base: SO,
+             note: "Groupe jihadiste somalien affilié à Al-Qaïda ; il a repris en 2025-2026 l'essentiel du terrain perdu face à l'offensive gouvernementale de 2022",
+             sources: ["Council on Foreign Relations, Global Conflict Tracker : le conflit avec Al-Shabab en Somalie (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/al-shabab-somalia", "International Crisis Group, « New Chapter, Same Stalemate: Somalia's War with Al-Shabaab » (juin 2026) — https://www.crisisgroup.org/brf/africa/somalia/b212-new-chapter-same-stalemate-somalias-war-al-shabaab"]}
   polisario: {name: Front Polisario, kind: non_state, base: DZ,
               note: "Mouvement indépendantiste sahraoui, basé en Algérie ; il tient environ 20 % du Sahara occidental, le Maroc contrôle le reste",
               sources: ["Council on Foreign Relations, « Morocco's Victory on the Western Sahara » — https://www.cfr.org/blog/moroccos-victory-western-sahara"]}
@@ -490,6 +498,34 @@ edges:
      sources: ["Council on Foreign Relations, « Morocco's Victory on the Western Sahara » — https://www.cfr.org/blog/moroccos-victory-western-sahara", "Security Council Report, vote sur le Sahara occidental et la MINURSO (oct. 2025) — https://www.securitycouncilreport.org/whatsinblue/2025/10/western-sahara-vote-on-a-draft-resolution-renewing-minursos-mandate-3.php"],
      verified: 2026-10, note: "Le Front Polisario est basé en Algérie et armé par elle, selon le CFR ; Alger dit ne pas être partie au conflit"}
 
+  # --- Corne de l'Afrique : Somalie, Somaliland ---
+  - {from: IL, to: somaliland, since: "2025-12", types: [political], status: active, confidence: high,
+     sources: ["Atlantic Council, « After Israel's recognition of Somaliland, what comes next? » — https://www.atlanticcouncil.org/blogs/menasource/after-israels-recognition-of-somaliland-what-comes-next/", "Al Jazeera, la Somalie met en garde contre une base israélienne au Somaliland (mars 2026) — https://www.aljazeera.com/news/2026/3/12/somalia-warns-against-any-israeli-base-plans-on-somaliland"],
+     verified: 2026-10, note: "Reconnaissance le 26 décembre 2025, la première par un État membre de l'ONU ; le Somaliland s'engage à rejoindre les accords d'Abraham. Des projets de base israélienne près de Berbera sont rapportés par la presse, sans confirmation ; le Somaliland a d'abord démenti, puis dit ne pas l'exclure",
+     why: "Selon l'Atlantic Council, Israël cherche un point d'appui près du détroit de Bab el-Mandeb, face aux Houthis"}
+  - {from: AE, to: somaliland, types: [economic], status: active, confidence: medium,
+     sources: ["Africa Center for Strategic Studies, les États du Golfe en Afrique de l'Est — https://africacenter.org/spotlight/gulf-state-actors-east-africa/", "Atlantic Council, « After Israel's recognition of Somaliland, what comes next? » — https://www.atlanticcouncil.org/blogs/menasource/after-israels-recognition-of-somaliland-what-comes-next/"],
+     verified: 2026-10, note: "Concession de 30 ans du port de Berbera à l'entreprise émiratie DP World (442 millions de dollars d'investissement, 51 % des parts) ; accès à la base navale et à l'aéroport de Berbera. Les Émirats n'ont pas reconnu le Somaliland et n'ont pas condamné seuls la reconnaissance israélienne"}
+  - {from: TR, to: SO, since: "2017", types: [troops, training, arms], status: active, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : le conflit avec Al-Shabab en Somalie (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/al-shabab-somalia", "International Crisis Group, « New Chapter, Same Stalemate: Somalia's War with Al-Shabaab » (juin 2026) — https://www.crisisgroup.org/brf/africa/somalia/b212-new-chapter-same-stalemate-somalias-war-al-shabaab", "Critical Threats, Africa File : la Turquie étend son influence en Afrique (avr. 2026) — https://www.criticalthreats.org/analysis/turkey-somalia-niger-africa-file-april-16-2026"],
+     verified: 2026-10, note: "Base militaire à Mogadiscio depuis 2017, formation de soldats somaliens, drones ; avions de combat F-16 déployés en 2026 selon Critical Threats"}
+  - {from: US, to: SO, types: [troops, training], status: active, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : le conflit avec Al-Shabab en Somalie (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/al-shabab-somalia", "International Crisis Group, « New Chapter, Same Stalemate: Somalia's War with Al-Shabaab » (juin 2026) — https://www.crisisgroup.org/brf/africa/somalia/b212-new-chapter-same-stalemate-somalias-war-al-shabaab"],
+     verified: 2026-10, note: "Frappes aériennes, raids de forces spéciales, conseillers et formation. Washington a annoncé la fin de son soutien logistique à la mission de l'Union africaine après décembre 2026"}
+  - {from: EG, to: SO, since: "2024-08", types: [troops, arms], status: active, confidence: medium,
+     sources: ["Atlantic Council, « Egypt is cozying up to Somalia to thwart Ethiopia » — https://www.atlanticcouncil.org/blogs/menasource/egypt-somalia-ethiopia-gerd/", "Council on Foreign Relations, Global Conflict Tracker : le conflit avec Al-Shabab en Somalie (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/al-shabab-somalia"],
+     verified: 2026-10, note: "Accord de défense le 14 août 2024, premières livraisons d'armes le 27 août ; troupes promises à la mission de l'Union africaine",
+     why: "Selon un analyste cité par l'Atlantic Council, Le Caire veut établir une dissuasion face à l'Éthiopie, avec laquelle il est en conflit sur le barrage du Nil"}
+  - {from: ET, to: SO, types: [troops], status: active, confidence: medium,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : le conflit avec Al-Shabab en Somalie (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/al-shabab-somalia"],
+     verified: 2026-10, note: "Troupes éthiopiennes dans la mission de l'Union africaine. En janvier 2024, un accord entre l'Éthiopie et le Somaliland sur un accès à la mer avait provoqué une crise avec Mogadiscio"}
+  - {from: SA, to: SO, since: "2026-02", types: [political], status: active, confidence: medium,
+     sources: ["Al Jazeera, accord de coopération militaire Somalie–Arabie saoudite (févr. 2026) — https://www.aljazeera.com/news/2026/2/10/somalia-saudi-arabia-sign-agreement-on-military-cooperation"],
+     verified: 2026-10, note: "Mémorandum de coopération militaire et de défense signé à Riyad le 10 février 2026 ; contenu non précisé"}
+  - {from: QA, to: SO, since: "2026-01", types: [training], status: active, confidence: medium,
+     sources: ["Al Jazeera, accord de coopération militaire Somalie–Arabie saoudite (févr. 2026) — https://www.aljazeera.com/news/2026/2/10/somalia-saudi-arabia-sign-agreement-on-military-cooperation"],
+     verified: 2026-10, note: "Pacte de défense de janvier 2026 : formation militaire, échange d'expertise, coopération de sécurité"}
+
 tensions:
   - {from: RU, to: UA, type: war, since: "2022-02", status: active, confidence: high,
      sources: ["Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"],
@@ -545,6 +581,15 @@ tensions:
   - {from: SA, to: AE, type: rivalry, since: "2025-12", status: active, confidence: medium,
      sources: ["CSIS, « Understanding the Saudi Reaction to the Escalation in Yemen » (déc. 2025) — https://www.csis.org/analysis/understanding-saudi-reaction-escalation-yemen", "Sana'a Center, The Yemen Review (janv.-mars 2026) — https://sanaacenter.org/the-yemen-review/jan-mar-2026"],
      verified: 2026-10, note: "En décembre 2025, les séparatistes du Sud-Yémen, soutenus par les Émirats, s'emparent de deux provinces ; l'Arabie saoudite les bombarde et somme publiquement les Émirats de cesser tout soutien. Le mouvement séparatiste est dissous en janvier 2026 et les soldats émiratis quittent le Yémen. Les deux pays soutiennent aussi des camps opposés au Soudan"}
+  - {from: alshabab, to: SO, type: war, status: active, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : le conflit avec Al-Shabab en Somalie (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/al-shabab-somalia", "International Crisis Group, « New Chapter, Same Stalemate: Somalia's War with Al-Shabaab » (juin 2026) — https://www.crisisgroup.org/brf/africa/somalia/b212-new-chapter-same-stalemate-somalias-war-al-shabaab"],
+     verified: 2026-10, note: "Offensive gouvernementale lancée en août 2022, enlisée ; Al-Shabab a repris l'essentiel du terrain perdu et le gouvernement se concentre sur les abords de Mogadiscio"}
+  - {from: SO, to: somaliland, type: claims, since: "1991", status: active, confidence: high,
+     sources: ["Atlantic Council, « After Israel's recognition of Somaliland, what comes next? » — https://www.atlanticcouncil.org/blogs/menasource/after-israels-recognition-of-somaliland-what-comes-next/", "Al Jazeera, la Somalie met en garde contre une base israélienne au Somaliland (mars 2026) — https://www.aljazeera.com/news/2026/3/12/somalia-warns-against-any-israeli-base-plans-on-somaliland"],
+     verified: 2026-10, note: "Le Somaliland est indépendant de fait depuis 1991 ; la Somalie le considère comme une partie de son territoire et rejette toute base étrangère qui y serait installée sans son accord"}
+  - {from: SO, to: AE, type: rivalry, since: "2026-01", status: active, confidence: high,
+     sources: ["Al Jazeera, la Somalie annule ses accords avec les Émirats (janv. 2026) — https://www.aljazeera.com/amp/news/2026/1/13/last-straw-somalia-cuts-uae-ties-after-yemen-separatists-illegal-entry", "Al Jazeera, accord de coopération militaire Somalie–Arabie saoudite (févr. 2026) — https://www.aljazeera.com/news/2026/2/10/somalia-saudi-arabia-sign-agreement-on-military-cooperation"],
+     verified: 2026-10, note: "Le 13 janvier 2026, la Somalie annule tous ses accords avec les Émirats (ports, sécurité, défense). Elle leur reproche le transit d'un chef séparatiste yéménite par son territoire, leur poids dans les régions autonomes et leur rôle supposé dans la reconnaissance du Somaliland par Israël"}
   - {from: jnim, to: ML, type: war, since: "2017", status: active, confidence: high,
      sources: ["Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel",
                "Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region",

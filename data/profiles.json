@@ -7792,6 +7792,91 @@
    ]
   }
  },
+ "SO": {
+  "fetched_at": "2026-10-01T21:13:42+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 2.61747052453864,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 1.75343513884018,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 6.013,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 337.042732018953,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 661.173877723116,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 12995200000.2658,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "république fédérale"
+    ],
+    "head_of_state": [
+     "Hassan Sheikh Mohamoud"
+    ]
+   },
+   "hightech_exports_pct": null,
+   "internet_users_pct": {
+    "value": 27.94020081,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.58578050121769,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 201854000,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 3.3397984923678,
+    "year": 2025
+   },
+   "population": {
+    "value": 19654739,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 3.59,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 11.2356934915275,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "SY": {
   "fetched_at": "2026-10-01T21:05:52+00:00",
   "profile": {

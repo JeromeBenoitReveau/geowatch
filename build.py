@@ -210,7 +210,8 @@ const nm = id => esc((D.actors[id]||{}).name || id);
 const KIND = {state:"État", non_state:"acteur armé non étatique", bloc:"bloc", party:"parti politique", person:"personnalité"};
 const SHAPE = {non_state:"diamond", party:"square", person:"triangle"};
 const DETAIL = new Set(["party","person"]);
-const flag = id => `https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/${id.toLowerCase()}.svg`;
+// drapeau : champ flag de l'acteur (territoire sans code pays), sinon flag-icons d'après le code ISO2
+const flag = id => (D.actors[id] || {}).flag || `https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/${id.toLowerCase()}.svg`;
 const CONTESTED = "#c98a1b";
 // Icônes Lucide (ISC) inlinées : épées = groupe armé, urne = parti, silhouette = personne sans photo
 const GLYPH = {

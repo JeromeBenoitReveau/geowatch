@@ -87,7 +87,7 @@ def camp_marks(side, d):
     """Drapeaux d'un camp (ses États, deux au plus) ; un groupe armé ou un parti : un pictogramme."""
     states = [a for a in side["actors"] if d["actors"].get(a, {}).get("kind") == "state"][:2]
     if states:
-        return "".join(f'<img src="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/{a.lower()}.svg" alt="">' for a in states)
+        return "".join(f'<img src="{e(style.flag_url(a, d["actors"][a]))}" alt="">' for a in states)
     return f'<span class="ns" aria-hidden="true">{SWORDS}</span>'
 
 def conflict_row(x, d):
@@ -105,7 +105,7 @@ def cross_links(d):
     out = []
     for q, title in cross.EXAMPLES:
         toks = q.split(",")
-        flags = "".join(f'<img src="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/{t.lower()}.svg" alt="">'
+        flags = "".join(f'<img src="{e(style.flag_url(t, d["actors"][t]))}" alt="">'
                         for t in toks if d["actors"].get(t, {}).get("kind") in ("state", "bloc"))
         marks = flags + "".join(f'<span class="ns">{SWORDS}</span>' for t in toks if t.startswith("d:")) \
             + "".join(style.dep_icon(t[2:], 16) for t in toks if t.startswith("r:"))
