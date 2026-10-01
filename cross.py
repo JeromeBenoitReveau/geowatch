@@ -136,7 +136,7 @@ function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : r�
         <p>${since(m)}${m.why ? "Pourquoi : " + esc(m.why) : ""}</p>${tail(m)}`}); });
   D.dependencies.forEach(x => { if(!S.has(x.from) || !S.has(x.supplier)) return;
     F.push({group: "lever", links: [[x.supplier, x.from]], color: DEP, width: 1 + x.share / 14, dash: "1.5 6", round: true, arrow: true,
-      nodes: [x.from, x.supplier], value: pct(x), dep: x.type, tip: `${(D.actors[x.from] || {}).name} dépend de ${(D.actors[x.supplier] || {}).name} : ${depShort(x)}`,
+      nodes: [x.from, x.supplier], value: depShort(x), dep: x.type, tip: `${(D.actors[x.from] || {}).name} dépend de ${(D.actors[x.supplier] || {}).name} : ${depShort(x)}`,
       html: `<div class="who">${who(x.from)}<span class="k">dépend de</span>${who(x.supplier)}</div>
         <p>${depIcon(x.type, 15)} ${depText(x)}.</p>${tail(x)}`}); });
   F.forEach((f, i) => f.id = i);
@@ -160,10 +160,10 @@ function draw(ids, extra, F){ const all = [...ids, ...extra], n = all.length, P 
       const [fa, fb] = l[0] === u ? [end(x1, y1), end(x2, y2)] : [end(x2, y2), end(x1, y1)];
       const path = `M${fa[0].toFixed(1)} ${fa[1].toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${fb[0].toFixed(1)} ${fb[1].toFixed(1)}`;
       s += `<g class="rel" data-f="${f.id}"><path d="${path}" fill="none" stroke="${f.color}" stroke-width="${f.width.toFixed(1)}"${f.dash ? ` stroke-dasharray="${f.dash}"` : ""}${f.round ? ' stroke-linecap="round"' : ""}${f.arrow ? ` marker-end="url(#mk${cols.indexOf(f.color)})"` : ""}/>
-        ${f.value ? (() => { const w = f.value.length * 6.4 + 30, lx = (x1 + x2) / 2 + nx * off, ly = (y1 + y2) / 2 + ny * off;
+        ${f.value ? (() => { const w = f.value.length * 6.3 + 30, lx = (x1 + x2) / 2 + nx * off, ly = (y1 + y2) / 2 + ny * off;
           return `<g transform="translate(${(lx - w / 2).toFixed(1)} ${(ly - 10).toFixed(1)})"><title>${esc(f.tip)}</title><rect class="pill" width="${w.toFixed(1)}" height="20" rx="10"/>
-            <svg x="7" y="3" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${DEP}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${DEP_ICON[f.dep] || ""}</svg>
-            <text class="val" x="25" y="14.2">${esc(f.value)}</text></g>`; })() : ""}
+            <svg x="8" y="4.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${DEP}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${DEP_ICON[f.dep] || ""}</svg>
+            <text class="val" x="23" y="14.2">${esc(f.value)}</text></g>`; })() : ""}
         <path class="hit" d="${path}"/></g>`; }); });
   all.forEach(id => { const [x, y] = P[id], up = y < CY - 1, name = (D.actors[id] || {}).name || id;
     s += `<g class="node${extra.includes(id) ? " extra" : ""}" data-n="${esc(id)}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})" tabindex="0" role="button" aria-label="${esc(name)}">
