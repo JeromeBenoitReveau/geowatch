@@ -10,6 +10,7 @@ CSS = """
 .cross{padding:56px 0 0}.cross h1{margin-bottom:8px}
 .pick{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:22px 0 6px}
 .chip{display:inline-flex;align-items:center;gap:7px;padding:5px 6px 5px 10px;border:1px solid var(--mist);border-radius:4px;background:var(--land);font-size:15px}
+.chip .dep-ico,#groups .dep-ico,.sug .dep-ico{flex:none}
 .chip img,.fact img,.ex img{width:16px;height:16px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px var(--mist);flex:none}
 .chip button{background:none;border:0;color:var(--graphite);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;border-radius:3px}
 .chip button:hover{color:var(--ink)}
@@ -44,6 +45,19 @@ CSS = """
 #schema .node.extra .ring{stroke-dasharray:3 3}#schema .node.on .ring{stroke:var(--peach);stroke-width:2.5}
 #schema .ini{font-size:13px;font-weight:600;fill:var(--paper)}
 #schema .rel{transition:opacity .15s}#schema.focus .rel:not(.on){opacity:.14}#schema.focus .node:not(.on){opacity:.35}
+.bar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:26px 0 0;min-height:30px}
+/* contrôle segmenté Schéma / Carte : même dessin que celui des vues de « Carte & graphe » */
+.seg{display:inline-flex;padding:3px;gap:2px;border:1px solid var(--mist);border-radius:7px;background:var(--land)}
+.seg button{display:flex;align-items:center;gap:7px;padding:6px 12px;border:0;border-radius:5px;background:none;font:14px var(--sans);color:var(--graphite);cursor:pointer;white-space:nowrap}
+.seg button:hover{color:var(--ink)}.seg button[aria-pressed=true]{background:color-mix(in srgb,var(--ink) 8%,var(--land));color:var(--ink)}
+.seg .ico{color:var(--peach)}.seg[data-busy] button{cursor:progress}
+.stage{position:relative}
+#zoom{display:flex;gap:4px}#zoom[hidden]{display:none}
+#zoom button{font:14px var(--sans);min-width:30px;height:30px;padding:0 9px;color:var(--ink);background:var(--land);border:1px solid var(--mist);border-radius:4px;cursor:pointer}
+#zoom button:hover{border-color:var(--peach)}
+#schema.map{cursor:grab;touch-action:pan-y;overflow:hidden;background:var(--ocean);border:1px solid var(--mist);border-radius:6px}
+#schema .land .c{fill:var(--land);stroke:var(--mist);stroke-width:.6}#schema .land .c.on{fill:color-mix(in srgb,var(--ink) 20%,var(--land))}
+#schema.map .lab{font-size:12.5px;paint-order:stroke;stroke:var(--land);stroke-width:3.5px;stroke-linejoin:round}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--graphite);margin:4px 0 14px}
 .legend span{display:inline-flex;align-items:center;gap:7px}.fact p svg{vertical-align:-2px}
 #detail{border-top:1px solid var(--mist);padding:16px 0 0;min-height:92px}
@@ -60,7 +74,17 @@ CSS = """
 def data(d):
     live = lambda xs: [x for x in xs if x.get("status") != "ended"]
     people = {k: v.get("thumb") for k, v in (d.get("people") or {}).items() if k in d["actors"] and v.get("thumb")}
-    return {"actors": {k: {"name": a["name"], "kind": a["kind"]} for k, a in d["actors"].items()},
+    # carte : position = le pays (data/geo.json), les coordonnées explicites d'un bloc, ou le pays de rattachement (base)
+    pos, num = {}, {}
+    for k, a in d["actors"].items():
+        g = d["geo"].get(k) or d["geo"].get(a.get("base") or "")
+        if a.get("coords"):
+            pos[k] = [a["coords"][1], a["coords"][0]]
+        elif g:
+            pos[k] = [g["lon"], g["lat"]]
+        if g and g.get("iso_numeric"):
+            num[k] = int(g["iso_numeric"])
+    return {"actors": {k: {"name": a["name"], "kind": a["kind"]} for k, a in d["actors"].items()}, "pos": pos, "num": num,
             "edges": live(d["edges"]), "tensions": live(d["tensions"]), "mediations": live(d["mediations"]),
             "dependencies": live(d["dependencies"]), "colors": d["colors"], "people": people,
             "dossiers": [{"id": x["id"], "title": x["title"], "sides": [s["actors"] for s in x["sides"]]}
@@ -77,7 +101,8 @@ const pic = id => isFlag(id) ? flag(id) : D.people[id] || null;
 const img = id => pic(id) ? `<img src="${esc(pic(id))}" alt="">` : "";
 const who = id => `${img(id)}<span>${nm(id)}</span>`;
 const DOS = Object.fromEntries(D.dossiers.map(x => ["d:" + x.id, x]));
-const label = t => DOS[t] ? esc(DOS[t].title) : nm(t);
+const label = t => DOS[t] ? esc(DOS[t].title) : RES[t] ? esc(RES_FR[RES[t]]) : nm(t);
+const mark = t => DOS[t] ? "" : RES[t] ? depIcon(RES[t], 15) : img(t);   // drapeau, photo ou pictogramme devant le nom
 // source → lien court vers le site (texte complet au survol) ; sans URL, le texte tel quel
 const src = s => { const m = String(s).match(/https?:\/\/[^\s<]+/); if(!m) return esc(s);
   let host = m[0]; try { host = new URL(m[0]).hostname.replace(/^www\./, ""); } catch(_) {}
@@ -110,14 +135,18 @@ const tail = x => `<p class="m">${x.note ? esc(x.note) + ". " : ""}Sources : ${(
 const ARROW = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="vers"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
 // ---------- Sélection : jetons « US » (acteur) ou « d:ukraine » (conflit), gardés dans l'URL ----------
-let SEL = (new URLSearchParams(location.search).get("e") || "").split(",").filter(t => D.actors[t] || DOS[t]);
+// Ressource (« r:oil ») : ajoute les pays liés aux acteurs choisis par une dépendance de ce type, et seulement ces dépendances-là
+const RES_FR = {arms: "Armes", gas: "Gaz", oil: "Pétrole", minerals: "Minerais", food: "Denrées", debt: "Dette", trade: "Commerce"};
+const RES = Object.fromEntries(Object.keys(RES_FR).filter(t => D.dependencies.some(x => x.type === t)).map(t => ["r:" + t, t]));
+let SEL = (new URLSearchParams(location.search).get("e") || "").split(",").filter(t => D.actors[t] || DOS[t] || RES[t]);
 let PICK = null;   // trait ou acteur mis en avant
+let VIEW = new URLSearchParams(location.search).get("v") === "carte" ? "map" : "schema", WORLD = null;
 function scope(){ const ids = [];
   SEL.forEach(t => (DOS[t] ? DOS[t].sides.flat() : [t]).forEach(id => { if(D.actors[id] && !ids.includes(id)) ids.push(id); }));
   return ids; }
 
 // ---------- Faits entre les acteurs du périmètre : un fait = un trait (deux pour une médiation) ----------
-function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : réservé aux acteurs ajoutés hors sélection (aucun pour l'instant)
+function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : pays apportés par une ressource choisie (contour pointillé)
   D.tensions.forEach(t => { if(!S.has(t.from) || !S.has(t.to)) return; const s = TENSION[t.type];
     F.push({group: "tension", links: [[t.from, t.to]], color: s.color, width: s.width, dash: s.dash, arrow: s.arrow, nodes: [t.from, t.to],
       html: `<div class="who">${who(t.from)}${s.arrow ? ARROW : '<span class="k">et</span>'}${who(t.to)}</div>
@@ -134,7 +163,10 @@ function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : r�
       nodes: out ? m.between : [m.mediator, ...m.between], mediator: m.mediator,
       html: `<div class="who">${who(m.mediator)}<span class="k">médiation entre</span>${who(m.between[0])}<span class="k">et</span>${who(m.between[1])}</div>
         <p>${since(m)}${m.why ? "Pourquoi : " + esc(m.why) : ""}</p>${tail(m)}`}); });
-  D.dependencies.forEach(x => { if(!S.has(x.from) || !S.has(x.supplier)) return;
+  const res = new Set(SEL.filter(t => RES[t]).map(t => RES[t]));
+  D.dependencies.forEach(x => { const a = S.has(x.from), b = S.has(x.supplier);
+    if(!(a && b) && !(res.has(x.type) && (a || b))) return;
+    [x.from, x.supplier].forEach(id => { if(!S.has(id) && !extra.includes(id)) extra.push(id); });
     F.push({group: "lever", links: [[x.supplier, x.from]], color: DEP, width: 1 + x.share / 14, dash: "1.5 6", round: true, arrow: true,
       nodes: [x.from, x.supplier], value: depShort(x), dep: x.type, tip: `${(D.actors[x.from] || {}).name} dépend de ${(D.actors[x.supplier] || {}).name} : ${depShort(x)}`,
       html: `<div class="who">${who(x.from)}<span class="k">dépend de</span>${who(x.supplier)}</div>
@@ -144,17 +176,33 @@ function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : r�
 
 // ---------- Schéma : acteurs sur une ellipse, fixes ; plusieurs faits entre deux acteurs = traits écartés ----------
 // écran étroit : cadre plus étroit et plus haut, pour que les noms restent lisibles
-const NARROW = innerWidth < 600, W = NARROW ? 400 : 760, H = 470, CX = W / 2, CY = H / 2 - 4, R = 27;
-function draw(ids, extra, F){ const all = [...ids, ...extra], n = all.length, P = {};
+const NARROW = innerWidth < 600, W = NARROW ? 400 : 760, H = 470, CX = W / 2, CY = H / 2 - 4;
+// Carte : mêmes traits, acteurs posés sur leur pays (Natural Earth, sans tuiles). Cadre ajusté aux acteurs choisis, zoom plafonné ;
+// deux acteurs au même endroit (un groupe armé et son pays) sont écartés juste assez pour rester lisibles.
+let ZM = null, BASE = null, LAST = null;
+function mapLayout(all, R){ const pts = all.map(id => D.pos[id]), mp = {type: "MultiPoint", coordinates: pts}, CAP = NARROW ? 420 : 700;
+  let proj = d3.geoMercator().fitExtent([[70, 56], [W - 70, H - 64]], mp);
+  if(!(proj.scale() < CAP)) proj = d3.geoMercator().scale(CAP).center(d3.geoCentroid(mp)).translate([W / 2, H / 2]);
+  BASE = {k: proj.scale(), T: proj([0, 0])}; const z = ZM || BASE; proj = d3.geoMercator().scale(z.k).translate(z.T);   // zoom et déplacement : même projection, recalculée
+  const P = {}; all.forEach((id, i) => P[id] = proj(pts[i]).slice());
+  for(let k = 0; k < 80; k++) all.forEach((a, i) => all.slice(i + 1).forEach(b => { const dx = P[b][0] - P[a][0] || .5 - i % 2, dy = P[b][1] - P[a][1] || .3, d = Math.hypot(dx, dy), min = 2 * R + 14;
+    if(d < min){ const m = (min - d) / 2 / d; P[a][0] -= dx * m; P[a][1] -= dy * m; P[b][0] += dx * m; P[b][1] += dy * m; } }));
+  all.forEach(id => { P[id][0] = Math.max(52, Math.min(W - 52, P[id][0])); P[id][1] = Math.max(R + 8, Math.min(H - R - 26, P[id][1])); });
+  const on = new Set(all.map(id => D.num[id])), path = d3.geoPath(proj);
+  const land = WORLD.map(f => `<path d="${path(f)}" class="${on.has(+f.id) ? "c on" : "c"}"/>`).join("");
+  return {P, land}; }
+function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ...extra].every(id => D.pos[id]), R = MAP ? 17 : 27;
+  const all = [...ids, ...extra], n = all.length; let P = {}, land = "";
+  if(MAP) ({P, land} = mapLayout(all, R)); else {
   const rx = NARROW ? 125 : n === 2 ? 230 : 285, ry = n === 2 ? 0 : NARROW ? 180 : 165, a0 = n % 2 === 0 ? -90 - 180 / n : -90;
-  all.forEach((id, i) => { const a = (a0 + 360 * i / n) * Math.PI / 180; P[id] = [CX + rx * Math.cos(a), CY + ry * Math.sin(a)]; });
+  all.forEach((id, i) => { const a = (a0 + 360 * i / n) * Math.PI / 180; P[id] = [CX + rx * Math.cos(a), CY + ry * Math.sin(a)]; }); }
   const byPair = {}; F.forEach(f => f.links.forEach(l => { const k = [...l].sort().join("|"); (byPair[k] = byPair[k] || []).push([f, l]); }));
   const cols = [...new Set(F.filter(f => f.arrow).map(f => f.color))];
   let s = `<defs>${cols.map((c, i) => `<marker id="mk${i}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`).join("")}
-    <clipPath id="cp"><circle r="${R - 3}"/></clipPath></defs>`;
+    <clipPath id="cp"><circle r="${R - 3}"/></clipPath></defs>${land ? `<g class="land">${land}</g>` : ""}`;
   Object.entries(byPair).forEach(([k, list]) => { const [u, v] = k.split("|"), [x1, y1] = P[u], [x2, y2] = P[v];
     const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy), nx = -dy / len, ny = dx / len;
-    list.forEach(([f, l], i) => { const off = (i - (list.length - 1) / 2) * 38;
+    list.forEach(([f, l], i) => { const off = (i - (list.length - 1) / 2) * Math.min(38, len / 5);
       const mx = (x1 + x2) / 2 + nx * off * 2, my = (y1 + y2) / 2 + ny * off * 2;      // point de contrôle
       const end = (px, py) => { const ex = mx - px, ey = my - py, d = Math.hypot(ex, ey) || 1; return [px + ex / d * (R + 5), py + ey / d * (R + 5)]; };
       const [fa, fb] = l[0] === u ? [end(x1, y1), end(x2, y2)] : [end(x2, y2), end(x1, y1)];
@@ -169,8 +217,30 @@ function draw(ids, extra, F){ const all = [...ids, ...extra], n = all.length, P 
     s += `<g class="node${extra.includes(id) ? " extra" : ""}" data-n="${esc(id)}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})" tabindex="0" role="button" aria-label="${esc(name)}">
       <circle class="ring" r="${R}"/>${pic(id) ? `<image href="${esc(pic(id))}" x="${-R + 3}" y="${-R + 3}" width="${2 * R - 6}" height="${2 * R - 6}" clip-path="url(#cp)" preserveAspectRatio="xMidYMid slice"/>`
         : `<circle r="${R - 3}" fill="var(--graphite)"/><text class="ini" text-anchor="middle" y="4.5">${esc(name.slice(0, 2).toUpperCase())}</text>`}
-      <text class="lab" text-anchor="middle" y="${up ? -R - 9 : R + 20}">${esc(name)}${extra.includes(id) ? " (hors sélection)" : ""}</text></g>`; });
-  const svg = $("#schema"); svg.setAttribute("viewBox", `0 ${n === 2 ? 130 : -14} ${W} ${n === 2 ? 200 : H + 6}`); svg.innerHTML = s; }
+      <text class="lab" text-anchor="${MAP && x > W - 90 ? "end" : MAP && x < 90 ? "start" : "middle"}" x="${MAP && x > W - 90 ? R : MAP && x < 90 ? -R : 0}" y="${up && !MAP ? -R - 9 : R + (MAP ? 16 : 20)}">${esc(name)}</text></g>`; });
+  const svg = $("#schema"); svg.setAttribute("viewBox", MAP ? `0 0 ${W} ${H}` : `0 ${n === 2 ? 130 : -14} ${W} ${n === 2 ? 200 : H + 6}`);
+  svg.classList.toggle("map", !!MAP); svg.innerHTML = s; $("#zoom").hidden = !MAP; LAST = [ids, extra, F]; }
+// zoom autour d'un point, déplacement à la souris ; les ronds et les textes gardent leur taille, un acteur hors cadre reste au bord
+function redraw(){ if(LAST){ draw(...LAST); detail(); } }
+function zoomBy(r, c = [W / 2, H / 2]){ if(!BASE) return; const z = ZM || BASE, k = Math.max(BASE.k * .6, Math.min(9000, z.k * r)), q = k / z.k;
+  ZM = {k, T: [c[0] + (z.T[0] - c[0]) * q, c[1] + (z.T[1] - c[1]) * q]}; redraw(); }
+(() => { const svg = $("#schema"); let drag = null, raf = 0;
+  const pt = ev => { const m = svg.getScreenCTM().inverse(); return [ev.clientX * m.a + m.e, ev.clientY * m.d + m.f]; };
+  svg.addEventListener("pointerdown", ev => { if(svg.classList.contains("map") && BASE) drag = {p: pt(ev), T: (ZM || BASE).T.slice(), k: (ZM || BASE).k, moved: false}; });
+  addEventListener("pointermove", ev => { if(!drag) return; const p = pt(ev), dx = p[0] - drag.p[0], dy = p[1] - drag.p[1];
+    if(!drag.moved && Math.hypot(dx, dy) < 5) return; drag.moved = true; ZM = {k: drag.k, T: [drag.T[0] + dx, drag.T[1] + dy]};
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(redraw); });
+  addEventListener("pointercancel", () => drag = null);
+  addEventListener("pointerup", () => { if(drag && drag.moved) svg.dataset.dragged = 1; drag = null; });
+  svg.addEventListener("wheel", ev => { if(!svg.classList.contains("map") || !ev.ctrlKey) return; ev.preventDefault(); zoomBy(Math.exp(-ev.deltaY / 120), pt(ev)); }, {passive: false});
+  $("#zoom").addEventListener("click", ev => { const z = ev.target.dataset.z; if(z === "in") zoomBy(1.6); if(z === "out") zoomBy(1 / 1.6); if(z === "fit"){ ZM = null; redraw(); } }); })();
+// fond de carte chargé à la première bascule (même source que les miniatures de l'accueil)
+function setView(v){ VIEW = v; PICK = null; ZM = null;
+  if(v === "map" && !WORLD){ $("#seg").dataset.busy = 1;
+    return fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json").then(r => r.json()).then(w => {
+      WORLD = topojson.feature(w, w.objects.countries).features.filter(f => f.id !== "010"); delete $("#seg").dataset.busy; render(); })
+      .catch(() => { VIEW = "schema"; delete $("#seg").dataset.busy; render(); }); }
+  render(); }
 
 // ---------- Suggestions : les entités qui apportent le plus de faits RELIÉS à la sélection (comptés, jamais choisis à la main) ----------
 function suggest(ids){ const old = new Set(ids), out = [];
@@ -178,26 +248,32 @@ function suggest(ids){ const old = new Set(ids), out = [];
     const add = (DOS[t] ? DOS[t].sides.flat() : [t]).filter(id => D.actors[id] && !old.has(id)); if(!add.length) return;
     const fresh = new Set(add), n = facts([...ids, ...add]).F.filter(f => f.nodes.some(x => fresh.has(x)) && f.nodes.some(x => old.has(x))).length;
     if(n) out.push({t, n, dos: !!DOS[t]}); });
+  const rs = Object.keys(RES).filter(t => !SEL.includes(t)).map(t => ({t, n: D.dependencies.filter(x => x.type === RES[t] && old.has(x.from) !== old.has(x.supplier)).length}))
+    .filter(x => x.n).sort((a, b) => b.n - a.n).slice(0, 2);
   const dos = out.filter(x => x.dos).sort((a, b) => b.n - a.n), covered = new Set(dos.flatMap(x => DOS[x.t].sides.flat()));
   // un acteur déjà apporté par un conflit suggéré n'est pas proposé en double
-  return [...dos, ...out.filter(x => !x.dos && !covered.has(x.t)).sort((a, b) => b.n - a.n).slice(0, 3)].slice(0, 5); }
+  return [...dos, ...rs, ...out.filter(x => !x.dos && !covered.has(x.t)).sort((a, b) => b.n - a.n).slice(0, 3)].slice(0, 7); }
 
 const stroke = (c, o = {}) => `<svg width="30" height="8" aria-hidden="true"><path d="M1 4H29" stroke="${c}" stroke-width="${o.w || 2.5}"${o.dash ? ` stroke-dasharray="${o.dash}"` : ""} stroke-linecap="${o.round ? "round" : "butt"}"/></svg>`;
 const GROUPS = [["tension", "Qui s'affronte"], ["support", "Qui soutient qui, et pourquoi"], ["mediation", "Qui négocie"], ["lever", "Qui dépend de qui"]];
 const card = f => `<div class="fact">${f.html}</div>`;
 
-function render(){ const ids = scope(), ok = SEL.length >= 2 && ids.length >= 2;
-  $("#chips").innerHTML = SEL.map((t, i) => `<span class="chip">${DOS[t] ? "" : img(t)}${label(t)}<button type="button" data-rm="${i}" aria-label="Retirer ${label(t)}">×</button></span>`).join("");
+function render(){ const ids = scope(), {F, extra} = facts(ids), ok = ids.length >= 1 && ids.length + extra.length >= 2;
+  const rs = SEL.filter(t => RES[t]);
+  $("#chips").innerHTML = SEL.map((t, i) => `<span class="chip">${mark(t)}${label(t)}<button type="button" data-rm="${i}" aria-label="Retirer ${label(t)}">×</button></span>`).join("");
   panel();
   const dos = SEL.filter(t => DOS[t]);
   $("#scope").innerHTML = (dos.length ? dos.map(t => `${label(t)} apporte ses camps : ${DOS[t].sides.flat().map(nm).join(", ")}. `).join("") : "")
+    + rs.map(t => !ids.length ? `${label(t)} : ajoutez un pays pour voir ses dépendances. `
+        : F.some(f => f.dep === RES[t]) ? `${label(t)} ajoute les pays liés à la sélection par cette ressource (contour pointillé). ` : `${label(t)} : aucune dépendance chiffrée pour cette sélection. `).join("")
     + (ok ? '<button type="button" id="copy">Copier le lien</button>' : "");
   const sug = ids.length ? suggest(ids) : [];
-  $("#sug").innerHTML = sug.length ? "À croiser aussi : " + sug.map(x => `<button type="button" data-add="${esc(x.t)}">${DOS[x.t] ? "" : img(x.t)}${label(x.t)} <small>${x.n} lien${x.n > 1 ? "s" : ""}</small></button>`).join("") : "";
+  $("#sug").innerHTML = sug.length ? "À croiser aussi : " + sug.map(x => `<button type="button" data-add="${esc(x.t)}">${mark(x.t)}${label(x.t)} <small>${x.n} lien${x.n > 1 ? "s" : ""}</small></button>`).join("") : "";
   $("#empty").hidden = ok; $("#out").hidden = !ok;
-  history.replaceState(null, "", location.pathname + (SEL.length ? "?e=" + SEL.join(",") : ""));
+  history.replaceState(null, "", location.pathname + (SEL.length ? "?e=" + SEL.join(",") + (VIEW === "map" ? "&v=carte" : "") : ""));
+  document.querySelectorAll("#seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === VIEW));
   if(!ok) return;
-  const {F, extra} = facts(ids); draw(ids, extra, F);
+  draw(ids, extra, F);
   const outs = F.filter(f => f.out);
   $("#aside").innerHTML = outs.length ? "Hors sélection : " + outs.map(f => `<button type="button" data-fact="${f.id}">${nm(f.mediator)}, médiateur entre ${nm(f.nodes[0])} et ${nm(f.nodes[1])}</button>`).join(" ; ") + "." : "";
   const has = g => F.some(f => f.group === g && !f.out), sup = [...new Set(F.filter(f => f.group === "support").map(f => f.color))];
@@ -228,10 +304,12 @@ function detail(){ const F = window.FACTS, svg = $("#schema"), box = $("#detail"
 const flat = v => String(v).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const byName = ks => ks.sort((a, b) => D.actors[a].name.localeCompare(D.actors[b].name, "fr"));
 const kindIs = (...k) => byName(Object.keys(D.actors).filter(id => k.includes(D.actors[id].kind)));
-const CATS = [["Conflits", Object.keys(DOS)], ["Pays et blocs", kindIs("state", "bloc")], ["Groupes armés", kindIs("non_state")], ["Partis et personnalités", kindIs("party", "person")]];
+const CATS = [["Conflits", Object.keys(DOS)], ["Pays et blocs", kindIs("state", "bloc")], ["Groupes armés", kindIs("non_state")], ["Partis et personnalités", kindIs("party", "person")],
+  ["Ressources et leviers", Object.keys(RES)]];
+const plain = k => DOS[k] ? DOS[k].title : RES[k] ? RES_FR[RES[k]] : D.actors[k].name;
 function panel(){ const q = flat($("#q").value.trim()); let shown = 0;
-  $("#groups").innerHTML = CATS.map(([t, items]) => { const hit = items.filter(k => !q || flat(DOS[k] ? DOS[k].title : D.actors[k].name).includes(q)); shown += hit.length;
-    return hit.length ? `<h3>${t}</h3><div class="g">${hit.map(k => `<button type="button" data-add="${esc(k)}"${SEL.includes(k) ? " disabled" : ""}>${DOS[k] ? "" : img(k)}${label(k)}</button>`).join("")}</div>` : ""; }).join("");
+  $("#groups").innerHTML = CATS.map(([t, items]) => { const hit = items.filter(k => !q || flat(plain(k)).includes(q)); shown += hit.length;
+    return hit.length ? `<h3>${t}</h3><div class="g">${hit.map(k => `<button type="button" data-add="${esc(k)}"${SEL.includes(k) ? " disabled" : ""}>${mark(k)}${label(k)}</button>`).join("")}</div>` : ""; }).join("");
   $("#noq").hidden = shown > 0; }
 function toggle(open){ $("#panel").hidden = !open; $("#veil").hidden = !open; $("#addbtn").setAttribute("aria-expanded", open); if(open){ $("#q").value = ""; panel(); $("#q").focus(); } }
 $("#addbtn").addEventListener("click", () => toggle($("#panel").hidden));
@@ -239,11 +317,12 @@ $("#q").addEventListener("input", panel);
 $("#q").addEventListener("keydown", ev => { if(ev.key === "Escape"){ toggle(false); $("#addbtn").focus(); }
   if(ev.key === "Enter"){ const b = $("#groups button:not(:disabled)"); if(b && $("#q").value.trim()){ b.click(); $("#q").value = ""; panel(); } } });
 document.addEventListener("click", ev => { const t = ev.target;
-  if(t.dataset && t.dataset.rm != null){ SEL.splice(+t.dataset.rm, 1); PICK = null; return render(); }
-  const add = t.closest && t.closest("[data-add]"); if(add){ if(!SEL.includes(add.dataset.add)) SEL.push(add.dataset.add); PICK = null; return render(); }
+  if(t.dataset && t.dataset.rm != null){ ZM = null; SEL.splice(+t.dataset.rm, 1); PICK = null; return render(); }
+  if($("#schema").dataset.dragged){ delete $("#schema").dataset.dragged; if(t.closest && t.closest("#schema")) return; }
+  const add = t.closest && t.closest("[data-add]"); if(add){ ZM = null; if(!SEL.includes(add.dataset.add)) SEL.push(add.dataset.add); PICK = null; return render(); }
   if(!$("#panel").hidden && !(t.closest && (t.closest("#panel") || t.closest("#addbtn") || t.closest(".pick") || t.closest("#sug")))) toggle(false);
   if(t.id === "copy"){ navigator.clipboard && navigator.clipboard.writeText(location.href).then(() => t.textContent = "Lien copié"); return; }
-  const ex = t.closest && t.closest("[data-ex]"); if(ex){ ev.preventDefault(); SEL = ex.dataset.ex.split(","); PICK = null; return render(); }
+  const ex = t.closest && t.closest("[data-ex]"); if(ex){ ev.preventDefault(); ZM = null; SEL = ex.dataset.ex.split(","); PICK = null; return render(); }
   if(t.dataset && t.dataset.fact != null){ PICK = {f: +t.dataset.fact}; return detail(); }
   const rel = t.closest && t.closest(".rel"), node = t.closest && t.closest(".node");
   if(rel){ PICK = PICK && PICK.f === +rel.dataset.f ? null : {f: +rel.dataset.f}; return detail(); }
@@ -251,16 +330,22 @@ document.addEventListener("click", ev => { const t = ev.target;
   if(t.closest && t.closest("#schema") && PICK){ PICK = null; detail(); } });
 document.addEventListener("keydown", ev => { const node = ev.target.closest && ev.target.closest(".node");
   if(node && (ev.key === "Enter" || ev.key === " ")){ ev.preventDefault(); node.dispatchEvent(new MouseEvent("click", {bubbles: true})); } });
-render();
+document.querySelectorAll("#seg button").forEach(b => b.addEventListener("click", () => setView(b.dataset.v)));
+VIEW === "map" ? setView("map") : render();
 </script>"""
+
+LIBS = ('<script src="https://cdn.jsdelivr.net/npm/d3-array@3/dist/d3-array.min.js"></script>'
+        '<script src="https://cdn.jsdelivr.net/npm/d3-geo@3/dist/d3-geo.min.js"></script>'
+        '<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>')
 
 EXAMPLES = [("US,d:ukraine,CN", "Les États-Unis, la Chine et la guerre en Ukraine"),
             ("d:iran,RU,CN", "La Russie, la Chine et la guerre avec l'Iran"),
-            ("EU,RU,US", "L'Union européenne, la Russie et les États-Unis")]
+            ("EU,RU,US", "L'Union européenne, la Russie et les États-Unis"),
+            ("IN,r:arms", "L'Inde et ses fournisseurs d'armes")]
 
 def page(d):
     x = data(d)
-    valid = set(x["actors"]) | {"d:" + t["id"] for t in x["dossiers"]}
+    valid = set(x["actors"]) | {"d:" + t["id"] for t in x["dossiers"]} | {"r:" + t["type"] for t in x["dependencies"]}
     examples = "".join(f'<a href="croiser.html?e={e(q)}" data-ex="{e(q)}">{e(t)}</a>' for q, t in EXAMPLES
                        if all(tok in valid for tok in q.split(",")))
     script = (SCRIPT.replace("__DATA__", json.dumps(x, ensure_ascii=False, default=str).replace("</", "<\\/"))
@@ -269,16 +354,18 @@ def page(d):
               .replace("__LEVIER__", glossary.term("levier", "dépendance")))
     body = f"""<main class="cross">
 <h1>Croiser des acteurs</h1>
-<p class="lede">Choisissez au moins deux pays, groupes ou conflits : le schéma montre ce qui les relie, fait par fait.</p>
+<p class="lede">Choisissez des pays, des groupes, un conflit ou une ressource : le schéma montre ce qui les relie, fait par fait.</p>
 <div class="picker"><div id="veil" hidden></div><div class="pick"><span id="chips" style="display:contents"></span>
 <button type="button" id="addbtn" aria-expanded="false" aria-controls="panel">Ajouter</button></div>
-<div id="panel" hidden><input type="search" id="q" placeholder="Filtrer : un pays, un groupe, un conflit" aria-label="Filtrer la liste" autocomplete="off">
+<div id="panel" hidden><input type="search" id="q" placeholder="Filtrer : un pays, un groupe, un conflit, une ressource" aria-label="Filtrer la liste" autocomplete="off">
 <div id="groups"></div><p class="none" id="noq" hidden>Aucun acteur ne correspond.</p></div></div>
 <p class="scope" id="scope"></p>
 <p class="sug" id="sug"></p>
 <div id="empty"><div class="ex"><span class="quiet">Pour commencer :</span>{examples}</div></div>
 <div id="out" hidden>
-<svg id="schema" role="group" aria-label="Schéma des relations entre les acteurs choisis"></svg>
+<div class="bar"><div class="seg" id="seg" role="group" aria-label="Affichage"><button type="button" data-v="schema">__ICO_GRAPH__<span>Schéma</span></button><button type="button" data-v="map">__ICO_MAP__<span>Carte</span></button></div>
+<div id="zoom" hidden><button type="button" data-z="in" aria-label="Zoomer">+</button><button type="button" data-z="out" aria-label="Dézoomer">−</button><button type="button" data-z="fit">Recadrer</button></div></div>
+<div class="stage"><svg id="schema" role="group" aria-label="Schéma des relations entre les acteurs choisis"></svg></div>
 <div class="legend" id="legend"></div>
 <p class="scope" id="aside"></p>
 <div id="detail" aria-live="polite"></div>
@@ -286,10 +373,11 @@ def page(d):
 <details class="all" id="all"></details>
 </div>
 </main>"""
+    body = body.replace("__ICO_GRAPH__", style.icon("graph", 16)).replace("__ICO_MAP__", style.icon("map", 16))
     title = f"Croiser des acteurs — {brand.NAME}"
     return (style.head(title, "Choisissez des pays, des groupes ou un conflit : ce qui les relie, fait par fait, avec les sources.",
                        f"<style>{CSS}</style>")
-            + f'<body><div class="wrap">{style.top("croiser.html")}\n{body}</div>{style.foot(page="Croiser des acteurs")}{script}</body></html>')
+            + f'<body><div class="wrap">{style.top("croiser.html")}\n{body}</div>{style.foot(page="Croiser des acteurs")}{LIBS}{script}</body></html>')
 
 def write(out, d):
     (out / "croiser.html").write_text(page(d), encoding="utf-8")

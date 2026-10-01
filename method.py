@@ -284,7 +284,7 @@ textes gardent une taille constante, et un nom qui chevaucherait un drapeau n'es
 <h2 id="croiser">Croiser des acteurs</h2>
 <p>La page <a href="croiser.html">Croiser</a> affiche ce que le graphe contient entre les pays, groupes ou conflits choisis :
 tensions, soutiens, médiations et dépendances dont les deux acteurs font partie de la sélection. Un conflit apporte les acteurs
-de ses camps. Rien n'y est rédigé automatiquement : chaque trait est un fait du graphe, avec sa date, son statut et ses sources.
+de ses camps. Une ressource (pétrole, armes, dette…) ajoute les pays liés aux acteurs choisis par une dépendance chiffrée de ce type. Rien n'y est rédigé automatiquement : chaque trait est un fait du graphe, avec sa date, son statut et ses sources.
 Une paire sans trait signifie seulement qu'aucune relation n'est sourcée ici.</p>
 
 <h2 id="glossaire">Glossaire</h2>
