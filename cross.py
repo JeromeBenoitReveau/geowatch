@@ -525,9 +525,9 @@ def page(d):
 </div>
 </main>"""
     body = body.replace("__ICO_GRAPH__", style.icon("graph", 16)).replace("__ICO_MAP__", style.icon("map", 16)).replace("__ICO_ORGS__", style.icon("orgs", 16))
-    title = f"Croiser des acteurs — {brand.NAME}"
+    title = f"Croiser des acteurs : ce qui relie deux pays — {brand.NAME}"
     return (style.head(title, "Choisissez des pays, des groupes ou un conflit : ce qui les relie, fait par fait, avec les sources.",
-                       f"<style>{CSS}</style>")
+                       f"<style>{CSS}</style>", path="croiser.html")
             + f'<body><div class="wrap">{style.top("croiser.html")}\n{body}</div>{style.foot(page="Croiser des acteurs")}{LIBS}{script}</body></html>')
 
 def write(out, d):

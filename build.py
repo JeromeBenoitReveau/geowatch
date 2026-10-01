@@ -10,6 +10,16 @@ DATA_LICENSE = "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/ — g
 TYPE_COLORS = {"arms": "#d64545", "troops": "#8b1e1e", "financial": "#2f8f5b", "training": "#c98a1b",
                "intelligence": "#6b4fbb", "political": "#3a6fd8", "economic": "#1f9aa5", "dual_use": "#b0569a"}
 
+EXPLORER_DESC = ("Alliances, soutiens, tensions et dépendances d’un coup d’œil : une carte du monde, un graphe "
+                 "et des cercles d’organisations. Données sourcées.")
+
+def sitemap(out):
+    """sitemap.xml : toutes les pages publiées, datées du jour de construction (à déclarer dans la Search Console)."""
+    day = db.now()[:10]
+    pages = sorted(p.name for p in out.glob("*.html"))
+    urls = "".join(f"<url><loc>{brand.SITE}{'' if p == 'index.html' else p}</loc><lastmod>{day}</lastmod></url>" for p in pages)
+    (out / "sitemap.xml").write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n', encoding="utf-8")
+
 def export_data(actors, edges):
     (OUT / "network.json").write_text(json.dumps(
         {"license": DATA_LICENSE, "generated_at": db.now(), "actors": actors, "edges": edges,
@@ -46,7 +56,7 @@ def build():
             "glossary": glossary.for_js(), "presets": presets.load(), "correction": style.correction_url("Vue d'ensemble"), "dep_icons": style.DEP_ICONS}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
                             .replace("</", "<\\/"))
-    (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS).replace("__TOP__", style.top("explorer.html")).replace("__THEME__", style.THEME_INIT).replace("__VIEWS__", "".join(
+    (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS).replace("__TOP__", style.top("explorer.html")).replace("__THEME__", style.THEME_INIT).replace("__DESC__", EXPLORER_DESC).replace("__SEO__", style.seo("explorer.html", f"Vue d'ensemble : carte, graphe, organisations — {brand.NAME}", EXPLORER_DESC)).replace("__VIEWS__", "".join(
         f'<a href="#{a}" data-view="{a}" title="{t}">{style.icon(k, 16)}<span>{t}</span></a>' for a, k, t in style.VIEWS)), encoding="utf-8")
     export_data(actors, edges)
     method.write(OUT, data)
@@ -55,13 +65,15 @@ def build():
     pages.write(OUT, data)
     cross.write(OUT, data)
     glossary.write(OUT)
+    sitemap(OUT)
     print(f"→ {OUT}/ : index.html (accueil), explorer.html, croiser.html, manifeste.html, glossaire.html, methode.html, dossiers, network.json, network.csv")
     return data
 
 TEMPLATE = r"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vue d'ensemble — __NAME__</title>
-<meta name="description" content="Les réseaux d’influence : alliances, soutiens et dépendances, sur une carte du monde, un graphe et des cercles d’organisations. Données sourcées.">
+<title>Vue d'ensemble : carte, graphe, organisations — __NAME__</title>
+<meta name="description" content="__DESC__">
+__SEO__
 <script src="https://cdn.jsdelivr.net/npm/vis-network@10.1.2/standalone/umd/vis-network.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>

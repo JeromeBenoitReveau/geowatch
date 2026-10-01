@@ -403,7 +403,16 @@ def page(dos, d):
 </div>
 {style.foot(f'Photos {"; ".join(f"""<a href="{e(c['page'])}">{e(c['artist'] or 'auteur inconnu')}</a>, {e(c['license'])}""" for c in credits)}, via Wikimedia Commons. ' if credits else "", dos["title"])}"""
     extra = f'<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><style>{CSS}</style>'
-    return style.head(f"{dos['title']} — {brand.NAME}", " ".join(dos["lede"].split())[:180], extra) + f"<body>{body}</body></html>"
+    desc = style.clip(dos["lede"])
+    ld = {"@context": "https://schema.org", "@type": "Article", "headline": dos["title"], "description": desc, "inLanguage": "fr",
+          "dateModified": f"{dos['verified']}-01" if len(str(dos["verified"])) == 7 else str(dos["verified"]),
+          "isAccessibleForFree": True, "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": {"@type": "Organization", "name": brand.NAME, "url": brand.SITE},
+          "publisher": {"@type": "Organization", "name": brand.NAME, "url": brand.SITE},
+          "mainEntityOfPage": f"{brand.SITE}{dos['id']}.html"}
+    # titre de l'onglet : on ajoute la promesse du dossier tant que l'ensemble reste court (les moteurs coupent vers 60 caractères)
+    tail = " : qui s'affronte, qui soutient qui" if len(dos["title"]) <= 24 else ""
+    return style.head(f"{dos['title']}{tail} — {brand.NAME}", desc, extra, path=f"{dos['id']}.html", kind="article", ld=ld) + f"<body>{body}</body></html>"
 
 def write(out, data):
     dossiers = load()

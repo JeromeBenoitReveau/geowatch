@@ -63,7 +63,7 @@ nav.toc{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px;color:var(--grap
 .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:20px;margin:28px 0 0}
 .kpi b{display:block;font:400 32px/1 var(--serif);font-variant-numeric:tabular-nums;margin-bottom:4px}.kpi span{font-size:14px;color:var(--graphite)}
 </style>"""
-    return style.head(f"Méthode et sources — {brand.NAME}", "Comment les données sont construites, et d'où elles viennent.", extra) + f"""<body><div class="wrap">{style.top("methode.html")}<main class="m">
+    return style.head(f"Méthode et sources — {brand.NAME}", "Comment le graphe est construit : sources, niveaux de confiance, calcul des blocs, votes à l'ONU, dépendances chiffrées. Code et données ouverts.", extra, path="methode.html") + f"""<body><div class="wrap">{style.top("methode.html")}<main class="m">
 <h1>Méthode et sources</h1>
 <p class="meta">Page générée automatiquement le {_date(d["built"])} à partir des données publiées. Code sous licence MIT,
 données du graphe sous CC BY 4.0 — <a href="{brand.REPO}">dépôt GitHub</a>.</p>

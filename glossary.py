@@ -74,7 +74,7 @@ pointillés renvoie ici ; survolez-le pour lire sa définition.</p>
 <p class="meta">Les échelles et les indices (niveau d'alignement, indice de vote à l'ONU) sont détaillés dans la
 <a href="methode.html">méthode</a>.</p>
 <dl>{rows}</dl></article>"""
-    return (style.head(f"Glossaire — {brand.NAME}", "Les mots de la géopolitique et du site, expliqués simplement.", f"<style>{css}</style>")
+    return (style.head(f"Glossaire — {brand.NAME}", "Alliance, sanctions, cessez-le-feu, levier… Les mots de la géopolitique et du site, chacun défini en une phrase avec un exemple.", f"<style>{css}</style>", path="glossaire.html")
             + f'<body><div class="wrap">{style.top("glossaire.html")}{body}</div>{style.foot(page="Glossaire")}</body></html>')
 
 def write(out):

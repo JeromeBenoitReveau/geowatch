@@ -122,10 +122,32 @@ def icon(k, size=18):
 # les trois vues de l'explorateur : (ancre, icône, libellé) — mêmes entrées dans le menu, l'explorateur et l'accueil
 VIEWS = [("organisations", "orgs", "Organisations"), ("carte", "map", "Carte du monde"), ("graphe", "graph", "Graphe des soutiens")]
 
-def head(title, desc=brand.BASELINE, extra=""):
+def clip(text, n=158):
+    """Description pour les moteurs de recherche : une ligne, coupée à un mot entier vers 158 caractères."""
+    t = " ".join(str(text).split())
+    return t if len(t) <= n else t[:n].rsplit(" ", 1)[0].rstrip(",;:") + "…"
+
+def seo(path, title, desc, kind="website", ld=None):
+    """Balises de référencement et de partage : adresse canonique, Open Graph, carte Twitter, données structurées (JSON-LD).
+    path = nom du fichier (« » pour l'accueil). Pas d'image de partage pour l'instant (il faudrait un PNG généré)."""
+    import json
+    url = brand.SITE + ("" if path in ("", "index.html") else path)
+    tags = [f'<link rel="canonical" href="{e(url)}">',
+            f'<meta property="og:type" content="{kind}">', f'<meta property="og:site_name" content="{e(brand.NAME)}">',
+            f'<meta property="og:title" content="{e(title)}">', f'<meta property="og:description" content="{e(desc)}">',
+            f'<meta property="og:url" content="{e(url)}">', '<meta property="og:locale" content="fr_FR">',
+            '<meta name="twitter:card" content="summary">', f'<meta name="twitter:title" content="{e(title)}">',
+            f'<meta name="twitter:description" content="{e(desc)}">']
+    if ld:
+        tags.append('<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace("</", "<\\/") + "</script>")
+    return "\n".join(tags)
+
+def head(title, desc=brand.BASELINE, extra="", path=None, kind="website", ld=None):
+    desc = clip(desc)
     return f"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>{e(title)}</title>
 <meta name="description" content="{e(desc)}">
+{seo(path, title, desc, kind, ld) if path is not None else ""}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="{FONTS}">
 <link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.svg" type="image/svg+xml">{THEME_INIT}{extra}</head>"""
 

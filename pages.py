@@ -63,8 +63,8 @@ fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json").then(r =>
 });
 </script>"""
 
-def page(title, body, current, desc=brand.BASELINE, extra=""):
-    return style.head(title, desc, f"<style>{CSS}</style>") + f"""<body><div class="wrap">{style.top(current)}
+def page(title, body, current, desc=brand.BASELINE, extra="", ld=None):
+    return style.head(title, desc, f"<style>{CSS}</style>", path=current or "index.html", ld=ld) + f"""<body><div class="wrap">{style.top(current)}
 {body}</div>{style.foot(page=title.split(" — ")[0])}{extra}</body></html>"""
 
 def conflict_map(x, d):
@@ -140,7 +140,9 @@ Les rapports de force du monde rendus lisibles, sans prérequis.</p>
 </div></section>
 <p class="quiet" style="margin-top:56px">Pourquoi vulgariser la géopolitique, et comment ce site est fait : <a href="manifeste.html">le manifeste</a>.
 Les mots du site sont définis dans le <a href="glossaire.html">glossaire</a>.</p>"""
-    return page(f"{brand.NAME} — {brand.BASELINE}", body, "", extra=WORLD_MAP)
+    ld = {"@context": "https://schema.org", "@type": "WebSite", "name": brand.NAME, "url": brand.SITE, "inLanguage": "fr",
+          "description": brand.DESCRIPTION, "license": "https://creativecommons.org/licenses/by/4.0/"}
+    return page(f"{brand.NAME} — {brand.BASELINE}", body, "", desc=brand.DESCRIPTION, extra=WORLD_MAP, ld=ld)
 
 def manifesto(d):
     body = f"""<article class="prose page">
@@ -199,7 +201,7 @@ heure par heure, les médias et les tableaux de bord spécialisés restent indis
 données de la Banque mondiale et de Wikidata.
 Le détail, source par source et règle par règle : <a href="methode.html">méthode et sources</a>.</p>
 </article>"""
-    return page(f"Manifeste — {brand.NAME}", body, "manifeste.html", "Pourquoi ce site existe, et comment il est fait.")
+    return page(f"Manifeste — {brand.NAME}", body, "manifeste.html", "Pourquoi vulgariser la géopolitique, et les règles du site : tout est sourcé, les faits sont séparés des analyses, aucune prédiction.")
 
 def write(out, data):
     dossiers = dossier.load()
