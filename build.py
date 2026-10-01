@@ -3,7 +3,7 @@ et le graphe en données ouvertes (network.json, network.csv — CC BY 4.0). Pub
 from dotenv import load_dotenv; load_dotenv()
 import csv, json
 from pathlib import Path
-import brand, db, dossier, glossary, method, network, pages, presets, style
+import brand, cross, db, dossier, glossary, method, network, pages, presets, style
 
 OUT = Path("site")
 DATA_LICENSE = "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/ — geowatch network.yaml"
@@ -53,8 +53,9 @@ def build():
     style.write(OUT)
     dossier.write(OUT, data)
     pages.write(OUT, data)
+    cross.write(OUT, data)
     glossary.write(OUT)
-    print(f"→ {OUT}/ : index.html (accueil), explorer.html, manifeste.html, glossaire.html, methode.html, dossiers, network.json, network.csv")
+    print(f"→ {OUT}/ : index.html (accueil), explorer.html, croiser.html, manifeste.html, glossaire.html, methode.html, dossiers, network.json, network.csv")
     return data
 
 TEMPLATE = r"""<!doctype html><html lang="fr"><head><meta charset="utf-8">

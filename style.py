@@ -122,6 +122,7 @@ def top(current=""):
     return f"""<div class="top"><a class="brand" href="index.html">{LOGO}{e(brand.NAME)}</a><nav class="menus">
 {menu("Conflits", conflicts, current in dict(conflicts))}
 <a class="menu-link" href="explorer.html"{' aria-current="page"' if current == "explorer.html" else ""}>Carte &amp; graphe</a>
+<a class="menu-link" href="croiser.html"{' aria-current="page"' if current == "croiser.html" else ""}>Croiser</a>
 {menu("À propos", about, current in dict(about))}
 <button class="theme" id="theme-toggle" type="button" title="Mode clair / mode sombre" aria-label="Basculer entre mode clair et mode sombre">
 <svg class="moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>

@@ -69,7 +69,7 @@ nav.toc{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px;color:var(--grap
 données du graphe sous CC BY 4.0 — <a href="{brand.REPO}">dépôt GitHub</a>.</p>
 <nav class="toc"><a href="#principe">Principe</a><a href="#chaine">Chaîne de données</a><a href="#graphe">Graphe</a>
 <a href="#dossiers">Dossiers</a><a href="#tensions">Tensions</a><a href="#influence">Influence</a><a href="#mediations">Médiations</a><a href="#personnes">Personnes</a><a href="#blocs">Blocs</a><a href="#onu">Votes ONU</a><a href="#taille">Taille</a>
-<a href="#profils">Profils</a><a href="#carte">Carte</a><a href="#explorateur">Explorateur</a><a href="#glossaire">Glossaire</a><a href="#limites">Limites</a><a href="#contribuer">Contribuer</a></nav>
+<a href="#profils">Profils</a><a href="#carte">Carte</a><a href="#explorateur">Explorateur</a><a href="#croiser">Croiser</a><a href="#glossaire">Glossaire</a><a href="#limites">Limites</a><a href="#contribuer">Contribuer</a></nav>
 
 <div class="kpi">
   <div><b>{len(actors)}</b><span class="mute">acteurs</span></div>
@@ -280,6 +280,12 @@ peut pas contredire les données. <code>validate.py</code> contrôle les vues, a
 intersections), en occupant toute la surface de cette zone (échantillonnage puis relaxation de Lloyd). Une zone trop serrée
 réduit ses drapeaux ; au-delà de 24 pays, les plus petits sont regroupés en une pastille « +N ». Zoom et déplacement : les
 textes gardent une taille constante, et un nom qui chevaucherait un drapeau n'est affiché qu'au survol.</p>
+
+<h2 id="croiser">Croiser des acteurs</h2>
+<p>La page <a href="croiser.html">Croiser</a> affiche ce que le graphe contient entre les pays, groupes ou conflits choisis :
+tensions, soutiens, médiations et dépendances dont les deux acteurs font partie de la sélection. Un conflit apporte les acteurs
+de ses camps. Rien n'y est rédigé automatiquement : chaque trait est un fait du graphe, avec sa date, son statut et ses sources.
+Une paire sans trait signifie seulement qu'aucune relation n'est sourcée ici.</p>
 
 <h2 id="glossaire">Glossaire</h2>
 <p><code>glossaire.yaml</code> donne une seule définition par terme, utilisée partout : infobulles des dossiers et de
