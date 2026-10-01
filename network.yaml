@@ -49,6 +49,17 @@ actors:
   MX: {name: Mexique, kind: state}
   BR: {name: Brésil, kind: state}
   AR: {name: Argentine, kind: state}
+  LY: {name: Libye (gouvernement de Tripoli), kind: state,
+       note: "Gouvernement d'unité nationale d'Abdel Hamid Dbeibah, reconnu par l'ONU ; il tient l'ouest du pays. L'est est tenu par un gouvernement rival appuyé sur l'armée de Khalifa Haftar",
+       sources: ["Council on Foreign Relations, Global Conflict Tracker : l'instabilité en Libye (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/civil-war-libya"]}
+  YE: {name: Yémen (gouvernement reconnu), kind: state,
+       note: "Conseil présidentiel soutenu par l'Arabie saoudite ; les Houthis tiennent la capitale Sanaa depuis 2014",
+       sources: ["Council on Foreign Relations, Global Conflict Tracker : la guerre au Yémen (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/war-yemen"]}
+  SY: {name: Syrie (gouvernement de transition), kind: state,
+       note: "Gouvernement d'Ahmed al-Charaa, au pouvoir depuis la chute de Bachar al-Assad en décembre 2024",
+       sources: ["Belfer Center, les États extérieurs et la réunification de la Syrie (oct. 2025) — https://www.belfercenter.org/research-analysis/external-states-and-syrias-challenge-reunification-under-transitional-president"]}
+  MA: {name: Maroc, kind: state}
+  DZ: {name: Algérie, kind: state}
   SD: {name: Soudan (armée et gouvernement de Port-Soudan), kind: state,
        leader: {name: Abdel Fattah al-Burhan, wikidata: Q63111184, role: "Général, chef de l'armée et du Conseil de souveraineté"}}
   AE: {name: Émirats arabes unis, kind: state}
@@ -87,6 +98,12 @@ actors:
   jnim: {name: JNIM (Groupe de soutien à l'islam et aux musulmans), kind: non_state, base: ML,
          note: "Branche d'Al-Qaïda au Sahel, née en 2017 de la fusion de plusieurs groupes ; principal groupe jihadiste du Sahel central. Depuis avril 2026, il coordonne ses attaques avec le FLA, une alliance tactique entre deux groupes aux buts opposés (jihadiste et indépendantiste)",
          sources: ["Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel", "Soufan Center, les limites de l'Africa Corps : le Mali et l'offensive JNIM-FLA (mai 2026) — https://thesoufancenter.org/intelbrief-2026-may-12/"]}
+  lna: {name: Armée nationale libyenne (Haftar), kind: non_state, base: LY,
+        note: "Coalition de groupes armés de l'est de la Libye, dirigée par Khalifa Haftar ; elle appuie le gouvernement rival de l'est",
+        sources: ["Council on Foreign Relations, Global Conflict Tracker : l'instabilité en Libye (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/civil-war-libya", "Service de recherche du Congrès américain, « Libya and U.S. Policy » (juill. 2026) — https://www.congress.gov/crs_external_products/IF/PDF/IF11556/IF11556.36.pdf"]}
+  polisario: {name: Front Polisario, kind: non_state, base: DZ,
+              note: "Mouvement indépendantiste sahraoui, basé en Algérie ; il tient environ 20 % du Sahara occidental, le Maroc contrôle le reste",
+              sources: ["Council on Foreign Relations, « Morocco's Victory on the Western Sahara » — https://www.cfr.org/blog/moroccos-victory-western-sahara"]}
   fla: {name: Front de libération de l'Azawad (FLA), kind: non_state, base: ML,
         note: "Coalition de groupes séparatistes touaregs et arabes du nord du Mali, formée fin 2024, qui réclame l'indépendance de l'Azawad. Depuis avril 2026, il coordonne ses attaques avec le JNIM, une alliance tactique entre deux groupes aux buts opposés",
         sources: ["Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel", "Soufan Center, les limites de l'Africa Corps : le Mali et l'offensive JNIM-FLA (mai 2026) — https://thesoufancenter.org/intelbrief-2026-may-12/"]}
@@ -440,6 +457,39 @@ edges:
      note: "Ligne d'échange de devises de 20 milliards de dollars financée par le Trésor américain, annoncée en octobre 2025 ; l'Argentine a tiré 2,5 milliards, remboursés en janvier 2026 selon le Trésor",
      why: "Selon le Service de recherche du Congrès, le Trésor présente l'Argentine comme un allié « d'importance systémique » en Amérique latine, et des responsables américains disent vouloir y contrer l'influence chinoise"}
 
+  # --- Monde arabe : Libye, Yémen, Syrie, Sahara occidental ---
+  - {from: TR, to: LY, since: "2020", types: [troops, arms], status: active, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : l'instabilité en Libye (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/civil-war-libya", "Service de recherche du Congrès américain, « Libya and U.S. Policy » (juill. 2026) — https://www.congress.gov/crs_external_products/IF/PDF/IF11556/IF11556.36.pdf"],
+     verified: 2026-10, note: "Troupes turques déployées en 2020 ; leur appui a forcé l'armée de Haftar à lever le siège de Tripoli"}
+  - {from: RU, to: lna, since: "2019", types: [troops], status: active, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : l'instabilité en Libye (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/civil-war-libya", "Service de recherche du Congrès américain, « Libya and U.S. Policy » (juill. 2026) — https://www.congress.gov/crs_external_products/IF/PDF/IF11556/IF11556.36.pdf"],
+     verified: 2026-10, note: "Combattants de Wagner puis de l'Africa Corps ; accès à des ports et des bases dans l'est et le sud"}
+  - {from: AE, to: lna, since: "2019", types: [arms], status: active, confidence: medium,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : l'instabilité en Libye (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/civil-war-libya", "Service de recherche du Congrès américain, « Libya and U.S. Policy » (juill. 2026) — https://www.congress.gov/crs_external_products/IF/PDF/IF11556/IF11556.36.pdf"],
+     verified: 2026-10, note: "Armes et drones livrés malgré l'embargo de l'ONU, selon le CFR"}
+  - {from: EG, to: lna, since: "2019", types: [arms, political], status: active, confidence: medium,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : l'instabilité en Libye (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/civil-war-libya", "Service de recherche du Congrès américain, « Libya and U.S. Policy » (juill. 2026) — https://www.congress.gov/crs_external_products/IF/PDF/IF11556/IF11556.36.pdf"],
+     verified: 2026-10}
+  - {from: SA, to: YE, since: "2015-03", types: [financial, troops], status: active, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : la guerre au Yémen (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/war-yemen", "Sana'a Center, The Yemen Review (janv.-mars 2026) — https://sanaacenter.org/the-yemen-review/jan-mar-2026"],
+     verified: 2026-10, note: "Coalition menée par l'Arabie saoudite depuis mars 2015. Début 2026 : frappes saoudiennes contre les séparatistes du Sud, puis aides annoncées (salaires publics, projets de développement, déficit budgétaire)"}
+  - {from: TR, to: SY, since: "2025-08", types: [training, arms], status: active, confidence: high,
+     sources: ["Middle East Eye, l'accord de défense Turquie–Syrie (août 2025) — https://www.middleeasteye.net/news/turkey-syria-defence-deal-covers-training-weapons-supply", "ISPI, « Country to Watch in 2026: Syria » — https://www.ispionline.it/en/publication/country-to-watch-in-2026-syria-226550"],
+     verified: 2026-10, note: "Mémorandum signé le 13 août 2025 : formation, conseil et fourniture d'équipements militaires ; il ne prévoit pas le déploiement de troupes turques sur des bases syriennes",
+     why: "Selon l'ISPI, la Turquie est le principal parrain du nouveau pouvoir syrien"}
+  - {from: SA, to: SY, since: "2025", types: [financial, political], status: active, confidence: medium,
+     sources: ["Belfer Center, les États extérieurs et la réunification de la Syrie (oct. 2025) — https://www.belfercenter.org/research-analysis/external-states-and-syrias-challenge-reunification-under-transitional-president", "ISPI, « Country to Watch in 2026: Syria » — https://www.ispionline.it/en/publication/country-to-watch-in-2026-syria-226550"],
+     verified: 2026-10, note: "Fonds de reconstruction promis sous conditions de réformes ; Riyad a facilité la rencontre entre Ahmed al-Charaa et Donald Trump"}
+  - {from: QA, to: SY, since: "2025", types: [economic], status: active, confidence: medium,
+     sources: ["Belfer Center, les États extérieurs et la réunification de la Syrie (oct. 2025) — https://www.belfercenter.org/research-analysis/external-states-and-syrias-challenge-reunification-under-transitional-president", "ISPI, « Country to Watch in 2026: Syria » — https://www.ispionline.it/en/publication/country-to-watch-in-2026-syria-226550"],
+     verified: 2026-10, note: "Fonds de reconstruction promis, avec l'Arabie saoudite"}
+  - {from: US, to: SY, since: "2025", types: [political], status: active, confidence: medium,
+     sources: ["Belfer Center, les États extérieurs et la réunification de la Syrie (oct. 2025) — https://www.belfercenter.org/research-analysis/external-states-and-syrias-challenge-reunification-under-transitional-president", "ISPI, « Country to Watch in 2026: Syria » — https://www.ispionline.it/en/publication/country-to-watch-in-2026-syria-226550"],
+     verified: 2026-10, note: "Sanctions allégées puis levées ; la Syrie a rejoint la coalition contre l'État islamique. Washington garde une présence militaire limitée dans le nord-est"}
+  - {from: DZ, to: polisario, types: [arms, financial, political], status: active, confidence: high,
+     sources: ["Council on Foreign Relations, « Morocco's Victory on the Western Sahara » — https://www.cfr.org/blog/moroccos-victory-western-sahara", "Security Council Report, vote sur le Sahara occidental et la MINURSO (oct. 2025) — https://www.securitycouncilreport.org/whatsinblue/2025/10/western-sahara-vote-on-a-draft-resolution-renewing-minursos-mandate-3.php"],
+     verified: 2026-10, note: "Le Front Polisario est basé en Algérie et armé par elle, selon le CFR ; Alger dit ne pas être partie au conflit"}
+
 tensions:
   - {from: RU, to: UA, type: war, since: "2022-02", status: active, confidence: high,
      sources: ["Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"],
@@ -476,6 +526,25 @@ tensions:
      sources: ["Time, le Brésil condamne les droits de douane américains (juill. 2026) — https://time.com/article/2026/07/16/brazil-condemns-us-tariffs-lula-trump-greer/",
                "Al Jazeera, Lula et les nouveaux droits de douane américains (juin 2026) — https://www.aljazeera.com/news/2026/6/3/lula-says-brazil-cannot-accept-treatment-after-new-us-tariffs-proposed"],
      verified: 2026-10, note: "Juillet 2025 : 50 % de droits de douane américains, liés au procès de Jair Bolsonaro. Février 2026 : la Cour suprême américaine invalide l'essentiel de ces droits. Depuis le 22 juillet 2026, nouveaux droits de 25 % sur une autre base juridique (section 301) ; le Brésil active sa loi de réciprocité et saisit l'Organisation mondiale du commerce"}
+  - {from: lna, to: LY, type: war, since: "2019", status: reduced, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : l'instabilité en Libye (août 2026) — https://www.cfr.org/global-conflict-tracker/conflict/civil-war-libya", "Service de recherche du Congrès américain, « Libya and U.S. Policy » (juill. 2026) — https://www.congress.gov/crs_external_products/IF/PDF/IF11556/IF11556.36.pdf"],
+     verified: 2026-10, note: "Offensive de Haftar sur Tripoli en 2019, repoussée ; cessez-le-feu depuis octobre 2020, violences sporadiques. Élections reportées sans date ; premier budget national unifié en avril 2026, frappes de drones sur des sites pétroliers en août-septembre 2026"}
+  - {from: houthis, to: YE, type: war, since: "2014", status: active, confidence: high,
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : la guerre au Yémen (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/war-yemen", "Sana'a Center, The Yemen Review (janv.-mars 2026) — https://sanaacenter.org/the-yemen-review/jan-mar-2026"],
+     verified: 2026-10, note: "Les Houthis prennent Sanaa en 2014. Trêve de 2022, officiellement expirée ; reprise des combats en 2026 après des frappes houthies sur l'aéroport saoudien d'Abha en juillet, plus de 800 morts fin septembre selon l'OMS"}
+  - {from: IL, to: SY, type: war, since: "2024-12", status: active, confidence: high,
+     sources: ["Al Jazeera, pourparlers Syrie–Israël en Jordanie sous médiation américaine (août 2026) — https://www.aljazeera.com/news/2026/8/24/syria-israel-hold-us-mediated-talks-in-jordan-to-de-escalate-tensions",
+               "Al Jazeera, incursion israélienne en Syrie (juill. 2026) — https://www.aljazeera.com/news/2026/7/26/israel-launches-military-incursion-into-syria-amid-un-condemnation"],
+     verified: 2026-10, note: "Pas de guerre déclarée : des centaines de frappes israéliennes depuis la chute d'Assad, des troupes dans la zone tampon du Golan, une incursion en juillet 2026. Les deux pays négocient un accord de sécurité sous médiation américaine"}
+  - {from: MA, to: polisario, type: war, since: "1976", status: active, confidence: high,
+     sources: ["Security Council Report, vote sur le Sahara occidental et la MINURSO (oct. 2025) — https://www.securitycouncilreport.org/whatsinblue/2025/10/western-sahara-vote-on-a-draft-resolution-renewing-minursos-mandate-3.php", "Council on Foreign Relations, « Morocco's Victory on the Western Sahara » — https://www.cfr.org/blog/moroccos-victory-western-sahara"],
+     verified: 2026-10, note: "Conflit du Sahara occidental depuis le retrait de l'Espagne. Cessez-le-feu rompu en 2020, hostilités de basse intensité depuis. Le 31 octobre 2025, le Conseil de sécurité (résolution 2797) prend le plan d'autonomie marocain comme base de négociation ; le Polisario et l'Algérie le rejettent"}
+  - {from: MA, to: DZ, type: rivalry, since: "2021", status: active, confidence: high,
+     sources: ["Council on Foreign Relations, « Morocco's Victory on the Western Sahara » — https://www.cfr.org/blog/moroccos-victory-western-sahara"],
+     verified: 2026-10, note: "L'Algérie a rompu ses relations diplomatiques avec le Maroc en 2021, sur fond de Sahara occidental et de rapprochement entre le Maroc et Israël"}
+  - {from: SA, to: AE, type: rivalry, since: "2025-12", status: active, confidence: medium,
+     sources: ["CSIS, « Understanding the Saudi Reaction to the Escalation in Yemen » (déc. 2025) — https://www.csis.org/analysis/understanding-saudi-reaction-escalation-yemen", "Sana'a Center, The Yemen Review (janv.-mars 2026) — https://sanaacenter.org/the-yemen-review/jan-mar-2026"],
+     verified: 2026-10, note: "En décembre 2025, les séparatistes du Sud-Yémen, soutenus par les Émirats, s'emparent de deux provinces ; l'Arabie saoudite les bombarde et somme publiquement les Émirats de cesser tout soutien. Le mouvement séparatiste est dissous en janvier 2026 et les soldats émiratis quittent le Yémen. Les deux pays soutiennent aussi des camps opposés au Soudan"}
   - {from: jnim, to: ML, type: war, since: "2017", status: active, confidence: high,
      sources: ["Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel",
                "Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region",
@@ -554,6 +623,11 @@ mediations:
 #        trade (+ direction : exports = part de ses exportations vendues au partenaire, imports = part de ses importations ;
 #        WITS, seuil 20 %, sans la Russie — données 2021 — ni les paires internes à l'UE). Une part calculée à partir de volumes publiés le dit dans sa note.
 # share : pourcentage ; year : fin de la période (period) ; seules les parts ≥ 10 % sont retenues.
+  - {mediator: US, between: [IL, SY], since: "2026-01", status: active, confidence: high,
+     sources: ["Al Jazeera, pourparlers Syrie–Israël en Jordanie sous médiation américaine (août 2026) — https://www.aljazeera.com/news/2026/8/24/syria-israel-hold-us-mediated-talks-in-jordan-to-de-escalate-tensions"],
+     verified: 2026-10, note: "Pourparlers de Paris en janvier 2026, gelés fin février par la guerre contre l'Iran, repris en Jordanie le 24 août 2026",
+     why: "Selon Al Jazeera, obtenir l'arrêt des attaques israéliennes et relancer la négociation d'un accord de sécurité durable"}
+
 dependencies:
   - {from: UA, supplier: US, type: arms, share: 41, year: 2025, period: "2021-2025", status: active, sources: ["SIPRI, Trends in International Arms Transfers 2025, tableau 2 : principaux fournisseurs des 40 plus gros importateurs, 2021-2025 (mars 2026) — https://www.sipri.org/publications/2026/sipri-fact-sheets/trends-international-arms-transfers-2025"], verified: 2026-09}
   - {from: UA, supplier: DE, type: arms, share: 14, year: 2025, period: "2021-2025", status: active, sources: ["SIPRI, Trends in International Arms Transfers 2025, tableau 2 : principaux fournisseurs des 40 plus gros importateurs, 2021-2025 (mars 2026) — https://www.sipri.org/publications/2026/sipri-fact-sheets/trends-international-arms-transfers-2025"], verified: 2026-09}
