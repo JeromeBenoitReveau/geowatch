@@ -47,12 +47,24 @@ CSS = """
 #schema .rel{transition:opacity .15s}#schema.focus .rel:not(.on){opacity:.14}#schema.focus .node:not(.on){opacity:.35}
 .bar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:26px 0 0;min-height:30px}
 /* contrôle segmenté Schéma / Carte : même dessin que celui des vues de « Carte & graphe » */
-.seg{display:inline-flex;padding:3px;gap:2px;border:1px solid var(--mist);border-radius:7px;background:var(--land)}
+.seg{display:inline-flex;flex-wrap:wrap;padding:3px;gap:2px;border:1px solid var(--mist);border-radius:7px;background:var(--land)}
 .seg button{display:flex;align-items:center;gap:7px;padding:6px 12px;border:0;border-radius:5px;background:none;font:14px var(--sans);color:var(--graphite);cursor:pointer;white-space:nowrap}
 .seg button:hover{color:var(--ink)}.seg button[aria-pressed=true]{background:color-mix(in srgb,var(--ink) 8%,var(--land));color:var(--ink)}
 .seg .ico{color:var(--peach)}.seg[data-busy] button{cursor:progress}
 .stage{position:relative}
 #frise{margin:18px 0 6px}
+#communs{margin:18px 0 6px}#communs h3{margin:22px 0 10px}#communs h3:first-child{margin-top:6px}
+.cap{font-size:13.5px;color:var(--graphite);margin:0 0 10px;max-width:46em}
+.tw{overflow-x:auto}
+.pc{border-collapse:collapse;font-size:14px}
+.pc th{font-weight:400;text-align:left;padding:7px 14px 7px 0;white-space:nowrap}
+.pc th small{display:block;color:var(--graphite);font-size:12px}
+.pc th.c{padding:0 4px 8px;text-align:center;vertical-align:bottom;font-size:12.5px;min-width:74px;white-space:normal}
+.pc th.c span{display:flex;flex-direction:column;align-items:center;gap:4px}.pc .rw{display:inline-flex;align-items:center;gap:7px}
+.pc img{width:16px;height:16px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px var(--mist)}
+.pc td{text-align:center;border-top:1px solid var(--mist);padding:7px 4px;font-variant-numeric:tabular-nums}
+.pc td.v{border:2px solid var(--paper);border-radius:4px}.pc td.x{color:var(--graphite)}
+.pc .dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--ink)}
 .fr{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:0 18px;align-items:center}
 .fr .track{position:relative;height:100%;min-height:38px}
 .fr.axis .track{min-height:22px}.fr .yr{position:absolute;top:0;transform:translateX(-50%);font-size:12px;color:var(--graphite);font-variant-numeric:tabular-nums}
@@ -97,7 +109,16 @@ def data(d):
             pos[k] = [g["lon"], g["lat"]]
         if g and g.get("iso_numeric"):
             num[k] = int(g["iso_numeric"])
+    # points communs : organisations (alignments.yaml) et accord de vote deux à deux à l'ONU (sources/unga.py), en ISO2
+    states = {k for k, a in d["actors"].items() if a["kind"] == "state"}
+    orgs = [{"name": g["name"].split(" (")[0], "full": g["name"], "forum": g.get("kind") == "forum",
+             "members": [m for m in g["members"] if m in states]} for g in d["align"]["groups"]]
+    by3 = {v["iso3"]: k for k, v in d["geo"].items() if v.get("iso3")}
+    unga = d.get("unga") or {}
+    agree = {f"{min(by3[a], by3[b])}|{max(by3[a], by3[b])}": v for a, row in (unga.get("pairs") or {}).items()
+             for b, v in row.items() if a in by3 and b in by3}
     return {"actors": {k: {"name": a["name"], "kind": a["kind"]} for k, a in d["actors"].items()}, "pos": pos, "num": num,
+            "orgs": [o for o in orgs if len(o["members"]) >= 2], "agree": agree, "agree_year": unga.get("agreement_year"),
             "edges": live(d["edges"]), "tensions": live(d["tensions"]), "mediations": live(d["mediations"]),
             "dependencies": live(d["dependencies"]), "colors": d["colors"], "people": people,
             "dossiers": [{"id": x["id"], "title": x["title"], "sides": [s["actors"] for s in x["sides"]]}
@@ -110,7 +131,15 @@ const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const nm = id => esc((D.actors[id] || {}).name || id);
 const isFlag = id => ["state", "bloc"].includes((D.actors[id] || {}).kind);
 const flag = id => `https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/${id.toLowerCase()}.svg`;
-const pic = id => isFlag(id) ? flag(id) : D.people[id] || null;
+// Sans drapeau ni photo : même pictogramme que dans « Carte & graphe » (Lucide, ISC) — épées = groupe armé, urne = parti, silhouette = personne
+const GLYPH = {
+  non_state: '<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/>',
+  party: '<path d="m9 12 2 2 4-4"/><path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v12H5V7Z"/><path d="M22 19H2"/>',
+  person: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'};
+const badge = (kind, bg) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 36 36"><circle cx="12" cy="12" r="18" fill="${bg}"/>` +
+  `<g fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${GLYPH[kind]}</g></svg>`);
+const pic = id => isFlag(id) ? flag(id) : D.people[id] || (D.actors[id] ? badge(D.actors[id].kind, D.actors[id].kind === "non_state" ? "#8a8a8a" : "#6b4fbb") : null);
 const img = id => pic(id) ? `<img src="${esc(pic(id))}" alt="">` : "";
 const who = id => `${img(id)}<span>${nm(id)}</span>`;
 const DOS = Object.fromEntries(D.dossiers.map(x => ["d:" + x.id, x]));
@@ -153,7 +182,7 @@ const RES_FR = {arms: "Armes", gas: "Gaz", oil: "Pétrole", minerals: "Minerais"
 const RES = Object.fromEntries(Object.keys(RES_FR).filter(t => D.dependencies.some(x => x.type === t)).map(t => ["r:" + t, t]));
 let SEL = (new URLSearchParams(location.search).get("e") || "").split(",").filter(t => D.actors[t] || DOS[t] || RES[t]);
 let PICK = null;   // trait ou acteur mis en avant
-let VIEW = {carte: "map", frise: "frise"}[new URLSearchParams(location.search).get("v")] || "schema", WORLD = null;
+let VIEW = {carte: "map", frise: "frise", communs: "communs"}[new URLSearchParams(location.search).get("v")] || "schema", WORLD = null;
 function scope(){ const ids = [];
   SEL.forEach(t => (DOS[t] ? DOS[t].sides.flat() : [t]).forEach(id => { if(D.actors[id] && !ids.includes(id)) ids.push(id); }));
   return ids; }
@@ -283,11 +312,13 @@ function render(){ const ids = scope(), {F, extra} = facts(ids), ok = ids.length
   const sug = ids.length ? suggest(ids) : [];
   $("#sug").innerHTML = sug.length ? "À croiser aussi : " + sug.map(x => `<button type="button" data-add="${esc(x.t)}">${mark(x.t)}${label(x.t)} <small>${x.n} lien${x.n > 1 ? "s" : ""}</small></button>`).join("") : "";
   $("#empty").hidden = ok; $("#out").hidden = !ok;
-  history.replaceState(null, "", location.pathname + (SEL.length ? "?e=" + SEL.join(",") + (VIEW === "map" ? "&v=carte" : VIEW === "frise" ? "&v=frise" : "") : ""));
+  history.replaceState(null, "", location.pathname + (SEL.length ? "?e=" + SEL.join(",") + (VIEW === "map" ? "&v=carte" : VIEW === "frise" ? "&v=frise" : VIEW === "communs" ? "&v=communs" : "") : ""));
   document.querySelectorAll("#seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === VIEW));
   if(!ok) return;
-  draw(ids, extra, F); frise(F);
-  $("#schema").style.display = VIEW === "frise" ? "none" : ""; $("#frise").hidden = VIEW !== "frise"; if(VIEW === "frise") $("#zoom").hidden = true;
+  draw(ids, extra, F); frise(F); communs(ids);
+  const flat2 = VIEW === "frise" || VIEW === "communs";
+  $("#schema").style.display = flat2 ? "none" : ""; $("#frise").hidden = VIEW !== "frise"; $("#communs").hidden = VIEW !== "communs"; if(flat2) $("#zoom").hidden = true;
+  ["#legend", "#aside", "#detail"].forEach(q => $(q).style.display = VIEW === "communs" ? "none" : "");
   const outs = F.filter(f => f.out);
   $("#aside").innerHTML = outs.length ? "Hors sélection : " + outs.map(f => `<button type="button" data-fact="${f.id}">${nm(f.mediator)}, médiateur entre ${nm(f.nodes[0])} et ${nm(f.nodes[1])}</button>`).join(" ; ") + "." : "";
   const has = g => F.some(f => f.group === g && !f.out), sup = [...new Set(F.filter(f => f.group === "support").map(f => f.color))];
@@ -322,6 +353,25 @@ function frise(F){ const now = new Date().getFullYear() + new Date().getMonth() 
     + dated.map(f => `<div class="fr row" data-f="${f.id}" tabindex="0" role="button"><div class="lbl"><div class="who">${head(f)}</div><small>${esc(f.kind)}, depuis ${esc(when(f.since))}</small></div><div class="track">${grid}${bar(f)}</div></div>`).join("")
     + (nodate.length ? `<p class="none">Sans date de début dans le graphe : ${nodate.map(f => `<button type="button" data-fact="${f.id}">${head(f).replace(/<img[^>]*>/g, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()} (${esc(f.kind.toLowerCase())})</button>`).join(" ; ")}.</p>` : "")
     + (F.some(f => f.group === "lever") ? '<p class="none">Les dépendances n\'apparaissent pas sur la frise : ce sont des mesures sur une période, pas des événements datés.</p>' : ""); }
+
+// ---------- Points communs : ce que les PAYS choisis partagent sans se le devoir — organisations et votes à l'ONU.
+// Mesures et appartenances sourcées (alignments.yaml, Voeten) ; un groupe armé, un parti ou un bloc n'y figure pas. ----------
+function communs(ids){ const st = ids.filter(id => D.actors[id].kind === "state"), others = ids.filter(id => !st.includes(id));
+  const skip = others.length ? `<p class="none">Sans objet pour ${others.map(nm).join(", ")} : seuls les pays sont membres d'organisations et votent à l'ONU.</p>` : "";
+  if(st.length < 2){ $("#communs").innerHTML = '<p class="none" style="margin:0">Il faut au moins deux pays dans la sélection pour comparer leurs organisations et leurs votes.</p>' + skip; return; }
+  const cols = st.map(id => `<th class="c"><span>${img(id)}${nm(id)}</span></th>`).join("");
+  const orgs = D.orgs.map(o => ({...o, n: st.filter(id => o.members.includes(id)).length})).filter(o => o.n >= 2).sort((a, b) => b.n - a.n || a.forum - b.forum);
+  let h = `<h3>Organisations en commun</h3>` + (orgs.length ? `<div class="tw"><table class="pc"><thead><tr><th></th>${cols}</tr></thead><tbody>${orgs.map(o =>
+      `<tr><th title="${esc(o.full)}">${esc(o.name)}<small>${o.forum ? "forum" : "alliance ou traité"}</small></th>${st.map(id => `<td>${o.members.includes(id) ? '<i class="dot" title="membre"></i>' : ""}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`
+    : `<p class="none" style="margin:0">Aucune organisation suivie par le site ne réunit au moins deux de ces pays.</p>`);
+  const val = (a, b) => D.agree[[a, b].sort().join("|")], any = st.some((a, i) => st.slice(i + 1).some(b => val(a, b) != null));
+  const cell = (a, b) => { const v = val(a, b); if(a === b) return '<td class="x"></td>'; if(v == null) return '<td class="x" title="pas de donnée">–</td>';
+    const p = Math.round(v * 100), k = Math.round(6 + v * 62);
+    return `<td class="v" style="background:color-mix(in srgb,var(--ink) ${k}%,var(--land));color:${k > 40 ? "var(--paper)" : "var(--ink)"}" title="${nm(a)} et ${nm(b)} : ${p} % de votes identiques">${p} %</td>`; };
+  h += `<h3>Votes à l'ONU${D.agree_year ? " en " + D.agree_year : ""}</h3>` + (any ? `<p class="cap">__ACCORD__ : part des votes où deux pays ont voté pareil à l'Assemblée générale. Plus la case est marquée, plus ils votent ensemble.</p>
+    <div class="tw"><table class="pc"><thead><tr><th></th>${cols}</tr></thead><tbody>${st.map(a => `<tr><th><span class="rw">${img(a)}${nm(a)}</span></th>${st.map(b => cell(a, b)).join("")}</tr>`).join("")}</tbody></table></div>`
+    : `<p class="none" style="margin:0">Pas de données de vote pour ces pays.</p>`);
+  $("#communs").innerHTML = h + skip; }
 
 function detail(){ const F = window.FACTS, svg = $("#schema"), box = $("#detail");
   document.querySelectorAll("#frise .row").forEach(r => r.classList.toggle("on", !!PICK && PICK.f === +r.dataset.f));
@@ -387,7 +437,8 @@ def page(d):
     script = (SCRIPT.replace("__DATA__", json.dumps(x, ensure_ascii=False, default=str).replace("</", "<\\/"))
               .replace("__DEP_ICONS__", json.dumps(style.DEP_ICONS))
               .replace("__SOUTIEN__", glossary.term("soutien", "soutien")).replace("__MEDIATION__", glossary.term("mediation", "médiation"))
-              .replace("__LEVIER__", glossary.term("levier", "dépendance")))
+              .replace("__LEVIER__", glossary.term("levier", "dépendance"))
+              .replace("__ACCORD__", glossary.term("taux-accord", "Taux d'accord")))
     body = f"""<main class="cross">
 <h1>Croiser des acteurs</h1>
 <p class="lede">Choisissez des pays, des groupes, un conflit ou une ressource : le schéma montre ce qui les relie, fait par fait.</p>
@@ -399,9 +450,9 @@ def page(d):
 <p class="sug" id="sug"></p>
 <div id="empty"><div class="ex"><span class="quiet">Pour commencer :</span>{examples}</div></div>
 <div id="out" hidden>
-<div class="bar"><div class="seg" id="seg" role="group" aria-label="Affichage"><button type="button" data-v="schema">__ICO_GRAPH__<span>Schéma</span></button><button type="button" data-v="map">__ICO_MAP__<span>Carte</span></button><button type="button" data-v="frise"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 6h9M8 12h12M13 18h8"/></svg><span>Frise</span></button></div>
+<div class="bar"><div class="seg" id="seg" role="group" aria-label="Affichage"><button type="button" data-v="schema">__ICO_GRAPH__<span>Schéma</span></button><button type="button" data-v="map">__ICO_MAP__<span>Carte</span></button><button type="button" data-v="frise"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 6h9M8 12h12M13 18h8"/></svg><span>Frise</span></button><button type="button" data-v="communs">__ICO_ORGS__<span>Points communs</span></button></div>
 <div id="zoom" hidden><button type="button" data-z="in" aria-label="Zoomer">+</button><button type="button" data-z="out" aria-label="Dézoomer">−</button><button type="button" data-z="fit">Recadrer</button></div></div>
-<div class="stage"><div id="frise" hidden></div><svg id="schema" role="group" aria-label="Schéma des relations entre les acteurs choisis"></svg></div>
+<div class="stage"><div id="frise" hidden></div><div id="communs" hidden></div><svg id="schema" role="group" aria-label="Schéma des relations entre les acteurs choisis"></svg></div>
 <div class="legend" id="legend"></div>
 <p class="scope" id="aside"></p>
 <div id="detail" aria-live="polite"></div>
@@ -409,7 +460,7 @@ def page(d):
 <details class="all" id="all"></details>
 </div>
 </main>"""
-    body = body.replace("__ICO_GRAPH__", style.icon("graph", 16)).replace("__ICO_MAP__", style.icon("map", 16))
+    body = body.replace("__ICO_GRAPH__", style.icon("graph", 16)).replace("__ICO_MAP__", style.icon("map", 16)).replace("__ICO_ORGS__", style.icon("orgs", 16))
     title = f"Croiser des acteurs — {brand.NAME}"
     return (style.head(title, "Choisissez des pays, des groupes ou un conflit : ce qui les relie, fait par fait, avec les sources.",
                        f"<style>{CSS}</style>")

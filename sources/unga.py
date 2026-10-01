@@ -26,8 +26,10 @@ def _latest(files, prefix):
         raise RuntimeError(f"UNGA : aucun fichier {prefix}*.csv dans {DOI}")
     return max(ids)
 
-def fetch(prev_version=None):
-    """None si la version publiée est déjà connue. Sinon données par pays, indexées en ISO3."""
+def fetch(prev_version=None, pair_isos=()):
+    """None si la version publiée est déjà connue. Sinon données par pays, indexées en ISO3.
+    pair_isos : pays (ISO3) dont on garde aussi l'accord DEUX À DEUX, dernière année (page « Croiser », points communs)."""
+    pair_isos = set(pair_isos)
     m = _meta()
     if m["version"] == prev_version:
         return None
@@ -41,6 +43,7 @@ def fetch(prev_version=None):
 
     targets = {c for group in REFS.values() for c in group} | {"USA"}
     agree = {}  # {année: {pays: {référence: accord}}}
+    duo = {}    # {année: {A: {B: accord}}} avec A < B, pour les pays de pair_isos
     url = f"{API}/access/datafile/{_latest(m['files'], 'AgreementScores')}?format=original"
     with httpx.stream("GET", url, headers=H, timeout=600, follow_redirects=True) as resp:
         resp.raise_for_status()
@@ -48,6 +51,9 @@ def fetch(prev_version=None):
             a, b = iso.get(r["ccode1"]), iso.get(r["ccode2"])
             if a and b in targets and r["agree"] not in ("", "NA"):
                 agree.setdefault(int(r["year"]), {}).setdefault(a, {})[b] = float(r["agree"])
+            if a in pair_isos and b in pair_isos and a != b and r["agree"] not in ("", "NA"):
+                x, y = sorted((a, b))
+                duo.setdefault(int(r["year"]), {}).setdefault(x, {})[y] = round(float(r["agree"]), 3)
     year = max(agree)
 
     def score(d, c):
@@ -79,4 +85,5 @@ def fetch(prev_version=None):
                        "url": "https://doi.org/10.7910/DVN/LEJUQZ", "license": "CC0 1.0",
                        "version": m["version"], "published": m["published"],
                        "cite": "Bailey, Strezhnev & Voeten (2017), Journal of Conflict Resolution 61(2)"},
-            "refs": REFS, "agreement_year": year, "countries": countries, "by_year": by_year, "drift": drift}
+            "refs": REFS, "agreement_year": year, "countries": countries, "by_year": by_year, "drift": drift,
+            "pairs": duo.get(year, {}), "pair_isos": sorted(pair_isos)}

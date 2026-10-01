@@ -122,6 +122,12 @@ terms:
     aliases: [votes à l'ONU, vote à l'ONU]
     definition: "Il mesure de quel côté un pays vote à l'Assemblée générale de l'ONU. On calcule la part de ses votes identiques à ceux de la France et de l'Allemagne, puis à ceux de la Russie et de la Chine (taux d'accord publiés par Erik Voeten, dernière année disponible). L'écart entre les deux va de −100 points (il vote toujours comme Russie/Chine) à +100 (toujours comme France/Allemagne). Entre −5 et +5, le pays est « entre les deux »."
     example: Un pays qui vote 80 % des fois comme Russie/Chine et 50 % comme France/Allemagne penche vers Russie/Chine de 30 points.
+  - id: taux-accord
+    term: taux d'accord à l'ONU
+    aliases: [taux d'accord]
+    auto: false
+    definition: "La part des votes de l'Assemblée générale de l'ONU où deux pays ont voté de la même façon, sur une année (calcul d'Erik Voeten). À 100 %, ils ont toujours voté pareil. Une abstention face à un oui ou à un non compte pour un demi-accord."
+    example: En 2024, la Chine et la Russie ont voté pareil dans 78 % des cas, la Chine et les États-Unis dans 29 %.
   - id: depenses-militaires
     term: dépenses militaires
     definition: Le budget qu'un pays consacre chaque année à son armée, en dollars (source Banque mondiale).

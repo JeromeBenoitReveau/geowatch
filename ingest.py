@@ -17,7 +17,11 @@ def run_profiles(c):
     c.commit()
     # votes à l'ONU (Voeten) : téléchargés seulement si une nouvelle version est publiée
     known = db.load_unga()
-    u = unga.fetch(known.get("source", {}).get("version") if "by_year" in known else None)
+    # accord deux à deux pour les États du graphe (page « Croiser ») : retéléchargé aussi si un État du graphe y manque
+    g0 = db.load_geo()
+    pair_isos = {g0[a]["iso3"] for a, v in actors.items() if v["kind"] == "state" and g0.get(a, {}).get("iso3")}
+    fresh = "by_year" in known and pair_isos <= set(known.get("pair_isos", []))
+    u = unga.fetch(known.get("source", {}).get("version") if fresh else None, pair_isos)
     if u:
         db.save_unga(u)
         print(f"→ votes ONU : version {u['source']['version']}, accord {u['agreement_year']}, {len(u['countries'])} pays")

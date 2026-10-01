@@ -286,6 +286,9 @@ textes gardent une taille constante, et un nom qui chevaucherait un drapeau n'es
 tensions, soutiens, médiations et dépendances dont les deux acteurs font partie de la sélection. Un conflit apporte les acteurs
 de ses camps. Une ressource (pétrole, armes, dette…) ajoute les pays liés aux acteurs choisis par une dépendance chiffrée de ce type. Rien n'y est rédigé automatiquement : chaque trait est un fait du graphe, avec sa date, son statut et ses sources.
 Une paire sans trait signifie seulement qu'aucune relation n'est sourcée ici.</p>
+<p>La vue « Points communs » montre ce que des pays partagent sans relation directe : les organisations dont au moins deux
+d'entre eux sont membres, et leur taux d'accord deux à deux à l'Assemblée générale de l'ONU (même jeu de données que
+l'indice de vote, dernière année disponible ; une abstention face à un oui ou à un non compte pour un demi-accord).</p>
 
 <h2 id="glossaire">Glossaire</h2>
 <p><code>glossaire.yaml</code> donne une seule définition par terme, utilisée partout : infobulles des dossiers et de
