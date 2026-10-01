@@ -226,5 +226,9 @@ terms:
     term: levier d'influence
     aliases: [leviers d'influence, levier, leviers, dépendance, dépendances]
     auto: false
-    definition: Une dépendance qu'un pays peut utiliser pour peser sur un autre, sans rien lui donner ni lui prendre. Le site ne retient que des dépendances chiffrées et sourcées, c'est-à-dire la part d'un fournisseur dans ce qu'un pays importe en armes, en gaz, en pétrole, en minerais critiques (terres rares) ou en denrées (blé).
+    definition: Une dépendance qu'un pays peut utiliser pour peser sur un autre, sans rien lui donner ni lui prendre. Le site ne retient que des dépendances chiffrées et sourcées, c'est-à-dire la part d'un fournisseur dans ce qu'un pays importe en armes, en gaz, en pétrole, en minerais critiques (terres rares) ou en denrées (blé), ou la part d'un créancier dans sa dette publique extérieure.
     example: 40 % des armes importées par l'Inde viennent de Russie (2021-2025, SIPRI).
+  - id: dette-publique-exterieure
+    term: dette publique extérieure
+    definition: L'argent qu'un État (ou une entreprise qu'il garantit) doit à des prêteurs étrangers, qu'il s'agisse d'autres États, d'institutions comme la Banque mondiale ou d'investisseurs privés. Un créancier qui en détient une grande part peut s'en servir pour faire pression.
+    example: Fin 2024, 25 % de la dette publique extérieure du Pakistan était due à la Chine (Banque mondiale).
