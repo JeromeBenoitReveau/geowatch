@@ -65,6 +65,15 @@ presets:
     types: []
     tensions: []
 
+  - id: energie-europe
+    question: De qui l'Europe dépend-elle pour son énergie ?
+    view: graphe
+    focus: EU
+    around: [EU]
+    dependencies: true
+    types: []
+    tensions: []
+
   - id: otan-axe
     question: L'OTAN face à l'axe Russie–Chine–Iran–Corée du Nord
     view: carte

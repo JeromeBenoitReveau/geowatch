@@ -443,9 +443,10 @@ const medEdges = MEDS.flatMap((m, i) => m.between.map(b => ({id: `m${i}-${b}`, f
 const medsVisible = () => MEDS.flatMap((m, i) => m.between.map(b => ({id: `m${i}-${b}`, hidden: !medOn(m)})));
 // ---------- Leviers (clé dependencies) : part chiffrée d'une ressource tirée d'un fournisseur ; ni soutien ni tension ----------
 const DEPS = D.dependencies || [], DEP = {color: "#b08968", dashes: [1, 4]};
-const DEP_FR = {arms: "de ses importations d'armes", gas: "de son gaz importé", oil: "de son pétrole importé", debt: "de sa dette extérieure", trade: "de son commerce"};
+const DEP_FR = {arms: "d'armes", gas: "de gaz", oil: "de pétrole"};
+const depWhat = x => x.resource ? (/^[aeiouyéèh]/i.test(x.resource) ? "d'" : "de ") + x.resource : DEP_FR[x.type] || x.type;
 const depOn = x => checked("dep", "on") && x.status !== "ended";
-const depText = x => `${x.share} % ${DEP_FR[x.type] || x.type} (${x.period || x.year})`;
+const depText = x => `${String(x.share).replace(".", ",")} % de ses importations ${depWhat(x)} (${x.period || x.year})`;
 const depEdges = DEPS.map((x, i) => ({id: "d" + i, from: x.supplier, to: x.from, arrows: {to: {enabled: true, scaleFactor: .4}}, physics: false,
   width: .6 + x.share/25, dashes: DEP.dashes, color: {color: DEP.color, opacity: .9}, smooth: {type: "curvedCW", roundness: .25}, hidden: true,
   title: `${(D.actors[x.from]||{}).name} : ${depText(x)} viennent de ${(D.actors[x.supplier]||{}).name}`}));

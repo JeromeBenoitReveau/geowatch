@@ -168,13 +168,16 @@ distingue trois étages, du plus formel au plus diffus :</p>
 <div class="scroll"><table><tr><th>Étage</th><th>Contenu</th><th>Données</th><th>Dans le site</th></tr>
 <tr><td>Alignements</td><td>traités, adhésions, alliances</td><td><code>alignments.yaml</code></td><td>vue Organisations, blocs de la carte</td></tr>
 <tr><td>Soutiens</td><td>aides concrètes à un camp (armes, argent, troupes…)</td><td><code>network.yaml</code>, <code>edges</code></td><td>graphe des soutiens, dossiers</td></tr>
-<tr><td>Leviers</td><td>dépendances chiffrées (armes importées ; gaz, pétrole, dette à venir)</td><td><code>network.yaml</code>, <code>dependencies</code></td><td>fiche « Dépend de », filtre « Leviers », dossiers</td></tr>
+<tr><td>Leviers</td><td>dépendances chiffrées : armes, gaz, pétrole, minerais critiques, denrées (dette à venir)</td><td><code>network.yaml</code>, <code>dependencies</code></td><td>fiche « Dépend de », filtre « Leviers », dossiers</td></tr>
 </table></div>
 <p><b>Règle des leviers</b> : une dépendance est une <b>part chiffrée et sourcée</b>, jamais un poids choisi à la main.
 Premier type : la part d'un fournisseur dans les importations d'armes majeures d'un pays (SIPRI, tableau 2 de la fiche
 « Trends in International Arms Transfers 2025 », période 2021-2025), pour les pays du graphe et les parts d'au moins 10 %.
 C'est une part des <i>importations</i>, pas de tout l'armement : pour un grand exportateur (États-Unis, Allemagne, Chine,
-Israël, Royaume-Uni), une note le rappelle. Les leviers n'entrent pas dans le calcul des blocs.
+Israël, Royaume-Uni), une note le rappelle.
+Énergie et ressources : part d'un fournisseur dans les importations de gaz (Conseil de l'UE), de pétrole (Reuters/Kpler,
+Eurostat), de terres rares (USGS) ou de blé (USDA). Les sources sont plus dispersées que pour les armes : seules les parts
+publiées ou calculables à partir de volumes publiés sont retenues, et une part calculée le dit dans sa note. Les leviers n'entrent pas dans le calcul des blocs.
 {len(d.get("dependencies", []))} dépendance(s) recensée(s). Ce qui ne se mesure pas de façon comparable (médias, religion,
 désinformation) reste dans les dossiers, en texte attribué.</p>
 
