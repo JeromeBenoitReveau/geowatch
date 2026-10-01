@@ -47,7 +47,7 @@ CSS = """
 #schema.ghosted .rel{opacity:.18}#schema .gl{font-size:13px;paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
 #schema .rel{transition:opacity .15s}#schema.focus .rel:not(.on){opacity:.14}#schema.focus .node:not(.on){opacity:.35}
 .bar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:26px 0 0;min-height:30px}
-/* contrôle segmenté Schéma / Carte : même dessin que celui des vues de « Carte & graphe » */
+/* contrôle segmenté Schéma / Carte : même dessin que celui de la vue d'ensemble (explorer.html) */
 .seg{display:inline-flex;flex-wrap:wrap;padding:3px;gap:2px;border:1px solid var(--mist);border-radius:7px;background:var(--land)}
 .seg button{display:flex;align-items:center;gap:7px;padding:6px 12px;border:0;border-radius:5px;background:none;font:14px var(--sans);color:var(--graphite);cursor:pointer;white-space:nowrap}
 .seg button:hover{color:var(--ink)}.seg button[aria-pressed=true]{background:color-mix(in srgb,var(--ink) 8%,var(--land));color:var(--ink)}
@@ -136,7 +136,7 @@ const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const nm = id => esc((D.actors[id] || {}).name || id);
 const isFlag = id => ["state", "bloc"].includes((D.actors[id] || {}).kind);
 const flag = id => `https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/${id.toLowerCase()}.svg`;
-// Sans drapeau ni photo : même pictogramme que dans « Carte & graphe » (Lucide, ISC) — épées = groupe armé, urne = parti, silhouette = personne
+// Sans drapeau ni photo : même pictogramme que dans la vue d'ensemble (Lucide, ISC) — épées = groupe armé, urne = parti, silhouette = personne
 const GLYPH = {
   non_state: '<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/>',
   party: '<path d="m9 12 2 2 4-4"/><path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v12H5V7Z"/><path d="M22 19H2"/>',
@@ -438,7 +438,7 @@ function detail(){ const F = window.FACTS, svg = $("#schema"), box = $("#detail"
   if(!PICK){ box.innerHTML = `<p class="none" style="margin:0">${F.length ? "Cliquez un trait ou un acteur pour lire le fait, sa date et ses sources." : "Aucun fait entre ces acteurs dans le graphe."}</p>`; return; }
   box.innerHTML = (camp ? `<p class="none" style="margin:0 0 12px">${esc(camp.name)} : ${camp.members.map(nm).join(", ")}. Les faits entre eux sont listés ici, pas dessinés.</p>` : "")
     + (on.length ? on.map(card).join("") : `<p class="none" style="margin:0 0 12px">Aucun fait entre ${camp ? "ce camp" : nm(PICK.n)} et les autres acteurs choisis.</p>`)
-    + (PICK.n && !camp ? `<p class="fact m"><a href="explorer.html#graphe:${esc(PICK.n)}">Voir toutes les relations de ${nm(PICK.n)} dans Carte &amp; graphe</a></p>` : ""); }
+    + (PICK.n && !camp ? `<p class="fact m"><a href="explorer.html#graphe:${esc(PICK.n)}">Voir toutes les relations de ${nm(PICK.n)} dans la vue d'ensemble</a></p>` : ""); }
 
 // ---------- Panneau de choix : catégories visibles d'un coup, champ qui filtre (sans accents ni casse) ----------
 const flat = v => String(v).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();

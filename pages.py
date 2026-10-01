@@ -20,9 +20,17 @@ CSS = """
 .conflict .vs .ns{display:inline-flex;align-items:center;justify-content:center;background:var(--graphite);color:var(--paper)}
 .conflict .vs .vs-x{color:var(--graphite)}
 .conflict p.lede1{margin:0;font-size:14px;line-height:1.45;color:var(--graphite);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.crossq{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.crossq .card{padding:16px 18px}.crossq h3{font-size:17px;margin:0}.crossq p{margin:4px 0 0;font-size:14px;color:var(--graphite)}
+.crossq .marks{display:flex;align-items:center;gap:6px;margin:0 0 10px;min-height:20px}
+.crossq .marks img,.crossq .marks .ns{width:20px;height:20px;border-radius:50%;object-fit:cover;flex:none;box-shadow:0 0 0 1px var(--mist)}
+.crossq .marks .ns{display:inline-flex;align-items:center;justify-content:center;background:var(--graphite);color:var(--paper)}
+.crossq .pick{border-style:dashed}
 .explore{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.explore .card{padding:22px}.explore .ico{display:block;margin-bottom:12px}
-.explore p.use{margin:0 0 14px;font-size:16px;color:var(--ink)}.explore .count{font-size:13px;color:var(--graphite)}
+/* vue d'ensemble : trois liens compacts sur une ligne (les blocs conflits et « Croiser » passent avant) */
+.explore .card{padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:0 12px;align-items:center}
+.explore .card{align-items:start;align-content:start}.explore .ico{grid-row:1 / 3;width:22px;height:22px;margin-top:2px}.explore h3{font-size:17px;margin:0}
+.explore p.use{grid-column:2;margin:4px 0 0;font-size:14px;line-height:1.45;color:var(--graphite)}
 /* étiquette discrète (date de mise à jour) : filet fin, coins à peine arrondis */
 .hero .updated{margin:22px 0 0}
 .tag{display:inline-flex;align-items:center;gap:7px;padding:3px 9px;border:1px solid var(--mist);border-radius:3px;
@@ -30,10 +38,10 @@ CSS = """
 .tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--peach)}
 .page{padding:64px 0 0}.page h2{margin-top:40px}.page ol li,.page ul li{margin-bottom:10px}
 @media (max-width:760px){.hero{padding:48px 0 28px}.hero h1{font-size:34px}.conflicts{grid-template-columns:1fr}
-  .explore{grid-template-columns:1fr}}
+  .explore,.crossq{grid-template-columns:1fr}}
 """
 
-svg = lambda k: style.icon(k, 28)
+svg = lambda k: style.icon(k, 22)
 
 WORLD_MAP = """<script src="https://cdn.jsdelivr.net/npm/d3-array@3/dist/d3-array.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-geo@3/dist/d3-geo.min.js"></script>
@@ -91,30 +99,44 @@ def conflict_row(x, d):
 <p class="vs">{camp_marks(x["sides"][0], d)}<span>{e(names[0])}</span><span class="vs-x">contre</span>{camp_marks(x["sides"][1], d)}<span>{e(names[1][:1].lower() + names[1][1:])}</span></p>
 <p class="lede1">{e(first)}</p></div></a>"""
 
+def cross_links(d):
+    """Questions d'exemple de la page Relations (cross.EXAMPLES), avec les drapeaux des pays cités."""
+    import cross
+    out = []
+    for q, title in cross.EXAMPLES:
+        toks = q.split(",")
+        flags = "".join(f'<img src="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/{t.lower()}.svg" alt="">'
+                        for t in toks if d["actors"].get(t, {}).get("kind") in ("state", "bloc"))
+        marks = flags + "".join(f'<span class="ns">{SWORDS}</span>' for t in toks if t.startswith("d:")) \
+            + "".join(style.dep_icon(t[2:], 16) for t in toks if t.startswith("r:"))
+        out.append(f'<a class="card" href="croiser.html?e={e(q)}"><div class="marks">{marks}</div><h3>{e(title)}</h3></a>')
+    return "".join(out)
+
 def home(d, dossiers):
-    groups = d["align"]["groups"]
     built = "/".join(reversed(d["built"][:10].split("-")))
     body = f"""<section class="hero"><h1>{e(brand.BASELINE)}</h1>
 <p>Guerres, alliances, sanctions, rivalités : qui s'oppose à qui, qui soutient qui, et pour quelles raisons.
-Les rapports de force du monde rendus lisibles, sans prérequis. Chaque affirmation est sourcée.</p>
+Les rapports de force du monde rendus lisibles, sans prérequis.</p>
 <p class="updated"><span class="tag">Mis à jour le {built}</span></p></section>
 
 <section id="conflits"><h2>Comprendre les conflits en cours</h2>
 <div class="conflicts">{"".join(conflict_row(x, d) for x in dossiers)}</div>
 </section>
 
-<section class="s"><h2>Aller plus loin : explorer les données</h2>
-<p class="quiet" style="margin:-8px 0 18px">Les réseaux d'influence : alliances, soutiens et dépendances, pays par pays.</p>
+<section class="s"><h2>Croiser des acteurs</h2>
+<p class="quiet" style="margin:-8px 0 18px">Choisissez des pays, un conflit ou une ressource : un schéma montre ce qui les relie, fait par fait.</p>
+<div class="crossq">{cross_links(d)}
+<a class="card pick" href="croiser.html"><h3>Choisir moi-même</h3><p>Pays, groupes armés, conflits, ressources.</p></a></div></section>
+
+<section class="s"><h2>La vue d'ensemble</h2>
+<p class="quiet" style="margin:-8px 0 18px">Tous les acteurs d'un coup : alliances, soutiens et dépendances, pays par pays.</p>
 <div class="explore">
 <a class="card" href="explorer.html#organisations">{svg("orgs")}<h3>Les organisations</h3>
-<p class="use">Voir qui appartient à quoi (OTAN, BRICS, Union européenne…), et quels pays sont à la croisée de plusieurs camps.</p>
-<span class="count">{len(groups)} organisations et alliances</span></a>
+<p class="use">Voir qui appartient à quoi (OTAN, BRICS, Union européenne…), et quels pays sont à la croisée de plusieurs camps.</p></a>
 <a class="card" href="explorer.html#carte">{svg("map")}<h3>La carte du monde</h3>
-<p class="use">Voir de quel côté penche chaque pays, et depuis quand.</p>
-<span class="count">{len(d["geo"])} pays</span></a>
+<p class="use">Voir de quel côté penche chaque pays, et depuis quand.</p></a>
 <a class="card" href="explorer.html#graphe">{svg("graph")}<h3>Le graphe des soutiens</h3>
-<p class="use">Suivre qui arme, qui finance et qui affronte qui.</p>
-<span class="count">{len(d["actors"])} acteurs, {len(d["edges"])} relations</span></a>
+<p class="use">Suivre qui arme, qui finance et qui affronte qui.</p></a>
 </div></section>
 <p class="quiet" style="margin-top:56px">Pourquoi vulgariser la géopolitique, et comment ce site est fait : <a href="manifeste.html">le manifeste</a>.
 Les mots du site sont définis dans le <a href="glossaire.html">glossaire</a>.</p>"""

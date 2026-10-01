@@ -43,7 +43,7 @@ def build():
     data = {"actors": actors, "edges": edges, "profiles": profiles, "colors": TYPE_COLORS,
             "tensions": network.tensions(), "mediations": network.mediations(), "dependencies": network.dependencies(), "align": aligns, "influence": network.influence(actors, edges, aligns), "geo": geo, "people": db.load_people(), "unga": unga,
             "dossiers": [{"id": x["id"], "title": x["title"]} for x in dossier.load()], "built": db.now(),
-            "glossary": glossary.for_js(), "presets": presets.load(), "correction": style.correction_url("Carte & graphe"), "dep_icons": style.DEP_ICONS}
+            "glossary": glossary.for_js(), "presets": presets.load(), "correction": style.correction_url("Vue d'ensemble"), "dep_icons": style.DEP_ICONS}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
                             .replace("</", "<\\/"))
     (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS).replace("__TOP__", style.top("explorer.html")).replace("__THEME__", style.THEME_INIT).replace("__VIEWS__", "".join(
@@ -60,7 +60,7 @@ def build():
 
 TEMPLATE = r"""<!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Carte & graphe — __NAME__</title>
+<title>Vue d'ensemble — __NAME__</title>
 <meta name="description" content="Les réseaux d’influence : alliances, soutiens et dépendances, sur une carte du monde, un graphe et des cercles d’organisations. Données sourcées.">
 <script src="https://cdn.jsdelivr.net/npm/vis-network@10.1.2/standalone/umd/vis-network.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
@@ -991,7 +991,7 @@ function showCountry(iso){
 function legend(){
   if(map) highlightLinks(null);
   if(FOCUS){ focusGraph(null); refresh(); }
-  $("#panel").innerHTML = `<h1>Carte &amp; graphe</h1>
+  $("#panel").innerHTML = `<h1>Vue d'ensemble</h1>
   <p>Les ${T("influence", "réseaux d'influence")} : alliances, soutiens et dépendances.</p>
   <p>Pour commencer simplement, lisez un dossier : il raconte un conflit, ses camps et leurs soutiens.</p>
   <div class="dossiers">${(D.dossiers||[]).map(x => `<a class="btn-dossier" href="${esc(x.id)}.html">${esc(x.title)}</a>`).join("")}</div>
