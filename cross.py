@@ -78,6 +78,10 @@ CSS = """
 .fr .span b{position:absolute;left:-5px;top:-3.5px;width:12px;height:12px;border-radius:50%;box-shadow:0 0 0 2px var(--paper)}
 #frise.focus .row:not(.on){opacity:.3}
 @media (max-width:640px){.fr{grid-template-columns:1fr}.fr.axis>div:first-child{display:none}.fr .track{min-height:22px}}
+#grp{font:14px var(--sans);color:var(--graphite);background:none;border:1px solid var(--mist);border-radius:4px;padding:5px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+#grp[hidden]{display:none}#grp::before{content:"";width:9px;height:9px;border-radius:50%;border:1.5px solid var(--graphite)}
+#grp:hover{border-color:var(--peach);color:var(--ink)}#grp[aria-pressed=true]{color:var(--ink)}#grp[aria-pressed=true]::before{background:var(--peach);border-color:var(--peach)}
+#schema .camp .ring{stroke-dasharray:none;stroke-width:2}#schema .more{font-size:11.5px;fill:var(--graphite)}
 #zoom{display:flex;gap:4px}#zoom[hidden]{display:none}
 #zoom button{font:14px var(--sans);min-width:30px;height:30px;padding:0 9px;color:var(--ink);background:var(--land);border:1px solid var(--mist);border-radius:4px;cursor:pointer}
 #zoom button:hover{border-color:var(--peach)}
@@ -122,7 +126,7 @@ def data(d):
             "orgs": [o for o in orgs if len(o["members"]) >= 2], "agree": agree, "agree_year": unga.get("agreement_year"),
             "edges": live(d["edges"]), "tensions": live(d["tensions"]), "mediations": live(d["mediations"]),
             "dependencies": live(d["dependencies"]), "colors": d["colors"], "people": people,
-            "dossiers": [{"id": x["id"], "title": x["title"], "sides": [s["actors"] for s in x["sides"]]}
+            "dossiers": [{"id": x["id"], "title": x["title"], "sides": [s["actors"] for s in x["sides"]], "names": [s["name"] for s in x["sides"]]}
                          for x in dossier.load()]}
 
 SCRIPT = r"""<script>
@@ -222,7 +226,14 @@ function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : pa
 const NARROW = innerWidth < 600, W = NARROW ? 400 : 760, H = 470, CX = W / 2, CY = H / 2 - 4;
 // Carte : mêmes traits, acteurs posés sur leur pays (Natural Earth, sans tuiles). Cadre ajusté aux acteurs choisis, zoom plafonné ;
 // deux acteurs au même endroit (un groupe armé et son pays) sont écartés juste assez pour rester lisibles.
-let ZM = null, BASE = null, LAST = null, GEO = null, BR = [];
+let ZM = null, BASE = null, LAST = null, GEO = null, BR = [], RELS = [], CAMPS = {}, DISP = id => id;
+// Regroupement des camps (schéma seulement) : chaque camp d'un conflit choisi devient UN rond, ses faits internes sortent du dessin
+// et les traits de même nature vers un même voisin fusionnent (« ×3 »). Par défaut au-delà de 6 acteurs ; l'URL garde le choix (g=1 / g=0).
+let GRP = {1: true, 0: false}[new URLSearchParams(location.search).get("g")];
+function camps(ids){ const solo = new Set(SEL.filter(t => D.actors[t])), taken = new Set(), out = {};
+  SEL.filter(t => DOS[t]).forEach(t => DOS[t].sides.forEach((side, i) => { const m = side.filter(id => ids.includes(id) && !solo.has(id) && !taken.has(id));
+    if(m.length < 2) return; m.forEach(id => taken.add(id)); out[`g:${t.slice(2)}:${i}`] = {name: DOS[t].names[i], members: m}; }));
+  return out; }
 function mapLayout(all, R){ const pts = all.map(id => D.pos[id]), mp = {type: "MultiPoint", coordinates: pts}, CAP = NARROW ? 420 : 700;
   let proj = d3.geoMercator().fitExtent([[70, 56], [W - 70, H - 64]], mp);
   if(!(proj.scale() < CAP)) proj = d3.geoMercator().scale(CAP).center(d3.geoCentroid(mp)).translate([W / 2, H / 2]);
@@ -235,28 +246,45 @@ function mapLayout(all, R){ const pts = all.map(id => D.pos[id]), mp = {type: "M
   const land = WORLD.map(f => `<path d="${path(f)}" class="${on.has(+f.id) ? "c on" : "c"}"/>`).join("");
   return {P, land}; }
 function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ...extra].every(id => D.pos[id]), R = MAP ? 17 : 27;
-  const all = [...ids, ...extra], n = all.length; let P = {}, land = "";
+  const possible = camps(ids), grouped = !MAP && VIEW === "schema" && (GRP ?? ids.length + extra.length > 6) && Object.keys(possible).length > 0;
+  CAMPS = grouped ? possible : {}; const of = {}; Object.entries(CAMPS).forEach(([g, c]) => c.members.forEach(id => of[id] = g)); DISP = id => of[id] || id;
+  $("#grp").hidden = MAP || VIEW !== "schema" || !Object.keys(possible).length; $("#grp").setAttribute("aria-pressed", grouped);
+  const all = [...new Set([...ids, ...extra].map(DISP))], n = all.length, rad = id => CAMPS[id] ? 38 : R; let P = {}, land = "";
+  // traits affichés : un par fait, ou un par groupe de faits de même nature entre les deux mêmes ronds
+  RELS = []; const idx = {};
+  F.forEach(f => f.links.forEach(l => { const u = DISP(l[0]), v = DISP(l[1]); if(u === v) return;
+    const k = [f.group, f.color, f.dash || "", f.dep || "", ...(f.arrow ? [u, v] : [u, v].sort())].join("|") + (grouped ? "" : "|" + f.id);
+    if(idx[k] == null){ idx[k] = RELS.length; RELS.push({id: RELS.length, fids: [], l: [u, v], color: f.color, width: 0, dash: f.dash, round: f.round, arrow: f.arrow, dep: f.dep, value: f.value, tip: f.tip}); }
+    const r = RELS[idx[k]]; if(!r.fids.includes(f.id)) r.fids.push(f.id); r.width = Math.max(r.width, f.width); }));
+  RELS.forEach(r => { if(r.fids.length < 2) return; r.tip = r.fids.length + " faits de même nature";
+    r.value = r.dep ? r.value.replace(/ [\d,]+ %$/, "") + " ×" + r.fids.length : "×" + r.fids.length; });
   if(MAP) ({P, land} = mapLayout(all, R)); else {
   const rx = NARROW ? 125 : n === 2 ? 230 : 285, ry = n === 2 ? 0 : NARROW ? 180 : 165, a0 = n % 2 === 0 ? -90 - 180 / n : -90;
   all.forEach((id, i) => { const a = (a0 + 360 * i / n) * Math.PI / 180; P[id] = [CX + rx * Math.cos(a), CY + ry * Math.sin(a)]; }); }
-  const byPair = {}; F.forEach(f => f.links.forEach(l => { const k = [...l].sort().join("|"); (byPair[k] = byPair[k] || []).push([f, l]); }));
-  const cols = [...new Set(F.filter(f => f.arrow).map(f => f.color))];
+  const byPair = {}; RELS.forEach(f => { const l = f.l, k = [...l].sort().join("|"); (byPair[k] = byPair[k] || []).push([f, l]); });
+  const cols = [...new Set(RELS.filter(f => f.arrow).map(f => f.color))];
   let s = `<defs>${cols.map((c, i) => `<marker id="mk${i}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`).join("")}
     <clipPath id="cp"><circle r="${R - 3}"/></clipPath></defs>${land ? `<g class="land">${land}</g>` : ""}`;
   Object.entries(byPair).forEach(([k, list]) => { const [u, v] = k.split("|"), [x1, y1] = P[u], [x2, y2] = P[v];
     const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy), nx = -dy / len, ny = dx / len;
     list.forEach(([f, l], i) => { const off = (i - (list.length - 1) / 2) * Math.min(38, len / 5);
       const mx = (x1 + x2) / 2 + nx * off * 2, my = (y1 + y2) / 2 + ny * off * 2;      // point de contrôle
-      const end = (px, py) => { const ex = mx - px, ey = my - py, d = Math.hypot(ex, ey) || 1; return [px + ex / d * (R + 5), py + ey / d * (R + 5)]; };
-      const [fa, fb] = l[0] === u ? [end(x1, y1), end(x2, y2)] : [end(x2, y2), end(x1, y1)];
+      const end = (px, py, q) => { const ex = mx - px, ey = my - py, d = Math.hypot(ex, ey) || 1; return [px + ex / d * (rad(q) + 5), py + ey / d * (rad(q) + 5)]; };
+      const [fa, fb] = l[0] === u ? [end(x1, y1, u), end(x2, y2, v)] : [end(x2, y2, v), end(x1, y1, u)];
       const path = `M${fa[0].toFixed(1)} ${fa[1].toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${fb[0].toFixed(1)} ${fb[1].toFixed(1)}`;
-      s += `<g class="rel" data-f="${f.id}"><path d="${path}" fill="none" stroke="${f.color}" stroke-width="${f.width.toFixed(1)}"${f.dash ? ` stroke-dasharray="${f.dash}"` : ""}${f.round ? ' stroke-linecap="round"' : ""}${f.arrow ? ` marker-end="url(#mk${cols.indexOf(f.color)})"` : ""}/>
-        ${f.value ? (() => { const w = f.value.length * 6.3 + 30, lx = (x1 + x2) / 2 + nx * off, ly = (y1 + y2) / 2 + ny * off;
+      s += `<g class="rel" data-r="${f.id}"><path d="${path}" fill="none" stroke="${f.color}" stroke-width="${f.width.toFixed(1)}"${f.dash ? ` stroke-dasharray="${f.dash}"` : ""}${f.round ? ' stroke-linecap="round"' : ""}${f.arrow ? ` marker-end="url(#mk${cols.indexOf(f.color)})"` : ""}/>
+        ${f.value ? (() => { const w = f.value.length * 6.3 + (f.dep ? 30 : 18), lx = (x1 + x2) / 2 + nx * off, ly = (y1 + y2) / 2 + ny * off;
           return `<g transform="translate(${(lx - w / 2).toFixed(1)} ${(ly - 10).toFixed(1)})"><title>${esc(f.tip)}</title><rect class="pill" width="${w.toFixed(1)}" height="20" rx="10"/>
-            <svg x="8" y="4.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${DEP}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${DEP_ICON[f.dep] || ""}</svg>
-            <text class="val" x="23" y="14.2">${esc(f.value)}</text></g>`; })() : ""}
+            ${f.dep ? `<svg x="8" y="4.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${DEP}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${DEP_ICON[f.dep] || ""}</svg>` : ""}
+            <text class="val" x="${f.dep ? 23 : 9}" y="14.2">${esc(f.value)}</text></g>`; })() : ""}
         <path class="hit" d="${path}"/></g>`; }); });
   all.forEach(id => { const [x, y] = P[id], up = y < CY - 1, name = (D.actors[id] || {}).name || id;
+    if(CAMPS[id]){ const c = CAMPS[id], m = c.members, show = m.slice(0, m.length > 4 ? 3 : 4), q = 15, cell = (i, k) => { const a = (-90 + 360 * i / k) * Math.PI / 180, d = k === 1 ? 0 : k === 2 ? 15 : 18; return [d * Math.cos(a), d * Math.sin(a)]; };
+      const k = show.length + (m.length > show.length ? 1 : 0);
+      s += `<g class="node camp" data-n="${esc(id)}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})" tabindex="0" role="button" aria-label="${esc(c.name)}"><circle class="ring" r="38"/>
+        ${show.map((a, i) => { const [ax, ay] = cell(i, k); return `<clipPath id="cc${esc(id.replace(/\W/g, ""))}${i}"><circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="${q - 2}"/></clipPath><image href="${esc(pic(a))}" x="${(ax - q + 2).toFixed(1)}" y="${(ay - q + 2).toFixed(1)}" width="${2 * q - 4}" height="${2 * q - 4}" clip-path="url(#cc${esc(id.replace(/\W/g, ""))}${i})" preserveAspectRatio="xMidYMid slice"><title>${esc(D.actors[a].name)}</title></image>`; }).join("")}
+        ${m.length > show.length ? (() => { const [ax, ay] = cell(k - 1, k); return `<text class="more" text-anchor="middle" x="${ax.toFixed(1)}" y="${(ay + 4).toFixed(1)}">+${m.length - show.length}</text>`; })() : ""}
+        <text class="lab" text-anchor="middle" y="${up ? -38 - 9 : 38 + 20}">${esc(c.name)}</text></g>`; return; }
     s += `<g class="node${extra.includes(id) ? " extra" : ""}" data-n="${esc(id)}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})" tabindex="0" role="button" aria-label="${esc(name)}">
       <circle class="ring" r="${R}"/>${pic(id) ? `<image href="${esc(pic(id))}" x="${-R + 3}" y="${-R + 3}" width="${2 * R - 6}" height="${2 * R - 6}" clip-path="url(#cp)" preserveAspectRatio="xMidYMid slice"/>`
         : `<circle r="${R - 3}" fill="var(--graphite)"/><text class="ini" text-anchor="middle" y="4.5">${esc(name.slice(0, 2).toUpperCase())}</text>`}
@@ -311,7 +339,7 @@ const bridgeWhy = (x, a) => x.fs.filter(f => f.nodes.includes(a)).map(f => (f.ki
 // aperçu au survol (schéma seulement) : l'intermédiaire au centre, ses liens en tirets de la couleur du fait
 function ghost(x){ const svg = $("#schema"); unghost(); if(!GEO || GEO.MAP || VIEW !== "schema") return;
   const R = 22, gx = CX, gy = GEO.n === 2 ? CY - 58 : CY, name = D.actors[x.c].name;
-  const lines = x.fs.flatMap(f => f.nodes.filter(a => a !== x.c && GEO.P[a]).map(a => `<line x1="${gx}" y1="${gy}" x2="${GEO.P[a][0].toFixed(1)}" y2="${GEO.P[a][1].toFixed(1)}" stroke="${f.color}" stroke-width="2.2" stroke-dasharray="5 5"/>`)).join("");
+  const lines = x.fs.flatMap(f => f.nodes.filter(a => a !== x.c && GEO.P[DISP(a)]).map(a => `<line x1="${gx}" y1="${gy}" x2="${GEO.P[DISP(a)][0].toFixed(1)}" y2="${GEO.P[DISP(a)][1].toFixed(1)}" stroke="${f.color}" stroke-width="2.2" stroke-dasharray="5 5"/>`)).join("");
   const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); g.setAttribute("class", "ghost");
   g.innerHTML = `${lines}<circle cx="${gx}" cy="${gy}" r="${R}" class="ring" stroke-dasharray="3 3"/><clipPath id="cpg"><circle cx="${gx}" cy="${gy}" r="${R - 3}"/></clipPath>
     <image href="${esc(pic(x.c))}" x="${gx - R + 3}" y="${gy - R + 3}" width="${2 * R - 6}" height="${2 * R - 6}" clip-path="url(#cpg)" preserveAspectRatio="xMidYMid slice"/>
@@ -335,7 +363,7 @@ function render(){ const ids = scope(), {F, extra} = facts(ids), ok = ids.length
   const sug = ids.length ? suggest(ids) : [];
   $("#sug").innerHTML = sug.length ? "À croiser aussi : " + sug.map(x => `<button type="button" data-add="${esc(x.t)}">${mark(x.t)}${label(x.t)} <small>${x.n} lien${x.n > 1 ? "s" : ""}</small></button>`).join("") : "";
   $("#empty").hidden = ok; $("#out").hidden = !ok;
-  history.replaceState(null, "", location.pathname + (SEL.length ? "?e=" + SEL.join(",") + (VIEW === "map" ? "&v=carte" : VIEW === "frise" ? "&v=frise" : VIEW === "communs" ? "&v=communs" : "") : ""));
+  history.replaceState(null, "", location.pathname + (SEL.length ? "?e=" + SEL.join(",") + (VIEW === "map" ? "&v=carte" : VIEW === "frise" ? "&v=frise" : VIEW === "communs" ? "&v=communs" : "") + (GRP == null ? "" : "&g=" + (GRP ? 1 : 0)) : ""));
   document.querySelectorAll("#seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === VIEW));
   if(!ok) return;
   draw(ids, extra, F); frise(F); communs(ids);
@@ -357,7 +385,7 @@ function render(){ const ids = scope(), {F, extra} = facts(ids), ok = ids.length
   $("#none").innerHTML = pairs.length ? `Ce que le graphe ne contient pas : aucune relation documentée entre ${pairs.join(" ; ")}. Cela ne prouve pas qu'il n'y en a pas, seulement qu'aucune n'est sourcée ici.` : "";
   $("#all").innerHTML = `<summary>Tous les faits (${F.length}) et leurs sources</summary>` + (F.length ? GROUPS.filter(([g]) => F.some(f => f.group === g)).map(([g, t]) =>
     `<h3>${t}</h3>` + F.filter(f => f.group === g).map(card).join("")).join("") : '<p class="none">Aucun fait entre ces acteurs dans le graphe.</p>');
-  window.FACTS = F; if(PICK && !(PICK.f != null ? F[PICK.f] : ids.concat(extra).includes(PICK.n))) PICK = null;
+  window.FACTS = F; if(PICK && !(PICK.r != null ? RELS[PICK.r] : PICK.f != null ? F[PICK.f] : ids.concat(extra).includes(PICK.n) || CAMPS[PICK.n])) PICK = null;
   detail(); }
 
 // ---------- Frise : une ligne par fait daté, du début à aujourd'hui. Échelle resserrée vers le passé (racine du temps écoulé)
@@ -401,14 +429,16 @@ function communs(ids){ const st = ids.filter(id => D.actors[id].kind === "state"
 function detail(){ const F = window.FACTS, svg = $("#schema"), box = $("#detail");
   document.querySelectorAll("#frise .row").forEach(r => r.classList.toggle("on", !!PICK && PICK.f === +r.dataset.f));
   $("#frise").classList.toggle("focus", !!PICK && PICK.f != null);
-  const on = PICK ? F.filter(f => PICK.f != null ? f.id === PICK.f : f.nodes.includes(PICK.n)) : [];
+  const camp = PICK && PICK.n ? CAMPS[PICK.n] : null, rel = PICK && PICK.r != null ? RELS[PICK.r] : null;
+  const on = !PICK ? [] : F.filter(f => rel ? rel.fids.includes(f.id) : PICK.f != null ? f.id === PICK.f : camp ? f.nodes.some(x => camp.members.includes(x)) : f.nodes.includes(PICK.n));
   svg.classList.toggle("focus", !!PICK);
-  svg.querySelectorAll(".rel").forEach(g => g.classList.toggle("on", on.some(f => f.id === +g.dataset.f)));
-  const near = new Set(on.flatMap(f => f.nodes)); if(PICK && PICK.n) near.add(PICK.n);
+  svg.querySelectorAll(".rel").forEach(g => g.classList.toggle("on", RELS[+g.dataset.r] && RELS[+g.dataset.r].fids.some(i => on.some(f => f.id === i))));
+  const near = new Set(on.flatMap(f => f.nodes).map(DISP)); if(PICK && PICK.n) near.add(PICK.n);
   svg.querySelectorAll(".node").forEach(g => g.classList.toggle("on", near.has(g.dataset.n)));
   if(!PICK){ box.innerHTML = `<p class="none" style="margin:0">${F.length ? "Cliquez un trait ou un acteur pour lire le fait, sa date et ses sources." : "Aucun fait entre ces acteurs dans le graphe."}</p>`; return; }
-  box.innerHTML = (on.length ? on.map(card).join("") : `<p class="none" style="margin:0 0 12px">Aucun fait entre ${nm(PICK.n)} et les autres acteurs choisis.</p>`)
-    + (PICK.n ? `<p class="fact m"><a href="explorer.html#graphe:${esc(PICK.n)}">Voir toutes les relations de ${nm(PICK.n)} dans Carte &amp; graphe</a></p>` : ""); }
+  box.innerHTML = (camp ? `<p class="none" style="margin:0 0 12px">${esc(camp.name)} : ${camp.members.map(nm).join(", ")}. Les faits entre eux sont listés ici, pas dessinés.</p>` : "")
+    + (on.length ? on.map(card).join("") : `<p class="none" style="margin:0 0 12px">Aucun fait entre ${camp ? "ce camp" : nm(PICK.n)} et les autres acteurs choisis.</p>`)
+    + (PICK.n && !camp ? `<p class="fact m"><a href="explorer.html#graphe:${esc(PICK.n)}">Voir toutes les relations de ${nm(PICK.n)} dans Carte &amp; graphe</a></p>` : ""); }
 
 // ---------- Panneau de choix : catégories visibles d'un coup, champ qui filtre (sans accents ni casse) ----------
 const flat = v => String(v).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -436,7 +466,8 @@ document.addEventListener("click", ev => { const t = ev.target;
   if(t.dataset && t.dataset.fact != null){ PICK = {f: +t.dataset.fact}; return detail(); }
   const row = t.closest && t.closest("#frise .row"); if(row){ PICK = PICK && PICK.f === +row.dataset.f ? null : {f: +row.dataset.f}; return detail(); }
   const rel = t.closest && t.closest(".rel"), node = t.closest && t.closest(".node");
-  if(rel){ PICK = PICK && PICK.f === +rel.dataset.f ? null : {f: +rel.dataset.f}; return detail(); }
+  if(rel){ PICK = PICK && PICK.r === +rel.dataset.r ? null : {r: +rel.dataset.r}; return detail(); }
+  if(t.closest && t.closest("#grp")){ GRP = $("#grp").getAttribute("aria-pressed") !== "true"; PICK = null; return render(); }
   if(node){ PICK = PICK && PICK.n === node.dataset.n ? null : {n: node.dataset.n}; return detail(); }
   if(t.closest && t.closest("#schema") && PICK){ PICK = null; detail(); } });
 ["mouseover", "focusin"].forEach(e => document.addEventListener(e, ev => { const b = ev.target.closest && ev.target.closest("[data-bridge]"); b && BR[+b.dataset.bridge] ? ghost(BR[+b.dataset.bridge]) : unghost(); }));
@@ -477,6 +508,7 @@ def page(d):
 <div id="empty"><div class="ex"><span class="quiet">Pour commencer :</span>{examples}</div></div>
 <div id="out" hidden>
 <div class="bar"><div class="seg" id="seg" role="group" aria-label="Affichage"><button type="button" data-v="schema">__ICO_GRAPH__<span>Schéma</span></button><button type="button" data-v="map">__ICO_MAP__<span>Carte</span></button><button type="button" data-v="frise"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 6h9M8 12h12M13 18h8"/></svg><span>Frise</span></button><button type="button" data-v="communs">__ICO_ORGS__<span>Points communs</span></button></div>
+<button type="button" id="grp" aria-pressed="false" hidden>Regrouper les camps</button>
 <div id="zoom" hidden><button type="button" data-z="in" aria-label="Zoomer">+</button><button type="button" data-z="out" aria-label="Dézoomer">−</button><button type="button" data-z="fit">Recadrer</button></div></div>
 <div class="stage"><div id="frise" hidden></div><div id="communs" hidden></div><svg id="schema" role="group" aria-label="Schéma des relations entre les acteurs choisis"></svg></div>
 <div class="legend" id="legend"></div>
