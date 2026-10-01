@@ -538,10 +538,23 @@ function userChanged(){ if(PRESET) history.replaceState(null, "", location.pathn
 const S0 = sizes("military");
 const nodesDS = new vis.DataSet(Object.keys(D.actors).map(id=>nodeFor(id, S0[id])));
 const edgesDS = new vis.DataSet([...edgeList, ...anchors, ...tensionEdges, ...medEdges, ...depEdges]);
+// Disposition calculée UNE fois, hors écran, sur tout le graphe (tous les acteurs, tous les soutiens, toutes années),
+// puis figée (physics:false) : un pays garde sa place quels que soient les filtres, rien ne bouge tout seul.
 const net = new vis.Network($("#graph"), {nodes:nodesDS, edges:edgesDS},
-  {physics:{solver:"forceAtlas2Based", stabilization:{iterations:250}}, interaction:{hover:true}});
+  {physics:false, interaction:{hover:true}});
 net.on("click", p => p.nodes.length ? show(p.nodes[0]) : legend());
-net.once("stabilizationIterationsDone", () => { if(!PRESET) net.fit({animation: {duration: 400}}); });
+$("#graph").style.visibility = "hidden";
+(() => { const box = document.createElement("div");
+  box.style.cssText = "position:absolute;left:-9999px;top:0;width:800px;height:600px;visibility:hidden";
+  document.body.appendChild(box);
+  const lay = new vis.Network(box, {nodes: nodesDS.get().map(n => ({id: n.id, size: n.size, shape: "dot"})),
+      edges: [...edgeList, ...anchors].map(e => ({from: e.from, to: e.to}))},
+    {physics:{solver:"forceAtlas2Based", stabilization:{iterations:400, fit:false}}});
+  lay.once("stabilizationIterationsDone", () => { const pos = lay.getPositions();
+    lay.destroy(); box.remove();
+    nodesDS.update(Object.entries(pos).map(([id, p]) => ({id, x: p.x, y: p.y})));
+    $("#graph").style.visibility = "";
+    net.fit({nodes: nodesDS.get({filter: n => !n.hidden}).map(n => n.id)}); }); })();
 // Acteur sélectionné : ses relations (soutiens, tensions, ancrages) et leurs acteurs restent nets, le reste s'estompe.
 // Couleurs d'origine gardées pour restaurer ; la couleur d'une relation ne change jamais, seule son opacité baisse.
 const DIM = .12, ORIG = Object.fromEntries(edgesDS.get().map(e => [e.id, typeof e.color === "object" ? {...e.color} : {color: e.color, opacity: 1}]));
@@ -1022,7 +1035,7 @@ function applyPreset(p){ PRESET = p;
   viewNote();
   // cadrage sur les acteurs affichés, une fois le graphe stabilisé
   const fit = () => net.fit({nodes: nodesDS.get({filter: n => !n.hidden}).map(n => n.id), animation: {duration: 500}});
-  if(p.view === "graphe"){ net.once("stabilized", fit); setTimeout(fit, 900); }
+  if(p.view === "graphe"){ fit(); setTimeout(fit, 900); }
   if(p.view === "carte" && map) map.setView([30, 20], 2); }
 // quitter une vue préréglée : ses filtres n'étaient pas des choix du lecteur, on revient à la vue simplifiée
 function clearPreset(){ if(!PRESET) return; PRESET = null; AROUND = null;
