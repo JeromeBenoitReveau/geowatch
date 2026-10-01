@@ -5608,6 +5608,101 @@
    ]
   }
  },
+ "MX": {
+  "fetched_at": "2026-10-01T20:59:37+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 8.52143438004228,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 10.3004679132694,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 1.892,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 3180.07999137444,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0.0909613894136,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 13889.2339628708,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 1832641364775.52,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "empire",
+     "régime présidentiel",
+     "république constitutionnelle",
+     "république démocratique",
+     "république fédérale"
+    ],
+    "head_of_state": [
+     "Claudia Sheinbaum"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 19.3037596613987,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 83.12233799,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.893257529320534,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 16726425452.0934,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 1.36465937318187,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 2.06594374719816,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 0.826382426690595,
+    "year": 2025
+   },
+   "population": {
+    "value": 131946900,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 0.86,
+    "below_replacement": true,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.25372,
+    "year": 2024
+   },
+   "resource_rents_pct_gdp": {
+    "value": 3.64307338835023,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "MY": {
   "fetched_at": "2026-09-30T07:11:13+00:00",
   "profile": {

@@ -72,7 +72,7 @@ terms:
   - id: guerre-commerciale
     term: guerre commerciale
     aliases: [guerres commerciales]
-    definition: Deux pays se frappent l'un l'autre de droits de douane, des taxes sur les produits importés, chacun répondant aux mesures de l'autre. Ce n'est pas une guerre armée.
+    definition: Un pays frappe les produits d'un autre de droits de douane, des taxes sur les importations ; l'autre répond le plus souvent de la même façon. Ce n'est pas une guerre armée.
     example: Depuis 2025, les États-Unis et le Canada taxent chacun une partie des produits de l'autre.
   - id: cessez-le-feu
     term: cessez-le-feu

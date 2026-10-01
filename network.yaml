@@ -46,6 +46,9 @@ actors:
   QA: {name: Qatar, kind: state}
   GY: {name: Guyana, kind: state}
   CA: {name: Canada, kind: state}
+  MX: {name: Mexique, kind: state}
+  BR: {name: Brésil, kind: state}
+  AR: {name: Argentine, kind: state}
   SD: {name: Soudan (armée et gouvernement de Port-Soudan), kind: state,
        leader: {name: Abdel Fattah al-Burhan, wikidata: Q63111184, role: "Général, chef de l'armée et du Conseil de souveraineté"}}
   AE: {name: Émirats arabes unis, kind: state}
@@ -429,6 +432,14 @@ edges:
      note: "Partenariat de sécurité et de défense signé le 23 juin 2025 ; participation au programme européen d'achats de défense SAFE (150 milliards d'euros) approuvée en décembre 2025, le Canada étant le premier pays non européen à y entrer. Le 16 septembre 2026, Ursula von der Leyen propose un statut inédit de « membre associé », absent des traités ; Mark Carney l'accueille favorablement mais ne vise pas l'adhésion pleine. Donald Trump y voit un possible « acte hostile »",
      why: "Selon PBS, la pression commerciale américaine pousse le Canada vers l'Europe ; Mark Carney dit chercher à ne plus dépendre d'un seul marché"}
 
+  # --- Amérique latine : l'appui américain à l'Argentine ---
+  - {from: US, to: AR, since: "2025-10", types: [financial], status: active, confidence: high,
+     sources: ["Service de recherche du Congrès américain, « U.S. Financial Support to Argentina » (déc. 2025) — https://www.congress.gov/crs_external_products/R/PDF/R48780/R48780.1.pdf",
+               "Bloomberg Law, l'Argentine rembourse son tirage sur la ligne américaine (janv. 2026) — https://news.bloomberglaw.com/bankruptcy-law/bessent-says-argentina-repaid-drawdown-on-20-billion-swap-line"],
+     verified: 2026-10,
+     note: "Ligne d'échange de devises de 20 milliards de dollars financée par le Trésor américain, annoncée en octobre 2025 ; l'Argentine a tiré 2,5 milliards, remboursés en janvier 2026 selon le Trésor",
+     why: "Selon le Service de recherche du Congrès, le Trésor présente l'Argentine comme un allié « d'importance systémique » en Amérique latine, et des responsables américains disent vouloir y contrer l'influence chinoise"}
+
 tensions:
   - {from: RU, to: UA, type: war, since: "2022-02", status: active, confidence: high,
      sources: ["Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"],
@@ -457,6 +468,14 @@ tensions:
                "NPR, la riposte canadienne (août 2026) — https://www.npr.org/2026/08/25/nx-s1-5944240/canada-us-tariffs",
                "Al Jazeera, Carney et le risque d'un conflit avec les États-Unis (sept. 2026) — https://www.aljazeera.com/news/2026/9/25/why-canada-is-not-ruling-out-a-possible-war-with-the-us"],
      verified: 2026-10, note: "Droits de douane américains à partir de février-mars 2025. Échec des négociations le 21 août 2026 : 50 % de droits américains sur 20 milliards de dollars de produits canadiens, riposte canadienne équivalente en vigueur depuis le 8 septembre. Donald Trump évoque à plusieurs reprises le Canada comme « 51e État » ; Mark Carney dit avoir examiné le risque d'une attaque américaine, qu'il juge extrême et très peu probable"}
+  - {from: US, to: MX, type: trade_war, since: "2025-02", status: active, confidence: high,
+     sources: ["Service de recherche du Congrès américain, « Mexico: Background and Key Issues in U.S. Relations » (févr. 2026) — https://www.congress.gov/crs_external_products/R/PDF/R48859/R48859.1.pdf",
+               "Al Jazeera, Sheinbaum et les négociations commerciales avec Washington (sept. 2026) — https://www.aljazeera.com/news/2026/9/18/mexicos-sheinbaum-says-she-spoke-with-trump-as-trade-negotiations-continue"],
+     verified: 2026-10, note: "Depuis février 2025, Washington impose ou menace des droits de douane pour obtenir des résultats sur la migration, la drogue et le partage des eaux ; l'acier, l'aluminium et l'automobile sont taxés. Le Mexique n'a presque pas riposté et négocie un accord, visé avant les élections américaines de novembre 2026. Donald Trump a plusieurs fois menacé d'une intervention militaire contre les cartels, dont six sont classés organisations terroristes ; Claudia Sheinbaum accepte le partage de renseignement mais refuse toute intervention étrangère"}
+  - {from: US, to: BR, type: trade_war, since: "2025-07", status: active, confidence: high,
+     sources: ["Time, le Brésil condamne les droits de douane américains (juill. 2026) — https://time.com/article/2026/07/16/brazil-condemns-us-tariffs-lula-trump-greer/",
+               "Al Jazeera, Lula et les nouveaux droits de douane américains (juin 2026) — https://www.aljazeera.com/news/2026/6/3/lula-says-brazil-cannot-accept-treatment-after-new-us-tariffs-proposed"],
+     verified: 2026-10, note: "Juillet 2025 : 50 % de droits de douane américains, liés au procès de Jair Bolsonaro. Février 2026 : la Cour suprême américaine invalide l'essentiel de ces droits. Depuis le 22 juillet 2026, nouveaux droits de 25 % sur une autre base juridique (section 301) ; le Brésil active sa loi de réciprocité et saisit l'Organisation mondiale du commerce"}
   - {from: jnim, to: ML, type: war, since: "2017", status: active, confidence: high,
      sources: ["Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel",
                "Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region",
@@ -619,3 +638,8 @@ dependencies:
   - {from: UA, supplier: EU, type: trade, direction: imports, share: 48.6, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les importations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/ukr/year/2023/partner/all/indicator/MPRT-PRTNR-SHR"], verified: 2026-10, note: "Part de l'UE calculée en additionnant ses 27 membres"}
   - {from: CA, supplier: US, type: trade, direction: exports, share: 77.3, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les exportations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/can/year/2023/partner/all/indicator/XPRT-PRTNR-SHR"], verified: 2026-10}
   - {from: CA, supplier: US, type: trade, direction: imports, share: 49.6, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les importations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/can/year/2023/partner/all/indicator/MPRT-PRTNR-SHR"], verified: 2026-10}
+  - {from: MX, supplier: US, type: trade, direction: exports, share: 80.0, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les exportations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/mex/year/2023/partner/all/indicator/XPRT-PRTNR-SHR"], verified: 2026-10}
+  - {from: MX, supplier: US, type: trade, direction: imports, share: 42.8, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les importations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/mex/year/2023/partner/all/indicator/MPRT-PRTNR-SHR"], verified: 2026-10}
+  - {from: BR, supplier: CN, type: trade, direction: exports, share: 30.7, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les exportations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/bra/year/2023/partner/all/indicator/XPRT-PRTNR-SHR"], verified: 2026-10}
+  - {from: BR, supplier: CN, type: trade, direction: imports, share: 22.2, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les importations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/bra/year/2023/partner/all/indicator/MPRT-PRTNR-SHR"], verified: 2026-10}
+  - {from: AR, supplier: BR, type: trade, direction: imports, share: 23.5, year: 2023, period: "2023", status: active, sources: ["Banque mondiale, WITS : part de chaque partenaire dans les importations de marchandises, 2023 — https://wits.worldbank.org/API/V1/SDMX/V21/datasource/tradestats-trade/reporter/arg/year/2023/partner/all/indicator/MPRT-PRTNR-SHR"], verified: 2026-10}
