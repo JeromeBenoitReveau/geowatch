@@ -44,6 +44,7 @@ CSS = """
 #schema .node{cursor:pointer}#schema .ring{fill:var(--land);stroke:var(--mist);stroke-width:1.5}
 #schema .node.extra .ring{stroke-dasharray:3 3}#schema .node.on .ring{stroke:var(--peach);stroke-width:2.5}
 #schema .ini{font-size:13px;font-weight:600;fill:var(--paper)}
+#schema.ghosted .rel{opacity:.18}#schema .gl{font-size:13px;paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
 #schema .rel{transition:opacity .15s}#schema.focus .rel:not(.on){opacity:.14}#schema.focus .node:not(.on){opacity:.35}
 .bar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:26px 0 0;min-height:30px}
 /* contrôle segmenté Schéma / Carte : même dessin que celui des vues de « Carte & graphe » */
@@ -221,7 +222,7 @@ function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : pa
 const NARROW = innerWidth < 600, W = NARROW ? 400 : 760, H = 470, CX = W / 2, CY = H / 2 - 4;
 // Carte : mêmes traits, acteurs posés sur leur pays (Natural Earth, sans tuiles). Cadre ajusté aux acteurs choisis, zoom plafonné ;
 // deux acteurs au même endroit (un groupe armé et son pays) sont écartés juste assez pour rester lisibles.
-let ZM = null, BASE = null, LAST = null;
+let ZM = null, BASE = null, LAST = null, GEO = null, BR = [];
 function mapLayout(all, R){ const pts = all.map(id => D.pos[id]), mp = {type: "MultiPoint", coordinates: pts}, CAP = NARROW ? 420 : 700;
   let proj = d3.geoMercator().fitExtent([[70, 56], [W - 70, H - 64]], mp);
   if(!(proj.scale() < CAP)) proj = d3.geoMercator().scale(CAP).center(d3.geoCentroid(mp)).translate([W / 2, H / 2]);
@@ -261,7 +262,7 @@ function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ..
         : `<circle r="${R - 3}" fill="var(--graphite)"/><text class="ini" text-anchor="middle" y="4.5">${esc(name.slice(0, 2).toUpperCase())}</text>`}
       <text class="lab" text-anchor="${MAP && x > W - 90 ? "end" : MAP && x < 90 ? "start" : "middle"}" x="${MAP && x > W - 90 ? R : MAP && x < 90 ? -R : 0}" y="${up && !MAP ? -R - 9 : R + (MAP ? 16 : 20)}">${esc(name)}</text></g>`; });
   const svg = $("#schema"); svg.setAttribute("viewBox", MAP ? `0 0 ${W} ${H}` : `0 ${n === 2 ? 130 : -14} ${W} ${n === 2 ? 200 : H + 6}`);
-  svg.classList.toggle("map", !!MAP); svg.innerHTML = s; $("#zoom").hidden = !MAP; LAST = [ids, extra, F]; }
+  svg.classList.toggle("map", !!MAP); svg.innerHTML = s; GEO = {P, R, MAP, n}; $("#zoom").hidden = !MAP; LAST = [ids, extra, F]; }
 // zoom autour d'un point, déplacement à la souris ; les ronds et les textes gardent leur taille, un acteur hors cadre reste au bord
 function redraw(){ if(LAST){ draw(...LAST); detail(); } }
 function zoomBy(r, c = [W / 2, H / 2]){ if(!BASE) return; const z = ZM || BASE, k = Math.max(BASE.k * .6, Math.min(9000, z.k * r)), q = k / z.k;
@@ -296,6 +297,28 @@ function suggest(ids){ const old = new Set(ids), out = [];
   // un acteur déjà apporté par un conflit suggéré n'est pas proposé en double
   return [...dos, ...rs, ...out.filter(x => !x.dos && !covered.has(x.t)).sort((a, b) => b.n - a.n).slice(0, 3)].slice(0, 7); }
 
+// ---------- Intermédiaires : acteurs HORS sélection liés à au moins deux acteurs choisis (médiations exclues, déjà signalées).
+// D'abord ceux qui relient une paire sans aucun fait direct ; comptés, jamais choisis à la main. ----------
+function bridges(ids, extra, F){ const S = new Set(ids), seen = new Set([...ids, ...extra]), out = [];
+  const direct = (a, b) => F.some(f => f.nodes.includes(a) && f.nodes.includes(b));
+  Object.keys(D.actors).forEach(c => { if(seen.has(c)) return;
+    const fs = facts([...ids, c]).F.filter(f => f.group !== "mediation" && f.nodes.includes(c)), near = [...new Set(fs.flatMap(f => f.nodes.filter(x => x !== c && S.has(x))))];
+    if(near.length < 2) return;
+    let gap = 0; near.forEach((a, i) => near.slice(i + 1).forEach(b => { if(!direct(a, b)) gap++; }));
+    out.push({c, fs, near, gap}); });
+  return out.sort((a, b) => b.gap - a.gap || b.near.length - a.near.length || b.fs.length - a.fs.length).slice(0, 5); }
+const bridgeWhy = (x, a) => x.fs.filter(f => f.nodes.includes(a)).map(f => (f.kind || f.value || "dépendance").toLowerCase()).join(", ");
+// aperçu au survol (schéma seulement) : l'intermédiaire au centre, ses liens en tirets de la couleur du fait
+function ghost(x){ const svg = $("#schema"); unghost(); if(!GEO || GEO.MAP || VIEW !== "schema") return;
+  const R = 22, gx = CX, gy = GEO.n === 2 ? CY - 58 : CY, name = D.actors[x.c].name;
+  const lines = x.fs.flatMap(f => f.nodes.filter(a => a !== x.c && GEO.P[a]).map(a => `<line x1="${gx}" y1="${gy}" x2="${GEO.P[a][0].toFixed(1)}" y2="${GEO.P[a][1].toFixed(1)}" stroke="${f.color}" stroke-width="2.2" stroke-dasharray="5 5"/>`)).join("");
+  const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); g.setAttribute("class", "ghost");
+  g.innerHTML = `${lines}<circle cx="${gx}" cy="${gy}" r="${R}" class="ring" stroke-dasharray="3 3"/><clipPath id="cpg"><circle cx="${gx}" cy="${gy}" r="${R - 3}"/></clipPath>
+    <image href="${esc(pic(x.c))}" x="${gx - R + 3}" y="${gy - R + 3}" width="${2 * R - 6}" height="${2 * R - 6}" clip-path="url(#cpg)" preserveAspectRatio="xMidYMid slice"/>
+    <text class="lab gl" text-anchor="middle" x="${gx}" y="${gy + R + 17}">${esc(name)}</text>`;
+  svg.insertBefore(g, svg.querySelector(".node")); svg.classList.add("ghosted"); }
+function unghost(){ const g = $("#schema .ghost"); if(g) g.remove(); $("#schema").classList.remove("ghosted"); }
+
 const stroke = (c, o = {}) => `<svg width="30" height="8" aria-hidden="true"><path d="M1 4H29" stroke="${c}" stroke-width="${o.w || 2.5}"${o.dash ? ` stroke-dasharray="${o.dash}"` : ""} stroke-linecap="${o.round ? "round" : "butt"}"/></svg>`;
 const GROUPS = [["tension", "Qui s'affronte"], ["support", "Qui soutient qui, et pourquoi"], ["mediation", "Qui négocie"], ["lever", "Qui dépend de qui"]];
 const card = f => `<div class="fact">${f.html}</div>`;
@@ -318,9 +341,11 @@ function render(){ const ids = scope(), {F, extra} = facts(ids), ok = ids.length
   draw(ids, extra, F); frise(F); communs(ids);
   const flat2 = VIEW === "frise" || VIEW === "communs";
   $("#schema").style.display = flat2 ? "none" : ""; $("#frise").hidden = VIEW !== "frise"; $("#communs").hidden = VIEW !== "communs"; if(flat2) $("#zoom").hidden = true;
-  ["#legend", "#aside", "#detail"].forEach(q => $(q).style.display = VIEW === "communs" ? "none" : "");
+  ["#legend", "#aside", "#bridges", "#detail"].forEach(q => $(q).style.display = VIEW === "communs" ? "none" : "");
   const outs = F.filter(f => f.out);
   $("#aside").innerHTML = outs.length ? "Hors sélection : " + outs.map(f => `<button type="button" data-fact="${f.id}">${nm(f.mediator)}, médiateur entre ${nm(f.nodes[0])} et ${nm(f.nodes[1])}</button>`).join(" ; ") + "." : "";
+  BR = bridges(ids, extra, F);
+  $("#bridges").innerHTML = BR.length ? "Reliés aussi par : " + BR.map((x, i) => `<button type="button" data-add="${esc(x.c)}" data-bridge="${i}" title="${esc(x.near.map(a => D.actors[a].name + " (" + bridgeWhy(x, a) + ")").join(" ; "))}">${img(x.c)}${nm(x.c)} <small>${x.near.map(nm).join(", ")}</small></button>`).join("") : "";
   const has = g => F.some(f => f.group === g && !f.out), sup = [...new Set(F.filter(f => f.group === "support").map(f => f.color))];
   $("#legend").innerHTML = [has("tension") && [...new Set(F.filter(f => f.group === "tension").map(f => f.color))].map(c => { const t = Object.values(TENSION).find(x => x.color === c);
       return `<span>${stroke(c, {w: Math.min(t.width, 3), dash: t.dash})}${t.label.toLowerCase()}</span>`; }).join(""),
@@ -414,6 +439,7 @@ document.addEventListener("click", ev => { const t = ev.target;
   if(rel){ PICK = PICK && PICK.f === +rel.dataset.f ? null : {f: +rel.dataset.f}; return detail(); }
   if(node){ PICK = PICK && PICK.n === node.dataset.n ? null : {n: node.dataset.n}; return detail(); }
   if(t.closest && t.closest("#schema") && PICK){ PICK = null; detail(); } });
+["mouseover", "focusin"].forEach(e => document.addEventListener(e, ev => { const b = ev.target.closest && ev.target.closest("[data-bridge]"); b && BR[+b.dataset.bridge] ? ghost(BR[+b.dataset.bridge]) : unghost(); }));
 document.addEventListener("keydown", ev => { const node = ev.target.closest && (ev.target.closest(".node") || ev.target.closest("#frise .row"));
   if(node && (ev.key === "Enter" || ev.key === " ")){ ev.preventDefault(); node.dispatchEvent(new MouseEvent("click", {bubbles: true})); } });
 document.querySelectorAll("#seg button").forEach(b => b.addEventListener("click", () => setView(b.dataset.v)));
@@ -455,6 +481,7 @@ def page(d):
 <div class="stage"><div id="frise" hidden></div><div id="communs" hidden></div><svg id="schema" role="group" aria-label="Schéma des relations entre les acteurs choisis"></svg></div>
 <div class="legend" id="legend"></div>
 <p class="scope" id="aside"></p>
+<p class="sug" id="bridges"></p>
 <div id="detail" aria-live="polite"></div>
 <p class="none" id="none"></p>
 <details class="all" id="all"></details>
