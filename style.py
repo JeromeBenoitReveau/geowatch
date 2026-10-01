@@ -129,14 +129,16 @@ def clip(text, n=158):
 
 def seo(path, title, desc, kind="website", ld=None):
     """Balises de référencement et de partage : adresse canonique, Open Graph, carte Twitter, données structurées (JSON-LD).
-    path = nom du fichier (« » pour l'accueil). Pas d'image de partage pour l'instant (il faudrait un PNG généré)."""
+    path = nom du fichier (« » pour l'accueil). Image de partage : assets/partage.png, la même pour toutes les pages."""
     import json
     url = brand.SITE + ("" if path in ("", "index.html") else path)
     tags = [f'<link rel="canonical" href="{e(url)}">',
             f'<meta property="og:type" content="{kind}">', f'<meta property="og:site_name" content="{e(brand.NAME)}">',
             f'<meta property="og:title" content="{e(title)}">', f'<meta property="og:description" content="{e(desc)}">',
             f'<meta property="og:url" content="{e(url)}">', '<meta property="og:locale" content="fr_FR">',
-            '<meta name="twitter:card" content="summary">', f'<meta name="twitter:title" content="{e(title)}">',
+            f'<meta property="og:image" content="{brand.SITE}partage.png">', '<meta property="og:image:width" content="1200">',
+            '<meta property="og:image:height" content="630">', f'<meta property="og:image:alt" content="{e(brand.NAME)} — {e(brand.BASELINE)}">',
+            '<meta name="twitter:card" content="summary_large_image">', f'<meta name="twitter:image" content="{brand.SITE}partage.png">', f'<meta name="twitter:title" content="{e(title)}">',
             f'<meta name="twitter:description" content="{e(desc)}">']
     if ld:
         tags.append('<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace("</", "<\\/") + "</script>")

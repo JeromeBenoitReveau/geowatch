@@ -1,7 +1,7 @@
 """python build.py → site/ : accueil, dossiers, explorateur (graphe, carte, organisations), méthode, manifeste,
 et le graphe en données ouvertes (network.json, network.csv — CC BY 4.0). Publiable tel quel."""
 from dotenv import load_dotenv; load_dotenv()
-import csv, json
+import csv, json, shutil
 from pathlib import Path
 import brand, cross, db, dossier, glossary, method, network, pages, presets, style
 
@@ -66,6 +66,7 @@ def build():
     cross.write(OUT, data)
     glossary.write(OUT)
     sitemap(OUT)
+    shutil.copy(Path("assets") / "partage.png", OUT / "partage.png")  # image de partage (og:image), produite depuis assets/partage.html
     print(f"→ {OUT}/ : index.html (accueil), explorer.html, croiser.html, manifeste.html, glossaire.html, methode.html, dossiers, network.json, network.csv")
     return data
 
