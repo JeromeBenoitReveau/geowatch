@@ -270,6 +270,8 @@ def check_dependencies(deps, actors):
             errors.append(f"{where} : un pays ne dépend pas de lui-même")
         if x.get("type") not in network.DEPENDENCY_TYPES:
             errors.append(f"{where} : type « {x.get('type')} » invalide ({', '.join(network.DEPENDENCY_TYPES)})")
+        if x.get("type") == "trade" and x.get("direction") not in ("exports", "imports"):
+            errors.append(f"{where} : direction obligatoire pour le commerce (exports ou imports)")
         if x.get("type") in ("minerals", "food") and not x.get("resource"):
             errors.append(f"{where} : resource obligatoire pour le type {x['type']} (ex. « terres rares », « blé »)")
         if not isinstance(x.get("share"), (int, float)) or not 0 < x["share"] <= 100:

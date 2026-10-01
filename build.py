@@ -446,10 +446,12 @@ const DEPS = D.dependencies || [], DEP = {color: "#b08968", dashes: [1, 4]};
 const DEP_FR = {arms: "d'armes", gas: "de gaz", oil: "de pétrole"};
 const depWhat = x => x.resource ? (/^[aeiouyéèh]/i.test(x.resource) ? "d'" : "de ") + x.resource : DEP_FR[x.type] || x.type;
 const depOn = x => checked("dep", "on") && x.status !== "ended";
-const depText = x => `${String(x.share).replace(".", ",")} % ${x.type === "debt" ? "de sa dette publique extérieure" : "de ses importations " + depWhat(x)} (${x.period || x.year})`;
+const depText = x => `${String(x.share).replace(".", ",")} % ${x.type === "debt" ? "de sa dette publique extérieure"
+  : x.type === "trade" ? (x.direction === "exports" ? "de ses exportations" : "de ses importations de marchandises")
+  : "de ses importations " + depWhat(x)} (${x.period || x.year})`;
 const depEdges = DEPS.map((x, i) => ({id: "d" + i, from: x.supplier, to: x.from, arrows: {to: {enabled: true, scaleFactor: .4}}, physics: false,
   width: .6 + x.share/25, dashes: DEP.dashes, color: {color: DEP.color, opacity: .9}, smooth: {type: "curvedCW", roundness: .25}, hidden: true,
-  title: `${(D.actors[x.from]||{}).name} : ${depText(x)} viennent de ${(D.actors[x.supplier]||{}).name}`}));
+  title: `${(D.actors[x.from]||{}).name} dépend de ${(D.actors[x.supplier]||{}).name} : ${depText(x)}`}));
 const depsVisible = () => DEPS.map((x, i) => ({id: "d" + i, hidden: !depOn(x)}));
 const supportsVisible = () => D.edges.map((e,i) => ({id:"e"+i, hidden: !activeAt(e, YEAR()) || !supportOn(e)}));
 

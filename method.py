@@ -168,7 +168,7 @@ distingue trois étages, du plus formel au plus diffus :</p>
 <div class="scroll"><table><tr><th>Étage</th><th>Contenu</th><th>Données</th><th>Dans le site</th></tr>
 <tr><td>Alignements</td><td>traités, adhésions, alliances</td><td><code>alignments.yaml</code></td><td>vue Organisations, blocs de la carte</td></tr>
 <tr><td>Soutiens</td><td>aides concrètes à un camp (armes, argent, troupes…)</td><td><code>network.yaml</code>, <code>edges</code></td><td>graphe des soutiens, dossiers</td></tr>
-<tr><td>Leviers</td><td>dépendances chiffrées : armes, gaz, pétrole, minerais critiques, denrées, dette</td><td><code>network.yaml</code>, <code>dependencies</code></td><td>fiche « Dépend de », filtre « Leviers », dossiers</td></tr>
+<tr><td>Leviers</td><td>dépendances chiffrées : armes, gaz, pétrole, minerais critiques, denrées, dette, commerce</td><td><code>network.yaml</code>, <code>dependencies</code></td><td>fiche « Dépend de », filtre « Leviers », dossiers</td></tr>
 </table></div>
 <p><b>Règle des leviers</b> : une dépendance est une <b>part chiffrée et sourcée</b>, jamais un poids choisi à la main.
 Premier type : la part d'un fournisseur dans les importations d'armes majeures d'un pays (SIPRI, tableau 2 de la fiche
@@ -181,7 +181,12 @@ publiées ou calculables à partir de volumes publiés sont retenues, et une par
 Dette : part d'un créancier dans la dette extérieure publique et garantie par l'État (PPG) d'un pays, encours fin 2024,
 calculée à partir de la base <a href="https://datatopics.worldbank.org/debt/ids/">International Debt Statistics</a> de la
 Banque mondiale (dette due au créancier / dette totale) ; chaque ligne cite les deux requêtes, vérifiables. Un pays sans
-dette extérieure notable (l'Iran : 0,3 milliard de dollars) n'est pas retenu, le pourcentage n'y ayant pas de sens. Les leviers n'entrent pas dans le calcul des blocs.
+dette extérieure notable (l'Iran : 0,3 milliard de dollars) n'est pas retenu, le pourcentage n'y ayant pas de sens.
+Commerce : part d'un partenaire dans les exportations d'un pays (débouché : le client peut peser sur lui) ou dans ses
+importations de marchandises (fournisseur), d'après <a href="https://wits.worldbank.org/">WITS</a> (Banque mondiale), dernière
+année disponible (2022 ou 2023). Seuil de 20 % : les grandes économies (UE, Chine, États-Unis) dépassent souvent 10 %, ce qui
+noierait les dépendances fortes. La part de l'UE est la somme de ses 27 membres (calculée). Écartés : la Russie, dont les
+données s'arrêtent en 2021, avant la guerre ; les paires entre membres de l'UE (marché unique, pas un levier). Les leviers n'entrent pas dans le calcul des blocs.
 {len(d.get("dependencies", []))} dépendance(s) recensée(s). Ce qui ne se mesure pas de façon comparable (médias, religion,
 désinformation) reste dans les dossiers, en texte attribué.</p>
 
