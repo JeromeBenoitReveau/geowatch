@@ -43,7 +43,7 @@ def build():
     data = {"actors": actors, "edges": edges, "profiles": profiles, "colors": TYPE_COLORS,
             "tensions": network.tensions(), "mediations": network.mediations(), "dependencies": network.dependencies(), "align": aligns, "influence": network.influence(actors, edges, aligns), "geo": geo, "people": db.load_people(), "unga": unga,
             "dossiers": [{"id": x["id"], "title": x["title"]} for x in dossier.load()], "built": db.now(),
-            "glossary": glossary.for_js(), "presets": presets.load(), "correction": style.correction_url("Carte & graphe")}
+            "glossary": glossary.for_js(), "presets": presets.load(), "correction": style.correction_url("Carte & graphe"), "dep_icons": style.DEP_ICONS}
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False, default=str)
                             .replace("</", "<\\/"))
     (OUT / "explorer.html").write_text(html.replace("__NAME__", brand.NAME).replace("__FONTS__", style.FONTS).replace("__TOP__", style.top("explorer.html")).replace("__THEME__", style.THEME_INIT).replace("__VIEWS__", "".join(
@@ -447,6 +447,7 @@ const DEPS = D.dependencies || [], DEP = {color: "#b08968", dashes: [1, 4]};
 const DEP_FR = {arms: "d'armes", gas: "de gaz", oil: "de pétrole"};
 const depWhat = x => x.resource ? (/^[aeiouyéèh]/i.test(x.resource) ? "d'" : "de ") + x.resource : DEP_FR[x.type] || x.type;
 const depOn = x => checked("dep", "on") && x.status !== "ended";
+const depIcon = (t, size = 14) => `<svg class="dep-ico" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${DEP.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px">${D.dep_icons[t] || ""}</svg>`;
 const depText = x => `${String(x.share).replace(".", ",")} % ${x.type === "debt" ? "de sa dette publique extérieure"
   : x.type === "trade" ? (x.direction === "exports" ? "de ses exportations" : "de ses importations de marchandises")
   : "de ses importations " + depWhat(x)} (${x.period || x.year})`;
@@ -939,10 +940,10 @@ function show(id){
   if(inn.length) h += `<h2>Soutenu par${Q("soutien")}</h2>` + inn.map(e=>rel(e,e.from)).join("");
   const deps = DEPS.filter(x => x.from === id).sort((a, b) => b.share - a.share);
   if(deps.length) h += `<h2>Dépend de${Q("levier")}</h2>` + deps.map(x => `<div class="dep"><div class="dep-h"><b data-id="${esc(x.supplier)}">${nm(x.supplier)}</b>
-    <span>${esc(depText(x))}</span></div><div class="bar"><i style="width:${Math.min(100, x.share)}%"></i></div>
+    <span>${depIcon(x.type)} ${esc(depText(x))}</span></div><div class="bar"><i style="width:${Math.min(100, x.share)}%"></i></div>
     <div class="mute">${x.note ? esc(x.note) + ". " : ""}Source : ${(x.sources||[]).map(src).join(", ")}</div></div>`).join("");
   const supplied = DEPS.filter(x => x.supplier === id).sort((a, b) => b.share - a.share);
-  if(supplied.length) h += `<h2>Pays qui dépendent de lui</h2><p class="mute">${supplied.map(x => `<b data-id="${esc(x.from)}">${nm(x.from)}</b> ${esc(depText(x))}`).join(" ; ")}.</p>`;
+  if(supplied.length) h += `<h2>Pays qui dépendent de lui</h2><p class="mute">${supplied.map(x => `<b data-id="${esc(x.from)}">${nm(x.from)}</b> ${depIcon(x.type, 13)} ${esc(depText(x))}`).join(" ; ")}.</p>`;
   const tens = TS.filter(t => (t.from===id || t.to===id) && t.status!=="ended");
   const meds = MEDS.filter(m => m.mediator === id || m.between.includes(id));
   if(meds.length) h += `<h2>Médiations${Q("mediation")}</h2>` + meds.map(m => `<div class="rel">${m.mediator === id

@@ -64,6 +64,7 @@ a.card{transition:border-color .15s}a.card:hover{border-color:var(--peach)}
 .tint{background:color-mix(in srgb,var(--ink) 5%,var(--land));border-radius:4px}
 sup.fns{font:500 11px/1 var(--sans);color:var(--graphite);margin-left:1px;white-space:nowrap}
 sup.fns a{text-decoration:none;padding:0 1px}sup.fns a:hover{color:var(--ink);text-decoration:underline}
+.dep-ico{vertical-align:-2px;flex:none}
 abbr{text-decoration:underline dotted var(--graphite);text-underline-offset:3px;cursor:help}
 /* termes du glossaire (glossary.py) : souligné pointillé, définition au survol ou au focus, clic vers glossaire.html */
 a.term{color:inherit;text-decoration:underline dotted var(--graphite);text-decoration-thickness:1px;text-underline-offset:3px;cursor:help}
@@ -96,6 +97,21 @@ ICONS = {
     "map": '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
     "graph": '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>',
 }
+# Pictogrammes des dépendances (Lucide, ISC), par type de levier : même dessin sur « Croiser », les fiches et les dossiers
+DEP_ICONS = {
+    "oil": '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>',
+    "gas": '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+    "arms": '<circle cx="12" cy="12" r="9"/><path d="M22 12h-5M7 12H2M12 7V2M12 22v-5"/>',
+    "minerals": '<path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6M2 9h20"/>',
+    "food": '<path d="M2 22 16 8M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94ZM7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94ZM11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94ZM20 2h2v2a4 4 0 0 1-4 4h-2V6a4 4 0 0 1 4-4Z"/>',
+    "debt": '<path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l8 5H4z"/>',
+    "trade": '<path d="M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4"/>',
+}
+DEP_COLOR = "#b08968"
+def dep_icon(t, size=14):
+    return (f'<svg class="dep-ico" viewBox="0 0 24 24" width="{size}" height="{size}" fill="none" stroke="{DEP_COLOR}" '
+            f'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{DEP_ICONS.get(t, "")}</svg>')
+
 def icon(k, size=18):
     return (f'<svg class="ico" viewBox="0 0 24 24" width="{size}" height="{size}" fill="none" stroke="currentColor" '
             f'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[k]}</svg>')

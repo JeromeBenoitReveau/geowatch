@@ -38,14 +38,14 @@ CSS = """
 .ex a{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
 #schema{display:block;width:100%;height:auto;margin:10px 0 0;overflow:visible}
 #schema text{font-family:var(--sans);fill:var(--ink)}
-#schema .lab{font-size:14px}#schema .val{font-size:11.5px;fill:var(--graphite);paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+#schema .lab{font-size:14px}#schema .val{font-size:12px;fill:var(--ink);font-variant-numeric:tabular-nums}#schema .pill{fill:var(--paper);stroke:var(--mist)}
 #schema .hit{stroke:transparent;stroke-width:16;fill:none;cursor:pointer}
 #schema .node{cursor:pointer}#schema .ring{fill:var(--land);stroke:var(--mist);stroke-width:1.5}
 #schema .node.extra .ring{stroke-dasharray:3 3}#schema .node.on .ring{stroke:var(--peach);stroke-width:2.5}
 #schema .ini{font-size:13px;font-weight:600;fill:var(--paper)}
 #schema .rel{transition:opacity .15s}#schema.focus .rel:not(.on){opacity:.14}#schema.focus .node:not(.on){opacity:.35}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--graphite);margin:4px 0 14px}
-.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend span{display:inline-flex;align-items:center;gap:7px}.fact p svg{vertical-align:-2px}
 #detail{border-top:1px solid var(--mist);padding:16px 0 0;min-height:92px}
 .fact{padding:0 0 14px;font-size:15.5px;max-width:46em}
 .fact .who{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-weight:600}
@@ -97,6 +97,10 @@ const pct = x => String(x.share).replace(".", ",") + " %";
 const depText = x => `${pct(x)} ${x.type === "debt" ? "de sa dette publique extérieure"
   : x.type === "trade" ? (x.direction === "exports" ? "de ses exportations" : "de ses importations de marchandises")
   : "de ses importations " + depWhat(x)} (${esc(x.period || x.year)})`;
+// pictogrammes des dépendances (Lucide, ISC) : la ressource se lit d'un coup d'œil, le chiffre reste à côté
+const DEP_ICON = __DEP_ICONS__;
+const DEP_NAME = {oil: "pétrole", gas: "gaz", arms: "armes", minerals: "minerais", food: "denrées", debt: "dette", trade: "commerce"};
+const depIcon = (t, size = 14) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${DEP}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${DEP_ICON[t] || ""}</svg>`;
 const depShort = x => `${x.type === "debt" ? "dette" : x.type === "trade" ? (x.direction === "exports" ? "exportations" : "importations")
   : x.resource || {arms:"armes", gas:"gaz", oil:"pétrole"}[x.type] || x.type} ${pct(x)}`;
 const MONTHS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
@@ -132,9 +136,9 @@ function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : r�
         <p>${since(m)}${m.why ? "Pourquoi : " + esc(m.why) : ""}</p>${tail(m)}`}); });
   D.dependencies.forEach(x => { if(!S.has(x.from) || !S.has(x.supplier)) return;
     F.push({group: "lever", links: [[x.supplier, x.from]], color: DEP, width: 1 + x.share / 14, dash: "1.5 6", round: true, arrow: true,
-      nodes: [x.from, x.supplier], value: depShort(x),
+      nodes: [x.from, x.supplier], value: pct(x), dep: x.type, tip: `${(D.actors[x.from] || {}).name} dépend de ${(D.actors[x.supplier] || {}).name} : ${depShort(x)}`,
       html: `<div class="who">${who(x.from)}<span class="k">dépend de</span>${who(x.supplier)}</div>
-        <p>${depText(x)}.</p>${tail(x)}`}); });
+        <p>${depIcon(x.type, 15)} ${depText(x)}.</p>${tail(x)}`}); });
   F.forEach((f, i) => f.id = i);
   return {F, extra}; }
 
@@ -156,7 +160,10 @@ function draw(ids, extra, F){ const all = [...ids, ...extra], n = all.length, P 
       const [fa, fb] = l[0] === u ? [end(x1, y1), end(x2, y2)] : [end(x2, y2), end(x1, y1)];
       const path = `M${fa[0].toFixed(1)} ${fa[1].toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${fb[0].toFixed(1)} ${fb[1].toFixed(1)}`;
       s += `<g class="rel" data-f="${f.id}"><path d="${path}" fill="none" stroke="${f.color}" stroke-width="${f.width.toFixed(1)}"${f.dash ? ` stroke-dasharray="${f.dash}"` : ""}${f.round ? ' stroke-linecap="round"' : ""}${f.arrow ? ` marker-end="url(#mk${cols.indexOf(f.color)})"` : ""}/>
-        ${f.value ? `<text class="val" text-anchor="middle" x="${((x1 + x2) / 2 + nx * off).toFixed(1)}" y="${((y1 + y2) / 2 + ny * off + 4).toFixed(1)}">${esc(f.value)}</text>` : ""}
+        ${f.value ? (() => { const w = f.value.length * 6.4 + 30, lx = (x1 + x2) / 2 + nx * off, ly = (y1 + y2) / 2 + ny * off;
+          return `<g transform="translate(${(lx - w / 2).toFixed(1)} ${(ly - 10).toFixed(1)})"><title>${esc(f.tip)}</title><rect class="pill" width="${w.toFixed(1)}" height="20" rx="10"/>
+            <svg x="7" y="3" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${DEP}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${DEP_ICON[f.dep] || ""}</svg>
+            <text class="val" x="25" y="14.2">${esc(f.value)}</text></g>`; })() : ""}
         <path class="hit" d="${path}"/></g>`; }); });
   all.forEach(id => { const [x, y] = P[id], up = y < CY - 1, name = (D.actors[id] || {}).name || id;
     s += `<g class="node${extra.includes(id) ? " extra" : ""}" data-n="${esc(id)}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})" tabindex="0" role="button" aria-label="${esc(name)}">
@@ -198,7 +205,8 @@ function render(){ const ids = scope(), ok = SEL.length >= 2 && ids.length >= 2;
       return `<span>${stroke(c, {w: Math.min(t.width, 3), dash: t.dash})}${t.label.toLowerCase()}</span>`; }).join(""),
     has("support") && `<span>${sup.map(c => stroke(c)).join("")}__SOUTIEN__ (tirets : en baisse ou allégué)</span>`,
     has("mediation") && `<span>${stroke("var(--graphite)", {w: 1.6, dash: "3 5"})}__MEDIATION__</span>`,
-    has("lever") && `<span>${stroke(DEP, {w: 3, dash: "1.5 6", round: true})}__LEVIER__ (épaisseur : part mesurée)</span>`].filter(Boolean).join("");
+    has("lever") && `<span>${stroke(DEP, {w: 3, dash: "1.5 6", round: true})}__LEVIER__ (épaisseur : part mesurée)</span>`
+      + [...new Set(F.filter(f => f.dep).map(f => f.dep))].map(t => `<span>${depIcon(t)}${DEP_NAME[t] || t}</span>`).join("")].filter(Boolean).join("");
   const pairs = []; ids.forEach((a, i) => ids.slice(i + 1).forEach(b => { if(!F.some(f => f.nodes.includes(a) && f.nodes.includes(b))) pairs.push(`${nm(a)} et ${nm(b)}`); }));
   $("#none").innerHTML = pairs.length ? `Ce que le graphe ne contient pas : aucune relation documentée entre ${pairs.join(" ; ")}. Cela ne prouve pas qu'il n'y en a pas, seulement qu'aucune n'est sourcée ici.` : "";
   $("#all").innerHTML = `<summary>Tous les faits (${F.length}) et leurs sources</summary>` + (F.length ? GROUPS.filter(([g]) => F.some(f => f.group === g)).map(([g, t]) =>
@@ -256,6 +264,7 @@ def page(d):
     examples = "".join(f'<a href="croiser.html?e={e(q)}" data-ex="{e(q)}">{e(t)}</a>' for q, t in EXAMPLES
                        if all(tok in valid for tok in q.split(",")))
     script = (SCRIPT.replace("__DATA__", json.dumps(x, ensure_ascii=False, default=str).replace("</", "<\\/"))
+              .replace("__DEP_ICONS__", json.dumps(style.DEP_ICONS))
               .replace("__SOUTIEN__", glossary.term("soutien", "soutien")).replace("__MEDIATION__", glossary.term("mediation", "médiation"))
               .replace("__LEVIER__", glossary.term("levier", "dépendance")))
     body = f"""<main class="cross">

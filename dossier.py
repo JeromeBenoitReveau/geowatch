@@ -163,7 +163,7 @@ def backers_block(bs, d, g, cite):
         rows.append(f"""<div class="backer">{flag(xs[0]["from"], d) if len(xs) == 1 else flag("EU", d) if any(x["from"] == "EU" for x in xs) else flag(xs[0]["from"], d)}
   <div><span class="name">{", ".join(names)}</span><span class="kind">{e(", ".join(kinds))}</span>{'<span class="alleged">allégué</span>' if alleged else ""}</div>
   <div class="why">{glossed(xs[0]["why"], g) if xs[0].get("why") else '<span style="color:var(--graphite)">Motivation pas encore documentée.</span>'}{cite(srcs)}</div>
-  {"".join(f'<div class="lever">{e(d["actors"][dp["from"]]["name"])} : <b>{dp["share"]} %</b> de ses armes importées viennent de ce fournisseur ({e(d["actors"][dp["supplier"]]["name"])}, {e(dp.get("period") or str(dp["year"]))}){cite(dp["sources"])}{(" " + e(dp["note"]) + ".") if dp.get("note") else ""}</div>'
+  {"".join(f'<div class="lever">{style.dep_icon(dp["type"])} {e(d["actors"][dp["from"]]["name"])} : <b>{dp["share"]} %</b> de ses armes importées viennent de ce fournisseur ({e(d["actors"][dp["supplier"]]["name"])}, {e(dp.get("period") or str(dp["year"]))}){cite(dp["sources"])}{(" " + e(dp["note"]) + ".") if dp.get("note") else ""}</div>'
            for dp in d.get("dependencies", []) for x in xs
            if dp["type"] == "arms" and dp["supplier"] == x["from"] and dp["from"] == x["to"] and dp.get("status", "active") != "ended")}
   {f'<details><summary>Détails</summary>{"".join(f"<p>{glossed(x['note'], g)}</p>" for x in notes)}</details>' if notes else ""}</div>""")
