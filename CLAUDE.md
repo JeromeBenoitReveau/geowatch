@@ -1,4 +1,4 @@
-# Lignes de force (dépôt « geowatch ») — contexte pour Claude Code
+# Lignes de force (dépôt « lignes-de-force », renommé depuis « geowatch » le 2026-10-02) — contexte pour Claude Code
 
 Site d'information open source qui rend la géopolitique accessible et la vulgarise (baseline « La géopolitique, vulgarisée et sourcée. », choisie par Jérôme le 2026-10-02 ; l'ancienne, « expliquée simplement », sonnait générique et condescendante — ne pas dire « simple » ou « facile », le montrer) : les conflits, alliances et tensions expliqués aux néophytes, à partir d'un graphe sourcé
 « qui soutient qui, et pourquoi », publié en données ouvertes. En Python.
@@ -84,6 +84,9 @@ Liens : souligné pêche EN TIRETS d'1 px ; au survol, même épaisseur, trait p
 
 ## Adresses des pages (2026-10-02, demande de Jérôme : l'adresse porte le titre de la page)
 `relations.html` (page « Croiser des acteurs », module cross.py) et `vue-d-ensemble.html` (explorateur, build.py). Les anciennes adresses `croiser.html` et `explorer.html` restent publiées comme pages de redirection (build.MOVED : elles transmettent la sélection `?e=…` et l'ancre, sont en noindex et hors du plan du site). Les autres pages portaient déjà leur titre (manifeste, methode, glossaire, un fichier par dossier).
+
+## Renommage du dépôt (2026-10-02, décision de Jérôme)
+Le dépôt GitHub s'appelle `lignes-de-force` (ex-`geowatch`) ; le site est à https://jeromebenoitreveau.github.io/lignes-de-force/ (brand.SITE, brand.REPO). L'ancienne adresse du dépôt redirige, PAS l'ancienne adresse du site (…/geowatch/ renvoie 404). Le dossier local reste `Desktop/Perso/GeoWatch` ; les mentions « geowatch » plus haut dans ce fichier sont historiques, de même que l'en-tête User-Agent des collectes.
 
 ## Référencement (2026-10-02)
 `brand.SITE` = adresse publique (à changer si domaine propre) ; `style.seo()` ajoute à chaque page l'adresse canonique, Open Graph, carte Twitter et, pour l'accueil (WebSite) et les dossiers (Article, dateModified = `verified`), des données structurées JSON-LD ; `style.clip()` coupe les descriptions vers 158 caractères ; `build.sitemap()` écrit site/sitemap.xml. Titres d'onglet enrichis tant qu'ils restent courts. Images de partage (og:image, 1200×630) : `assets/partage.png` pour le site et `assets/partage-<id>.png` pour chaque dossier (titre du conflit, « camp A contre camp B »), copiées dans site/ par build.py ; produites par `python share.py` (Chrome sans interface, donc à la main, pas dans la CI), à relancer pour tout NOUVEAU dossier ou si la baseline, le logo ou un titre changent — sans image dédiée, un dossier retombe sur celle du site. PAS FAIT : robots.txt (ignoré par les moteurs tant que le site est dans un sous-dossier de github.io), déclaration dans la Search Console (à faire par Jérôme), contenu statique pour l'explorateur et « Croiser » (rendus en JavaScript).

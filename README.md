@@ -4,7 +4,7 @@
 qui n'y connaît rien : les camps, leurs soutiens étrangers, ce qu'ils y cherchent et ce qui est en jeu. Chaque relation
 est **sourcée, datée et relue à la main**, et publiée en données ouvertes.
 
-Site : https://jeromebenoitreveau.github.io/geowatch/ (le dépôt garde son ancien nom, `geowatch`).
+Site : https://jeromebenoitreveau.github.io/lignes-de-force/
 
 Règle non négociable : **aucune prédiction**. Le site n'affiche aucune probabilité ni cote de paris ; les seuls
 chiffres sont des mesures sourcées. Pour le suivi en temps réel, le tableau de bord gratuit

@@ -6,7 +6,7 @@ from pathlib import Path
 import brand, cross, db, dossier, glossary, method, network, pages, presets, style
 
 OUT = Path("site")
-DATA_LICENSE = "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/ — geowatch network.yaml"
+DATA_LICENSE = "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/ — Lignes de force, network.yaml"
 TYPE_COLORS = {"arms": "#d64545", "troops": "#8b1e1e", "financial": "#2f8f5b", "training": "#c98a1b",
                "intelligence": "#6b4fbb", "political": "#3a6fd8", "economic": "#1f9aa5", "dual_use": "#b0569a"}
 
