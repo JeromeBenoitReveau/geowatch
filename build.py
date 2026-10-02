@@ -77,6 +77,9 @@ def build():
     glossary.write(OUT)
     redirects(OUT)
     sitemap(OUT)
+    for folder in ("photos", "flags"):  # vignettes et drapeaux hébergés sur le site, sans requête vers un tiers
+        if (Path("data") / folder).exists():
+            shutil.copytree(Path("data") / folder, OUT / folder, dirs_exist_ok=True)
     for png in Path("assets").glob("partage*.png"):  # images de partage (og:image) : site et dossiers, produites par share.py
         shutil.copy(png, OUT / png.name)
     print(f"→ {OUT}/ : index.html (accueil), vue-d-ensemble.html, relations.html, manifeste.html, glossaire.html, methode.html, dossiers, network.json, network.csv")
@@ -230,7 +233,7 @@ const D = __DATA__;
 let map, groups, linkLayers = [], countries;  // carte Leaflet, créée à la première visite de la vue
 const $ = s => document.querySelector(s);
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const safeUrl = u => /^https?:\/\//.test(u||"") ? esc(u) : "#";
+const safeUrl = u => /^(https?:\/\/|photos\/[\w.-]+$)/.test(u||"") ? esc(u) : "#";
 const nm = id => esc((D.actors[id]||{}).name || id);
 const KIND = {state:"État", non_state:"acteur armé non étatique", bloc:"bloc", party:"parti politique", person:"personnalité"};
 const SHAPE = {non_state:"diamond", party:"square", person:"triangle"};

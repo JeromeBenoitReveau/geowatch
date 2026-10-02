@@ -322,7 +322,8 @@ for(const a of M.arrows){{
   head(a.at, to, color);
   L.marker(a.at, {{icon: L.divIcon({{className:"", iconSize:[26,26], iconAnchor:[13,13],
     html:'<img src="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/' + a.iso + '.svg" alt="" class="flag">'}})}})
-    .bindTooltip(a.name, {{direction:"top", offset:[0,-12]}}).bindPopup(pop(a.name + " → " + M.sides[a.side], a.types + (a.why ? " — Pourquoi ? " + a.why : ""), a.source)).addTo(map); }}
+    .bindTooltip(a.name, {{direction:"top", offset:[0,-12]}}).bindPopup(pop(a.name + " → " + M.sides[a.side], a.types + (a.why ? " — Pourquoi ? " + a.why : ""), a.source)).addTo(map)
+    .getElement().setAttribute("aria-label", a.name + ", soutien de : " + M.sides[a.side]); }}
 for(const p of M.pins){{
   L.circleMarker(p.at, {{radius:5, color:css("--fg"), weight:2, fillColor:css("--card"), fillOpacity:1}})
     .bindTooltip(p.label, {{permanent:true, direction: p.dir || "right", offset:[p.dir === "left" ? -6 : 6, 0], className:"pin-label"}})

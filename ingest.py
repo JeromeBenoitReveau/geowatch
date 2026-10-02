@@ -38,6 +38,20 @@ def run_profiles(c):
     import dossier
     qids |= {f"p:{k}": v["wikidata"] for k, v in dossier.registry().items() if v.get("wikidata") and not v.get("actor")}
     db.save_people(profiles.people(qids))
+    photos()
+
+def photos():
+    """Télécharge les vignettes de data/people.json dans data/photos/ (servies par le site lui-même)."""
+    import json, httpx
+    db.PHOTOS.mkdir(exist_ok=True)
+    for k, v in json.loads(db.PEOPLE.read_text(encoding="utf-8")).items():
+        f = db.photo_file(k, v.get("thumb", ""))
+        if v.get("thumb") and not f.exists():
+            r = httpx.get(v["thumb"], headers={"User-Agent": "geowatch/0.1 (open-source research tool)"}, timeout=60, follow_redirects=True)
+            if r.status_code == 200:
+                f.write_bytes(r.content)
+            else:
+                print(f"  [photos] {k} : HTTP {r.status_code}")
 
 if __name__ == "__main__":
     c = db.conn()

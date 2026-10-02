@@ -61,7 +61,7 @@ actors:
   MA: {name: Maroc, kind: state}
   SO: {name: Somalie (gouvernement fédéral), kind: state}
   somaliland: {name: Somaliland, kind: state, coords: [9.56, 44.06],
-               flag: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Flag_of_Somaliland.svg",
+               flag: "flags/somaliland.svg",  # data/flags/, copie de Wikimedia Commons (domaine public)
                note: "Région du nord de la Somalie, indépendante de fait depuis 1991 mais non reconnue, sauf par Israël depuis le 26 décembre 2025. La Somalie la considère comme une partie de son territoire",
                sources: ["Atlantic Council, « After Israel's recognition of Somaliland, what comes next? » — https://www.atlanticcouncil.org/blogs/menasource/after-israels-recognition-of-somaliland-what-comes-next/"]}
   DZ: {name: Algérie, kind: state}
@@ -610,9 +610,10 @@ tensions:
      sources: ["Trésor américain, alerte sur les raffineries « teapot » qui achètent le pétrole iranien (avr. 2026) — https://home.treasury.gov/news/press-releases/sb0476"],
      verified: 2026-09}
   - {from: US, to: VE, type: war, since: "2025-09", until: "2026-01", status: ended, confidence: high,
-     sources: ["Council on Foreign Relations, Global Conflict Tracker : l'instabilité au Venezuela (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/instability-venezuela"],
-     verified: 2026-09,
-     note: "Frappes contre des bateaux présentés comme narcotrafiquants dès septembre 2025 ; frappes sur Caracas et capture de Maduro le 3 janvier 2026, relations diplomatiques reprises depuis"}
+     sources: ["Council on Foreign Relations, Global Conflict Tracker : l'instabilité au Venezuela (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/instability-venezuela",
+               "Al Jazeera, « Venezuela after Maduro: Oil, power and the limits of intervention » (janv. 2026) — https://www.aljazeera.com/news/2026/1/5/venezuela-after-maduro-oil-power-and-the-limits-of-intervention"],
+     verified: 2026-10,
+     note: "Frappes contre des bateaux présentés comme narcotrafiquants dès septembre 2025 ; frappes sur Caracas et capture de Maduro le 3 janvier 2026, relations diplomatiques reprises depuis. Motif officiel : le narcotrafic. Donald Trump a mis en avant le pétrole, que des entreprises américaines doivent exploiter. Certains commentateurs y voient la défense du dollar dans le commerce pétrolier, le Venezuela vendant une part de son brut en yuans ; les experts cités par Al Jazeera jugent ce motif secondaire"}
   - {from: US, to: VE, type: sanctions, since: "2015", status: reduced, confidence: high,
      sources: ["Holland & Knight, l'OFAC autorise certaines activités du secteur pétrolier vénézuélien (févr. 2026) — https://www.hklaw.com/en/insights/publications/2026/02/ofac-authorizes-certain-venezuelan-oil-sector-activities",
                "Cleary Gottlieb, licence générale 52 de l'OFAC assouplissant les sanctions contre PdVSA (mars 2026) — https://www.clearygottlieb.com/news-and-insights/publication-listing/ofac-issues-gl-52-further-loosening-sanctions-against-pdvsa"],

@@ -193,3 +193,52 @@ groups:
     joined: {TL: "2025-10"}
     note: "Timor-Leste admis comme 11e membre en octobre 2025"
     sources: ["ASEAN, admission du Timor-Leste (oct. 2025) — https://asean.org/forging-a-new-era-timor-leste-admitted-into-asean/"]
+
+  # ---------- Organisations régionales (forums : sans bloc, hors calcul des blocs) ----------
+  - id: aes
+    name: Alliance des États du Sahel (AES)
+    kind: forum
+    level: 0
+    since: "2023-09"
+    members: [ML, BF, NE]
+    joined: {ML: "2023-09", BF: "2023-09", NE: "2023-09"}
+    note: "Pacte de défense mutuelle signé le 16 septembre 2023 (charte du Liptako-Gourma), devenu une confédération le 6 juillet 2024. Classée ici parmi les forums : elle ne crée pas de bloc d'influence dans le calcul du site"
+    sources: ["Al Jazeera, le Mali, le Niger et le Burkina Faso créent une alliance de sécurité (16 sept. 2023) — https://www.aljazeera.com/news/2023/9/16/mali-niger-and-burkina-faso-establish-sahel-security-alliance",
+              "Al Jazeera, traité de confédération signé à Niamey (6 juill. 2024) — https://www.aljazeera.com/news/2024/7/6/niger-mali-and-burkina-faso-military-leaders-sign-new-pact-rebuff-ecowas"]
+
+  - id: ecowas
+    name: CEDEAO
+    kind: forum
+    level: 0
+    members: [BJ, CV, CI, GM, GH, GN, GW, LR, NG, SN, SL, TG]
+    left: {ML: "2025-01", BF: "2025-01", NE: "2025-01"}
+    note: "Communauté économique des États de l'Afrique de l'Ouest. Le Mali, le Burkina Faso et le Niger l'ont quittée le 29 janvier 2025, après la menace d'intervention de la CEDEAO au Niger en 2023"
+    sources: ["CEDEAO, États membres — https://www.ecowas.int/member-states/",
+              "Voice of America, sortie officielle du Niger, du Mali et du Burkina Faso (29 janv. 2025) — https://www.voanews.com/a/west-africa-bloc-announces-formal-exit-of-three-junta-led-states-/7955666.html"]
+
+  - id: au
+    name: Union africaine
+    kind: forum
+    level: 0
+    members: [BI, CM, CF, TD, CG, CD, GQ, GA, ST, KM, DJ, ER, ET, KE, MG, MU, RW, SC, SO, SS, SD, TZ, UG,
+              DZ, EG, LY, MR, MA, TN, AO, BW, SZ, LS, MW, MZ, NA, ZA, ZM, ZW,
+              BJ, BF, CV, CI, GM, GH, GN, GW, LR, ML, NE, NG, SN, SL, TG]
+    note: "55 membres : le 55e, la République sahraouie, n'a pas de code pays sur ce site. Des États restent membres mais suspendus après un coup d'État ou une guerre : Soudan, Mali, Burkina Faso, Niger, Gabon, Guinée-Bissau (état début 2026)"
+    sources: ["Union africaine, États membres — https://au.int/en/member_states/countryprofiles2",
+              "JURIST, l'Union africaine maintient la suspension du Soudan (févr. 2026) — https://www.jurist.org/news/2026/02/african-union-condemns-ongoing-violence-and-maintains-sudan-membership-suspension/"]
+
+  - id: arab_league
+    name: Ligue arabe
+    kind: forum
+    level: 0
+    members: [DZ, BH, KM, DJ, EG, IQ, JO, KW, LB, LY, MR, MA, OM, PS, QA, SA, SO, SD, SY, TN, AE, YE]
+    note: "22 membres, dont la Palestine. La Syrie, suspendue fin 2011, a été réintégrée en 2023"
+    sources: ["Encyclopædia Britannica, « Arab League » — https://www.britannica.com/topic/Arab-League",
+              "Council on Foreign Relations, « The Arab League » (mai 2023) — https://www.cfr.org/backgrounder/arab-league"]
+
+  - id: gcc
+    name: Conseil de coopération du Golfe (CCG)
+    kind: forum
+    level: 0
+    members: [SA, AE, QA, KW, BH, OM]
+    sources: ["Secrétariat général du CCG, États membres — https://www.gcc-sg.org/en/AboutUs/MemberStates/Pages/default.aspx"]

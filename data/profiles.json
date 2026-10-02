@@ -276,6 +276,98 @@
    ]
   }
  },
+ "AO": {
+  "fetched_at": "2026-10-01T21:44:43+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 2.89492414306917,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 4.31940322451271,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 5.048,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 4153.21676881475,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 1.01234906054638,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 3129.47662331063,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 122174889423.635,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "régime présidentiel",
+     "république"
+    ],
+    "head_of_state": [
+     "João Lourenço"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 16.6897206933082,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 40.70479965,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.00049213337543,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 922050813.886942,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 28.2744398825844,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 3.00100954627922,
+    "year": 2025
+   },
+   "population": {
+    "value": 39040039,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 3.32,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.03229,
+    "year": 2016
+   },
+   "resource_rents_pct_gdp": {
+    "value": 29.9674348417559,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "AR": {
   "fetched_at": "2026-09-30T07:11:13+00:00",
   "profile": {
@@ -920,6 +1012,277 @@
    ]
   }
  },
+ "BH": {
+  "fetched_at": "2026-10-01T21:44:43+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 4.01595782713348,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 2.625,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 1.805,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 2.62347895609149,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 5.70191051100315,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 30596.5794898885,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 48965725531.9149,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "monarchie constitutionnelle"
+    ],
+    "head_of_state": [
+     "Hamed ben Issa al-Khalifa"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 0.387343644517371,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 100,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 2.8946654057963,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 1383973404.25532,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 10.9376756365994,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 0.733516488465226,
+    "year": 2025
+   },
+   "population": {
+    "value": 1600366,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 1.56,
+    "below_replacement": true,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.19327,
+    "year": 2024
+   },
+   "resource_rents_pct_gdp": {
+    "value": 16.6400337175308,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "BI": {
+  "fetched_at": "2026-10-01T21:44:43+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 2.54810935578364,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 51.4488629283489,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 4.789,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 755.193059550576,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 233.823013385395,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 3364713864.08488,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "démocratie représentative",
+     "régime présidentiel"
+    ],
+    "head_of_state": [
+     "Évariste Ndayishimiye"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 1.30508367041098,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 8.595999718,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 3.80127919699841,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 171829784.578258,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.40689260858279,
+    "year": 2025
+   },
+   "population": {
+    "value": 14390003,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.68,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.21312,
+    "year": 2018
+   },
+   "resource_rents_pct_gdp": {
+    "value": 13.9570339894077,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "BJ": {
+  "fetched_at": "2026-10-01T21:44:43+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.15305462207379,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 31.4468987229514,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 4.48,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 748.573658303452,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 1658.27312662991,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 24566420903.5337,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "république"
+    ],
+    "head_of_state": [
+     "Romuald Wadagni"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 30.5389584270212,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 33.98379898,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.720549619940377,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 154107719.732787,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.40291500851022,
+    "year": 2025
+   },
+   "population": {
+    "value": 14814460,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.69,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 2.30442028320417,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "BN": {
   "fetched_at": "2026-09-30T07:11:13+00:00",
   "profile": {
@@ -1190,6 +1553,97 @@
    },
    "resource_rents_pct_gdp": {
     "value": 7.94111199933246,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "BW": {
+  "fetched_at": "2026-10-01T21:44:43+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 4.08292423233554,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 0.458772254865633,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 2.703,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 983.650095987855,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 7778.1151090571,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 19928479839.4476,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "république parlementaire"
+    ],
+    "head_of_state": [
+     "Duma Boko"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 0.539469030954736,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 57.45950036,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 2.83392800595041,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 567822651.448639,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0.242401015769655,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 1.61250378521521,
+    "year": 2025
+   },
+   "population": {
+    "value": 2562122,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 1.52,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.561,
+    "year": 2013
+   },
+   "resource_rents_pct_gdp": {
+    "value": 1.03853443914101,
     "year": 2021
    },
    "sources": [
@@ -1474,6 +1928,183 @@
    ]
   }
  },
+ "CF": {
+  "fetched_at": "2026-10-01T21:44:43+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 2.19798298001082,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 2.88933834151979,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 5.954,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 27657.6934778255,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 556.131398031455,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 3066109226.40165,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Faustin-Archange Touadéra"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 8.29978042191414,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 13.78250027,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 2.51969119903231,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 71174969.9459274,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0.76804803651011,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 3.36794044132968,
+    "year": 2025
+   },
+   "population": {
+    "value": 5513282,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 1.76,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 10.2601957578803,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "CG": {
+  "fetched_at": "2026-10-01T21:44:43+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.06138374079353,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 1.61054172767204,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 4.109,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 36784.7844875581,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0.356926091847818,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 2514.73393584747,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 16306633778.765,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "république parlementaire"
+    ],
+    "head_of_state": [
+     "Denis Sassou-Nguesso"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 3.15972234574724,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 47.25159836,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.18596121569308,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 182044402.521739,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 34.3828809069635,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.36370989746216,
+    "year": 2025
+   },
+   "population": {
+    "value": 6484437,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.44,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.38339,
+    "year": 2022
+   },
+   "resource_rents_pct_gdp": {
+    "value": 37.7125480946685,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "CH": {
   "fetched_at": "2026-09-30T07:11:13+00:00",
   "profile": {
@@ -1558,6 +2189,185 @@
    },
    "resource_rents_pct_gdp": {
     "value": 0.00910740311945595,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "CI": {
+  "fetched_at": "2026-10-01T21:44:43+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 2.65345754900338,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 15.1038040880503,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 4.23,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 2528.04720986694,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0.309353155239366,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 3050.10202257321,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 99773555666.1988,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "république"
+    ],
+    "head_of_state": [
+     "Alassane Ouattara"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 5.25759412069948,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 41.43219902,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.762358993041457,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 658353218.218127,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 2.50107699952363,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0.70017290136454,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.40496595908985,
+    "year": 2025
+   },
+   "population": {
+    "value": 32711547,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.62,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.06975,
+    "year": 2016
+   },
+   "resource_rents_pct_gdp": {
+    "value": 4.73502206212113,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "CM": {
+  "fetched_at": "2026-10-01T21:44:43+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 2.81759096595751,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 13.1158638488714,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 4.261,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 9879.57378577776,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0.584760671391585,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 1972.3815800786,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 58933453923.761,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "république"
+    ],
+    "head_of_state": [
+     "Paul Biya"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 2.10363029161033,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 46.25880051,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.00912763032385,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 534852005.33635,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 2.36159953238547,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.56133847709635,
+    "year": 2025
+   },
+   "population": {
+    "value": 29879337,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.76,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 5.52598268395679,
     "year": 2021
    },
    "sources": [
@@ -1741,6 +2551,97 @@
    "resource_rents_pct_gdp": {
     "value": 0.565351678337536,
     "year": 2020
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "CV": {
+  "fetched_at": "2026-10-01T21:44:55+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 7.15393054195179,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 12.4069478908189,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 1.511,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 577.21057218884,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 5796.47207860911,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 3056630435.32463,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "république parlementaire"
+    ],
+    "head_of_state": [
+     "José Maria Neves"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 1.15215005835922,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 74.73519897,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.623903407592831,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 16827224.9254434,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 0.465500368710652,
+    "year": 2025
+   },
+   "population": {
+    "value": 527326,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 0.29,
+    "below_replacement": true,
+    "label": "stagnation",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.06622,
+    "year": 2011
+   },
+   "resource_rents_pct_gdp": {
+    "value": 17.6577234520724,
+    "year": 2021
    },
    "sources": [
     "Banque mondiale WDI",
@@ -2014,6 +2915,92 @@
    },
    "resource_rents_pct_gdp": {
     "value": 0.0770848993139744,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "DJ": {
+  "fetched_at": "2026-10-01T21:44:55+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 4.97206050453666,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 0.129421915444349,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 2.618,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 263.829966862956,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 3905.604954681,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 4624533092.31886,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Ismail Omar Guelleh"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 3.27550022198031,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 65.29889679,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 2.62758252462798,
+    "year": 2008
+   },
+   "military_usd": {
+    "value": 36274835.2755161,
+    "year": 2008
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 1.30518794764358,
+    "year": 2025
+   },
+   "population": {
+    "value": 1184076,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 1.5,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 0.277110490356489,
     "year": 2021
    },
    "sources": [
@@ -2380,6 +3367,83 @@
    "resource_rents_pct_gdp": {
     "value": 5.1391200748227,
     "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "ER": {
+  "fetched_at": "2026-10-01T21:44:55+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 4.2581056905137,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 5.69409349206375,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.68,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 821.247551289109,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2011
+   },
+   "gdp_per_capita_usd": {
+    "value": 688.68165957684,
+    "year": 2011
+   },
+   "gdp_usd": {
+    "value": 2065001626.01626,
+    "year": 2011
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Issayas Afewerki"
+    ]
+   },
+   "hightech_exports_pct": null,
+   "internet_users_pct": {
+    "value": 14.34939957,
+    "year": 2020
+   },
+   "military_pct_gdp": null,
+   "military_usd": null,
+   "mineral_rents_pct_gdp": {
+    "value": 24.6305983607814,
+    "year": 2011
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2011
+   },
+   "pop_growth_pct": {
+    "value": 1.99933689205926,
+    "year": 2025
+   },
+   "population": {
+    "value": 3607003,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 1.51,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 26.9562621368195,
+    "year": 2011
    },
    "sources": [
     "Banque mondiale WDI",
@@ -2832,6 +3896,97 @@
    ]
   }
  },
+ "GA": {
+  "fetched_at": "2026-10-01T21:44:55+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 4.13008683137499,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 1.26130321729344,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.592,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 67468.9714725556,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0.268524525122843,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 8263.03321595,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 21427119323.2764,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "régime présidentiel"
+    ],
+    "head_of_state": [
+     "Brice Oligui Nguema"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 1.77313570365975,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 68.72090149,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.538206793748,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 319095920.726509,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0.0225266342101698,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 15.5565091491463,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.11142428155027,
+    "year": 2025
+   },
+   "population": {
+    "value": 2593130,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.42,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.57924,
+    "year": 2009
+   },
+   "resource_rents_pct_gdp": {
+    "value": 18.4933440925176,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "GB": {
   "fetched_at": "2026-09-28T21:32:36+00:00",
   "profile": {
@@ -3017,6 +4172,359 @@
    ]
   }
  },
+ "GH": {
+  "fetched_at": "2026-10-01T21:44:55+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.78769586621254,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 20.6998545265961,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.344,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 914.050531368042,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0.371360442634513,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 3257.1588903576,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 114209905278.717,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "démocratie"
+    ],
+    "head_of_state": [
+     "John Dramani Mahama"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 2.11003762211445,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 72.17569733,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.383994182354107,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 268736705.433852,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 5.165049712175,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 4.05501917796431,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 1.83295547173437,
+    "year": 2025
+   },
+   "population": {
+    "value": 35064272,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.02,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.37655,
+    "year": 2010
+   },
+   "resource_rents_pct_gdp": {
+    "value": 13.3474845007777,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "GM": {
+  "fetched_at": "2026-10-01T21:44:55+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.18495882311462,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 43.4782608695652,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.907,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 1137.88512670351,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 919.060423427951,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 2593673987.53306,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "république"
+    ],
+    "head_of_state": [
+     "Adama Barrow"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 3.34757896376015,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 49.49430084,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.574440350261863,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 14433677.7042713,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.22524763449017,
+    "year": 2025
+   },
+   "population": {
+    "value": 2822093,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.41,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.06933,
+    "year": 2018
+   },
+   "resource_rents_pct_gdp": {
+    "value": 2.85673041093642,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "GN": {
+  "fetched_at": "2026-10-01T21:44:55+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.47302636663564,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 24.4184071300667,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 4.131,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 16079.5302102,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 1877.2541220972,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 28346024753.2924,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "république"
+    ],
+    "head_of_state": [
+     "Mamadi Doumbouya"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 0.899971742078623,
+    "year": 2016
+   },
+   "internet_users_pct": {
+    "value": 33.30469894,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 2.05370337042453,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 562455950.499682,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.31092272302565,
+    "year": 2025
+   },
+   "population": {
+    "value": 15099727,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.53,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 4.51955879028644,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "GQ": {
+  "fetched_at": "2026-10-01T21:44:55+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.76410096619379,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 1.88948306595365,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 4.116,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 14416.052829289,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 6.63018966086863,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 6615.25245207167,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 12823210425.9217,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Teodoro Obiang Nguema Mbasogo"
+    ]
+   },
+   "hightech_exports_pct": null,
+   "internet_users_pct": {
+    "value": 63.29930115,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.982185856511218,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 113135237.554975,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 14.9400221325798,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.39717222444002,
+    "year": 2025
+   },
+   "population": {
+    "value": 1938431,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.92,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 23.500064053404,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "GR": {
   "fetched_at": "2026-09-30T07:11:13+00:00",
   "profile": {
@@ -3100,6 +4608,94 @@
    },
    "resource_rents_pct_gdp": {
     "value": 0.0875219452812631,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "GW": {
+  "fetched_at": "2026-10-01T21:44:55+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.23723113648942,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 14.065807254623,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.757,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 7599.04043116955,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 1123.76679992349,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 2527930272.92988,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "José Mário Vaz",
+     "Manuel Serifo Nhamadjo",
+     "Umaro Sissoco Embaló"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 5.80645161290323,
+    "year": 2015
+   },
+   "internet_users_pct": {
+    "value": 29.77739906,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.2348847572106,
+    "year": 2023
+   },
+   "military_usd": {
+    "value": 25292392.1705683,
+    "year": 2023
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.16429203622489,
+    "year": 2025
+   },
+   "population": {
+    "value": 2249515,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.33,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 10.4285037712862,
     "year": 2021
    },
    "sources": [
@@ -4110,6 +5706,95 @@
    ]
   }
  },
+ "JO": {
+  "fetched_at": "2026-10-01T21:52:44+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 4.75359341712725,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 2.29745253057639,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 2.604,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 60.5884919355562,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0.0430035744363791,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 5347.77731384797,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 61610052535.2113,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Abdallah II de Jordanie"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 2.08415985427159,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 95.62244985,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 4.80018703722722,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 2560281690.14085,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0.0143633135367042,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": -0.279038179525473,
+    "year": 2025
+   },
+   "population": {
+    "value": 11520684,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 1.9,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.69547,
+    "year": 2016
+   },
+   "resource_rents_pct_gdp": {
+    "value": 0.0776640966166585,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "JP": {
   "fetched_at": "2026-09-30T07:11:13+00:00",
   "profile": {
@@ -4193,6 +5878,95 @@
    },
    "resource_rents_pct_gdp": {
     "value": 0.0473044627668744,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "KE": {
+  "fetched_at": "2026-10-01T21:52:44+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.02095116077232,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 11.4175064467254,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.167,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 381.549511643352,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 2362.86091198611,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 135941278878.815,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "William Ruto"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 3.15003013612034,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 34.97622513,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.999546585264659,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 1231306436.54642,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0.00566243092389293,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 1.92967823977399,
+    "year": 2025
+   },
+   "population": {
+    "value": 57532493,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.02,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.81069,
+    "year": 2024
+   },
+   "resource_rents_pct_gdp": {
+    "value": 1.22792857770901,
     "year": 2021
    },
    "sources": [
@@ -4383,6 +6157,88 @@
    ]
   }
  },
+ "KM": {
+  "fetched_at": "2026-10-01T21:52:44+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 4.45428004270273,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 34.9274583557227,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.822,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 1438.52464911986,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 2055.75921566281,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 1814920856.27026,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "république fédérale"
+    ],
+    "head_of_state": [
+     "Azali Assoumani"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 3.13907204820087,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 32.51750183,
+    "year": 2024
+   },
+   "military_pct_gdp": null,
+   "military_usd": null,
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 1.85420936957363,
+    "year": 2025
+   },
+   "population": {
+    "value": 882847,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 1.97,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 1.62843413378353,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "KP": {
   "fetched_at": "2026-09-28T21:32:36+00:00",
   "profile": {
@@ -4535,6 +6391,97 @@
    "resource_rents_pct_gdp": {
     "value": 0.049812574781783,
     "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "KW": {
+  "fetched_at": "2026-10-01T21:52:44+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.17490130225807,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 0.448933782267116,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 1.56,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 0,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 1.70268520321554,
+    "year": 2020
+   },
+   "gdp_per_capita_usd": {
+    "value": 32312.3119953634,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 157209026926.418,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "monarchie constitutionnelle"
+    ],
+    "head_of_state": [
+     "Mechaal al-Ahmad al-Jaber al-Sabah"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 5.82777648932315,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 100,
+    "year": 2025
+   },
+   "military_pct_gdp": {
+    "value": 4.84093247384389,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 7792925565.71038,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2020
+   },
+   "oil_rents_pct_gdp": {
+    "value": 27.5816891390019,
+    "year": 2020
+   },
+   "pop_growth_pct": {
+    "value": -0.654851001278566,
+    "year": 2025
+   },
+   "population": {
+    "value": 4865298,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.41,
+    "below_replacement": true,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.08954,
+    "year": 2024
+   },
+   "resource_rents_pct_gdp": {
+    "value": 29.2848672951013,
+    "year": 2020
    },
    "sources": [
     "Banque mondiale WDI",
@@ -4876,6 +6823,188 @@
    "resource_rents_pct_gdp": {
     "value": 0.00147146668515006,
     "year": 2020
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "LR": {
+  "fetched_at": "2026-10-01T21:52:44+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.33493509045042,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 5.19102990033223,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.864,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 37221.1161347211,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 915.328972645548,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 5245938900,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "Démocratie Herrenvolk",
+     "régime présidentiel",
+     "république",
+     "république constitutionnelle"
+    ],
+    "head_of_state": [
+     "Joseph Boakai"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 0.643718596498284,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 32.23360062,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.711206896551724,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 33825000,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 5.43515850046016,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.08732472424606,
+    "year": 2025
+   },
+   "population": {
+    "value": 5731206,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.09,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 21.9156000871056,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "LS": {
+  "fetched_at": "2026-10-01T21:54:27+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.88046584377219,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 11.7505928853755,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 2.664,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 2287.72893692779,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 1088.96276223185,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 2573572920.05159,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "monarchie constitutionnelle"
+    ],
+    "head_of_state": [
+     "Letsie III du Lesotho"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 0.0895832496967832,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 51.79660034,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.56745014441231,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 36295976.9958149,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 1.1020485314959,
+    "year": 2025
+   },
+   "population": {
+    "value": 2363325,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 1.17,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.09453,
+    "year": 2023
+   },
+   "resource_rents_pct_gdp": {
+    "value": 4.31788190525398,
+    "year": 2021
    },
    "sources": [
     "Banque mondiale WDI",
@@ -5517,6 +7646,97 @@
    ]
   }
  },
+ "MG": {
+  "fetched_at": "2026-10-01T21:54:27+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.47289998087395,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 5.15641113784806,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.912,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 11071.9555218848,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 599.265294255357,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 19620352035.7899,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "république"
+    ],
+    "head_of_state": [
+     "Michael Randrianirina"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 0.958835172179217,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 18.67790031,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.708648145396825,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 121634246.7323,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0.0838298700394072,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.39781026296956,
+    "year": 2025
+   },
+   "population": {
+    "value": 32740678,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.56,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.01275,
+    "year": 2017
+   },
+   "resource_rents_pct_gdp": {
+    "value": 5.5311886434036,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "MK": {
   "fetched_at": "2026-09-30T07:11:13+00:00",
   "profile": {
@@ -5788,6 +8008,97 @@
    ]
   }
  },
+ "MR": {
+  "fetched_at": "2026-10-01T21:54:27+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.24673388253332,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 0.436596487823809,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 4.625,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 82.040562084503,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 2197.51046251309,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 11679910946.4371,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "régime présidentiel"
+    ],
+    "head_of_state": [
+     "Mohammed ould al-Ghazouani"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 9.44834081238425,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 45.77939987,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 2.15504682070845,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 260059017.269229,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 9.58503577077492,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.77895808619534,
+    "year": 2025
+   },
+   "population": {
+    "value": 5315065,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.97,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.01019,
+    "year": 2018
+   },
+   "resource_rents_pct_gdp": {
+    "value": 11.4487520863931,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "MT": {
   "fetched_at": "2026-09-30T07:11:13+00:00",
   "profile": {
@@ -5871,6 +8182,186 @@
    },
    "resource_rents_pct_gdp": {
     "value": 0,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "MU": {
+  "fetched_at": "2026-10-01T21:54:27+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 14.1145544022434,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 37.5563345017526,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 1.44,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 2178.97020489924,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 12991.2935987166,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 16157804491.7614,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "république parlementaire"
+    ],
+    "head_of_state": [
+     "Dharam Gokhool"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 1.21703538647261,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 73.30793533,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.149590857574221,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 23009853.3257139,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": -0.163726377394902,
+    "year": 2025
+   },
+   "population": {
+    "value": 1243741,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": -0.15,
+    "below_replacement": true,
+    "label": "déclin",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.26181,
+    "year": 2024
+   },
+   "resource_rents_pct_gdp": {
+    "value": 0.00271526913227865,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "MW": {
+  "fetched_at": "2026-10-01T21:51:48+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 2.58857988227872,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 42.4268137462877,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.59,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 784.686345212985,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 671.506847203876,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 14918276698.303,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Peter Mutharika"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 1.64552794448662,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 18.96159935,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.02496048269861,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 117589994.544906,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0.00564591527235387,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.55685698114353,
+    "year": 2025
+   },
+   "population": {
+    "value": 22216120,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.66,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.17752,
+    "year": 2019
+   },
+   "resource_rents_pct_gdp": {
+    "value": 4.22250421289741,
     "year": 2021
    },
    "sources": [
@@ -6061,6 +8552,184 @@
    },
    "resource_rents_pct_gdp": {
     "value": 6.92196634868479,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "MZ": {
+  "fetched_at": "2026-10-01T21:51:48+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 2.73388102426795,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 7.18482158752766,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 4.69,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 3071.3879360169,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 3.56569180210999,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 626.914419215727,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 22337997046.1913,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Daniel Chapo"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 3.6302648420799,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 20.52729988,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.99330115632931,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 450448587.393598,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0.140484013033913,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0.0793125662089328,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.84630186701375,
+    "year": 2025
+   },
+   "population": {
+    "value": 35631653,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.99,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.30814,
+    "year": 2015
+   },
+   "resource_rents_pct_gdp": {
+    "value": 14.9074768559672,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "NA": {
+  "fetched_at": "2026-10-01T21:51:48+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.79304753450455,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 0.971711061715799,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.211,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 2131.73720663524,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 4875.92558158247,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 15080340653.5276,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Netumbo Nandi-Ndaitwah"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 0.117288080576373,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 64.87460327,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 2.73490195432496,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 362392304.29255,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 3.16791637362429,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.04761498541566,
+    "year": 2025
+   },
+   "population": {
+    "value": 3092816,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.68,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.64636,
+    "year": 2022
+   },
+   "resource_rents_pct_gdp": {
+    "value": 4.03058059383138,
     "year": 2021
    },
    "sources": [
@@ -6423,6 +9092,97 @@
    },
    "resource_rents_pct_gdp": {
     "value": 10.0482763904291,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "OM": {
+  "fetched_at": "2026-10-01T21:51:48+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 2.6870391801832,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 0.281518578352181,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 2.508,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 295.968945247014,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 5.67148047353265,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 19947.3966227092,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 109604780696.23,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "monarchie absolue"
+    ],
+    "head_of_state": [
+     "Haïtham bin Tariq Al Saïd"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 5.00539346096146,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 95.25174678,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 5.59419531945284,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 5988296488.94668,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 23.5387435070386,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 3.95650101545376,
+    "year": 2025
+   },
+   "population": {
+    "value": 5494691,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.76,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.38979,
+    "year": 2024
+   },
+   "resource_rents_pct_gdp": {
+    "value": 29.2115792686173,
     "year": 2021
    },
    "sources": [
@@ -6971,6 +9731,97 @@
    ]
   }
  },
+ "QA": {
+  "fetched_at": "2026-10-01T21:51:48+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 1.70081503237359,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 1.82767624020888,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 1.717,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 21.0737607970096,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 12.0112545642563,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 72524.9066385222,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 215559615384.615,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "monarchie constitutionnelle"
+    ],
+    "head_of_state": [
+     "Tamim ben Hamad Al Thani"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 2.80655334313522,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 98.08540344,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 6.50020565272303,
+    "year": 2022
+   },
+   "military_usd": {
+    "value": 15412087912.0879,
+    "year": 2022
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 15.2784667126988,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 3.92476698437933,
+    "year": 2025
+   },
+   "population": {
+    "value": 2972215,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.4,
+    "below_replacement": true,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.68058,
+    "year": 2021
+   },
+   "resource_rents_pct_gdp": {
+    "value": 27.2897873992471,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "RO": {
   "fetched_at": "2026-09-30T07:11:13+00:00",
   "profile": {
@@ -7328,6 +10179,185 @@
    },
    "resource_rents_pct_gdp": {
     "value": 4.01723634071877,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "SA": {
+  "fetched_at": "2026-10-01T21:51:48+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.05678115419144,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 1.59577287888021,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 2.308,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 74.5915552911147,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 1.715848461975,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 34536.6555456551,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 1276942933333.33,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "monarchie",
+     "monarchie absolue",
+     "théocratie islamique"
+    ],
+    "head_of_state": [
+     "Salmane ben Abdelaziz Al Saoud"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 0.544002126713625,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 100,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 7.2981029390103,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 80330666666.6667,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0.162202190483481,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 23.6862940574499,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 4.63120314543082,
+    "year": 2025
+   },
+   "population": {
+    "value": 36973555,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.17,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.63522,
+    "year": 2024
+   },
+   "resource_rents_pct_gdp": {
+    "value": 25.5652418188141,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "SC": {
+  "fetched_at": "2026-10-01T21:51:48+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 8.74539176146741,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 0.326086956521739,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 1.85,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": null,
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 19449.3836346926,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 2387022853.48583,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Patrick Herminie"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 0.0899054165105232,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 87.81800079,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.17906851761683,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 26860869.6918082,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 1.12749264749076,
+    "year": 2025
+   },
+   "population": {
+    "value": 122730,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.77,
+    "below_replacement": true,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.2017,
+    "year": 2016
+   },
+   "resource_rents_pct_gdp": {
+    "value": 0.120645132507182,
     "year": 2021
    },
    "sources": [
@@ -7792,6 +10822,182 @@
    ]
   }
  },
+ "SL": {
+  "fetched_at": "2026-10-01T21:51:48+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.28364812148674,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 21.9451371571072,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.703,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 19331.1261214621,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": null,
+   "gdp_per_capita_usd": {
+    "value": 846.296172499617,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 7464157904.43509,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "régime présidentiel"
+    ],
+    "head_of_state": [
+     "Julius Maada Bio"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 0.736114020377876,
+    "year": 2018
+   },
+   "internet_users_pct": {
+    "value": 25.10499954,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.462539633893509,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 36447048.8625476,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0.212781118346023,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.03619305233604,
+    "year": 2025
+   },
+   "population": {
+    "value": 8819794,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.28,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 9.03701414128967,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "SN": {
+  "fetched_at": "2026-10-01T21:51:48+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.64616639269883,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 19.893003687737,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.765,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 1461.66503022502,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0.00259884853020802,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 1954.71174194867,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 37006536238.3731,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "régime présidentiel"
+    ],
+    "head_of_state": [
+     "Bassirou Diomaye Faye"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 3.0439766592332,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 60.11780167,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.56647768181405,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 514941285.308382,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 2.89566328207721,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.29738465638923,
+    "year": 2025
+   },
+   "population": {
+    "value": 18931966,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.64,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.5772,
+    "year": 2015
+   },
+   "resource_rents_pct_gdp": {
+    "value": 4.40159712005452,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "SO": {
   "fetched_at": "2026-10-01T21:13:42+00:00",
   "profile": {
@@ -7869,6 +11075,171 @@
    "rd_pct_gdp": null,
    "resource_rents_pct_gdp": {
     "value": 11.2356934915275,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "SS": {
+  "fetched_at": "2026-10-01T21:52:00+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.07528935608692,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 3.93909657715253,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.785,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 2359.09467745596,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2015
+   },
+   "gdp_per_capita_usd": {
+    "value": 1080.14718624765,
+    "year": 2015
+   },
+   "gdp_usd": {
+    "value": 11997800760.2242,
+    "year": 2015
+   },
+   "government": {
+    "forms": [
+     "république fédérale"
+    ],
+    "head_of_state": [
+     "Salva Kiir"
+    ]
+   },
+   "hightech_exports_pct": null,
+   "internet_users_pct": {
+    "value": 6.671000004,
+    "year": 2019
+   },
+   "military_pct_gdp": {
+    "value": 1.9617070809135,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 2027890373.09995,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0.0133266931516145,
+    "year": 2015
+   },
+   "oil_rents_pct_gdp": {
+    "value": 10.3913729191421,
+    "year": 2015
+   },
+   "pop_growth_pct": {
+    "value": 2.0337018417734,
+    "year": 2025
+   },
+   "population": {
+    "value": 12188788,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 0.93,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 13.0532234224485,
+    "year": 2015
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "ST": {
+  "fetched_at": "2026-10-01T21:52:00+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.94457532444829,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 4.16666666666667,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.596,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 9633.01738803827,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 4084.40062145233,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 981293586.906408,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Carlos Vila Nova"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 29.2734328924522,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 59.11759949,
+    "year": 2024
+   },
+   "military_pct_gdp": null,
+   "military_usd": null,
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 1.98329290197673,
+    "year": 2025
+   },
+   "population": {
+    "value": 240254,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 1.84,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 1.88439596006627,
     "year": 2021
    },
    "sources": [
@@ -7961,6 +11332,272 @@
    "resource_rents_pct_gdp": {
     "value": 6.37482598047532,
     "year": 2020
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "SZ": {
+  "fetched_at": "2026-10-01T21:52:00+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 4.34585495321508,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 10.2906976744186,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 2.718,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 2165.85706820071,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 4108.25221093363,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 5160679612.81734,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "monarchie absolue"
+    ],
+    "head_of_state": [
+     "Mswati III"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 0.285307158606886,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 63.40309906,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.4440675502379,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 79655264.6081486,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 1.06859931393766,
+    "year": 2025
+   },
+   "population": {
+    "value": 1256174,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 0.95,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.27807,
+    "year": 2015
+   },
+   "resource_rents_pct_gdp": {
+    "value": 2.99915237990705,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "TD": {
+  "fetched_at": "2026-10-01T21:52:00+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 2.11894758567596,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 4.20902160101652,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 6.028,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 812.773945458317,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0.013490946600622,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 1022.33559390754,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 21472835225.4338,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Mahamat Idriss Déby"
+    ]
+   },
+   "hightech_exports_pct": null,
+   "internet_users_pct": {
+    "value": 12.62689972,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 2.98484990097129,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 557711240.140698,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 16.7515661611417,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 3.41211675890953,
+    "year": 2025
+   },
+   "population": {
+    "value": 21003705,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 3.67,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.23294,
+    "year": 2016
+   },
+   "resource_rents_pct_gdp": {
+    "value": 21.3429312625159,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "TG": {
+  "fetched_at": "2026-10-01T21:52:00+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.4768505984781,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 48.7221915793344,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 4.121673,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 1425.27541278455,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 1383.89974929887,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 11889949067.4697,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Jean-Lucien Savi de Tové"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 0.681948279595617,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 39.48320007,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.99877193389434,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 195347349.222552,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 4.880592026997,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.17758924189303,
+    "year": 2025
+   },
+   "population": {
+    "value": 8591626,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 1.97,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.22229,
+    "year": 2024
+   },
+   "resource_rents_pct_gdp": {
+    "value": 7.86417419787513,
+    "year": 2021
    },
    "sources": [
     "Banque mondiale WDI",
@@ -8241,6 +11878,99 @@
    ]
   }
  },
+ "TN": {
+  "fetched_at": "2026-10-01T21:52:00+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 9.9376502855836,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 18.2241246138002,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 1.818,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 346.141132837828,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0.490998034663024,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 4656.63818386852,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 57502836548.0878,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "régime présidentiel",
+     "régime semi-présidentiel",
+     "république parlementaire"
+    ],
+    "head_of_state": [
+     "Kaïs Saïed"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 7.70110744284105,
+    "year": 2023
+   },
+   "internet_users_pct": {
+    "value": 76.5,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 2.50636792573464,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 1313683263.15451,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 1.5489621013289,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 0.580403828948731,
+    "year": 2025
+   },
+   "population": {
+    "value": 12348573,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 0.8,
+    "below_replacement": true,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.74658,
+    "year": 2019
+   },
+   "resource_rents_pct_gdp": {
+    "value": 2.24923087429424,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
  "TR": {
   "fetched_at": "2026-09-28T21:32:36+00:00",
   "profile": {
@@ -8364,6 +12094,95 @@
    "population_trend": null,
    "rd_pct_gdp": null,
    "resource_rents_pct_gdp": null,
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "TZ": {
+  "fetched_at": "2026-10-01T21:52:00+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.04176368097549,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 15.2432829081057,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 4.541,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 1298.06268316881,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0.223340416897822,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 1318.81921386719,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 90143496090.4411,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Samia Suluhu Hassan"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 3.00569275084221,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 31.16209984,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.154617473534,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 920849885.868755,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 4.02780413757632,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.85515014149945,
+    "year": 2025
+   },
+   "population": {
+    "value": 70545865,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 3.09,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.51456,
+    "year": 2013
+   },
+   "resource_rents_pct_gdp": {
+    "value": 6.69370906979479,
+    "year": 2021
+   },
    "sources": [
     "Banque mondiale WDI",
     "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
@@ -9184,6 +13003,184 @@
    },
    "resource_rents_pct_gdp": {
     "value": 7.32857859192335,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "ZM": {
+  "fetched_at": "2026-10-01T21:52:00+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 2.00005028777659,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 5.11171794078478,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 4.036,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 3979.56863659284,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 1317.87771619597,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 28879806220.1264,
+    "year": 2025
+   },
+   "government": {
+    "forms": [
+     "démocratie représentative",
+     "régime présidentiel"
+    ],
+    "head_of_state": [
+     "Hakainde Hichilema"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 1.4719428559393,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 17.10099983,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 1.33268361976463,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 349668209.787907,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 28.2490949914965,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 2.77109662765952,
+    "year": 2025
+   },
+   "population": {
+    "value": 21913874,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 2.94,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": {
+    "value": 0.27819,
+    "year": 2008
+   },
+   "resource_rents_pct_gdp": {
+    "value": 35.2641479964325,
+    "year": 2021
+   },
+   "sources": [
+    "Banque mondiale WDI",
+    "Wikidata (P122 forme de gouvernement, P35 chef d'État)"
+   ]
+  }
+ },
+ "ZW": {
+  "fetched_at": "2026-10-01T21:52:00+00:00",
+  "profile": {
+   "age65_pct": {
+    "value": 3.56147602516578,
+    "year": 2025
+   },
+   "arable_land_pct": {
+    "value": 10.3926785575805,
+    "year": 2023
+   },
+   "fertility": {
+    "value": 3.674,
+    "year": 2024
+   },
+   "freshwater_m3_per_capita": {
+    "value": 762.957077254569,
+    "year": 2022
+   },
+   "gas_rents_pct_gdp": {
+    "value": 0,
+    "year": 2021
+   },
+   "gdp_per_capita_usd": {
+    "value": 3021.43019873632,
+    "year": 2025
+   },
+   "gdp_usd": {
+    "value": 51215643905.5886,
+    "year": 2025
+   },
+   "government": {
+    "forms": [],
+    "head_of_state": [
+     "Emmerson Mnangagwa"
+    ]
+   },
+   "hightech_exports_pct": {
+    "value": 2.79801736625087,
+    "year": 2024
+   },
+   "internet_users_pct": {
+    "value": 41.64279938,
+    "year": 2024
+   },
+   "military_pct_gdp": {
+    "value": 0.351195023855751,
+    "year": 2024
+   },
+   "military_usd": {
+    "value": 98394292.7162675,
+    "year": 2024
+   },
+   "mineral_rents_pct_gdp": {
+    "value": 4.24065959200093,
+    "year": 2021
+   },
+   "oil_rents_pct_gdp": {
+    "value": 0.0477688089316108,
+    "year": 2021
+   },
+   "pop_growth_pct": {
+    "value": 1.88435182354047,
+    "year": 2025
+   },
+   "population": {
+    "value": 16950795,
+    "year": 2025
+   },
+   "population_trend": {
+    "annual_rate_pct": 1.64,
+    "below_replacement": false,
+    "label": "croissance",
+    "period": "2015-2025"
+   },
+   "rd_pct_gdp": null,
+   "resource_rents_pct_gdp": {
+    "value": 6.39845161112644,
     "year": 2021
    },
    "sources": [
