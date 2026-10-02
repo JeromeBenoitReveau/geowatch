@@ -654,6 +654,161 @@ dossiers:
         text: Plan de reconstruction de 2,45 milliards de dollars du Board of Peace
         source: "FDD's Long War Journal (sept. 2026) — https://www.longwarjournal.org/archives/2026/09/board-of-peace-unveils-gaza-recovery-plan-israel-reports-18-ceasefire-violations-sept-15-29.php"
 
+  - id: sahel
+    title: La guerre au Sahel
+    card: "Depuis 2012, jihadistes et séparatistes défient les armées du Mali et du Burkina Faso ; Bamako vit sous blocus."
+    since: "2012"
+    verified: 2026-10
+
+    # Carte d'ouverture. Coordonnées des lieux : Wikidata (P625). Pas de zones de contrôle : aucune source fiable région par région.
+    # Dioura (attaque de septembre 2026) n'est pas épinglée : coordonnées non vérifiées.
+    map:
+      bounds: [[9.5, -12.5], [25.0, 5.0]]
+      anchors: [[12.646, -7.992], [18.441, 1.408]]   # Bamako, Kidal
+      countries: [[ML, BF], []]   # les groupes armés n'administrent pas un pays : Kidal est épinglée
+      pins:
+        - {label: Bamako, at: [12.646, -7.992], text: "La capitale du Mali. Depuis septembre 2025, le JNIM attaque les camions-citernes qui l'approvisionnent depuis le Sénégal et la Côte d'Ivoire.",
+           source: "Al Jazeera, le Mali fête son indépendance en pleine crise sécuritaire (sept. 2026) — https://www.aljazeera.com/news/2026/9/22/mali-marks-independence-amid-a-worsening-security-crisis", dir: left}
+        - {label: Kati, at: [12.747, -8.071], text: "Ville de garnison aux portes de Bamako. Le ministre de la Défense, Sadio Camara, y est tué dans un attentat le 25 avril 2026.",
+           source: "Security Council Report, Afrique de l'Ouest et Sahel, prévisions de juillet 2026 — https://www.securitycouncilreport.org/monthly-forecast/2026-07/west-africa-and-the-sahel-17.php"}
+        - {label: Sévaré, at: [14.533, -4.1], text: "Dans le centre du Mali, visée lors de l'offensive coordonnée du 25 avril 2026.",
+           source: "Security Council Report, Afrique de l'Ouest et Sahel, prévisions de juillet 2026 — https://www.securitycouncilreport.org/monthly-forecast/2026-07/west-africa-and-the-sahel-17.php"}
+        - {label: Gao, at: [16.267, -0.05], text: "Grande ville du Nord, prise par les rebelles en 2012 et attaquée de nouveau le 25 avril 2026.",
+           source: "Security Council Report, Afrique de l'Ouest et Sahel, prévisions de juillet 2026 — https://www.securitycouncilreport.org/monthly-forecast/2026-07/west-africa-and-the-sahel-17.php"}
+        - {label: Kidal, at: [18.441, 1.408], text: "Bastion des rebelles touaregs. Fin avril 2026, les militaires russes s'en retirent après un accord avec le FLA, qui en revendique le contrôle.",
+           source: "Security Council Report, Afrique de l'Ouest et Sahel, prévisions de juillet 2026 — https://www.securitycouncilreport.org/monthly-forecast/2026-07/west-africa-and-the-sahel-17.php"}
+    lede: >-
+      Depuis 2012, le Mali puis le Burkina Faso affrontent des groupes jihadistes et des rebelles séparatistes. Les
+      militaires qui ont pris le pouvoir ont renvoyé l'armée française et fait venir des combattants russes. Le 25 avril
+      2026, une offensive coordonnée du JNIM et du FLA frappe Bamako et le Nord, tue le ministre malien de la Défense et
+      fait tomber Kidal. La capitale vit depuis sous un blocus du carburant.
+    lede_sources:
+      - "Security Council Report, Afrique de l'Ouest et Sahel, prévisions de juillet 2026 — https://www.securitycouncilreport.org/monthly-forecast/2026-07/west-africa-and-the-sahel-17.php"
+      - "Al Jazeera, le Mali fête son indépendance en pleine crise sécuritaire (sept. 2026) — https://www.aljazeera.com/news/2026/9/22/mali-marks-independence-amid-a-worsening-security-crisis"
+
+    origins:
+      text: >-
+        En 2012, un coup d'État renverse le président malien. Des rebelles touaregs s'emparent de Gao, Kidal et Tombouctou
+        et proclament un État indépendant, l'Azawad, avant d'être débordés par des groupes liés à Al-Qaïda. La France
+        intervient en 2013 à la demande du Mali, puis installe une force régionale de plusieurs milliers de soldats, aux
+        côtés de 15 000 Casques bleus. La violence gagne pourtant le Burkina Faso et le Niger. Des militaires prennent le
+        pouvoir au Mali (2020 et 2021), au Burkina Faso (2022) et au Niger (2023), obtiennent le départ des troupes
+        françaises et de la mission de l'ONU, et se tournent vers la Russie.
+      sources:
+        - "Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"
+
+    sides:
+      - name: Les juntes du Sahel
+        actors: [ML, BF]
+        text: >-
+          Le Mali est dirigé par Assimi Goïta, arrivé au pouvoir par le coup d'État de 2020, et le Burkina Faso par le
+          capitaine Ibrahim Traoré depuis 2022. Avec le Niger, ils ont signé un pacte de défense mutuelle en 2023 et
+          quitté la CEDEAO, l'organisation des pays d'Afrique de l'Ouest, en janvier 2025. Leurs aviations ont mené des
+          frappes communes au Mali après l'offensive d'avril 2026.
+        sources:
+          - "Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"
+          - "Security Council Report, Afrique de l'Ouest et Sahel, prévisions de juillet 2026 — https://www.securitycouncilreport.org/monthly-forecast/2026-07/west-africa-and-the-sahel-17.php"
+          - "Al Jazeera, le Mali fête son indépendance en pleine crise sécuritaire (sept. 2026) — https://www.aljazeera.com/news/2026/9/22/mali-marks-independence-amid-a-worsening-security-crisis"
+      - name: Les groupes armés
+        actors: [jnim, fla]
+        text: >-
+          Ce ne sont pas des alliés naturels. Le JNIM, branche d'Al-Qaïda née en 2017, veut imposer la loi islamique ; le
+          FLA, coalition de groupes touaregs et arabes, veut l'indépendance du nord du Mali. Ils coordonnent leurs
+          attaques depuis avril 2026, comme en 2012 et en 2024, mais ces alliances se sont déjà rompues sur des désaccords
+          de territoire et de doctrine. Un troisième groupe, l'État islamique au Sahel, combat à la fois les armées et le
+          JNIM.
+        sources:
+          - "Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"
+          - "Al Jazeera, le Mali fête son indépendance en pleine crise sécuritaire (sept. 2026) — https://www.aljazeera.com/news/2026/9/22/mali-marks-independence-amid-a-worsening-security-crisis"
+
+    stakes:
+      - label: Le nord du Mali
+        icon: anchor
+        text: >-
+          Le FLA réclame l'indépendance de l'Azawad. Fin avril 2026, les militaires russes quittent Kidal après un accord
+          qui garantit leur départ sans combat ; le FLA en revendique le contrôle et exige leur retrait de tout le Mali.
+        sources:
+          - "Security Council Report, Afrique de l'Ouest et Sahel, prévisions de juillet 2026 — https://www.securitycouncilreport.org/monthly-forecast/2026-07/west-africa-and-the-sahel-17.php"
+      - label: Les routes du carburant
+        icon: route
+        text: >-
+          Bamako dépend des camions-citernes venus du Sénégal et de la Côte d'Ivoire. En les attaquant depuis septembre
+          2025, le JNIM provoque des pénuries, des coupures d'électricité et des fermetures d'écoles. Le 14 septembre
+          2026, plus de 900 camions sont entrés dans la capitale sous escorte militaire, selon le gouvernement malien.
+        sources:
+          - "Al Jazeera, le Mali fête son indépendance en pleine crise sécuritaire (sept. 2026) — https://www.aljazeera.com/news/2026/9/22/mali-marks-independence-amid-a-worsening-security-crisis"
+      - label: La présence russe
+        icon: gem
+        text: >-
+          Environ 2 000 combattants russes sont au Mali ; l'Africa Corps, qui dépend du ministère russe de la Défense, a
+          remplacé le groupe Wagner en 2025. L'offensive d'avril 2026 l'a contraint à quitter le Nord pour se regrouper
+          autour de Bamako, ce qui montre ses limites selon le Soufan Center.
+        sources:
+          - "Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region"
+          - "Soufan Center, les limites de l'Africa Corps : le Mali et l'offensive JNIM-FLA (mai 2026) — https://thesoufancenter.org/intelbrief-2026-may-12/"
+      - label: La rupture avec les voisins
+        icon: wheat
+        text: >-
+          Le Mali, le Burkina Faso et le Niger ont quitté la CEDEAO et formé leur propre alliance, l'Alliance des États du
+          Sahel. Ils se retirent aussi de la Cour pénale internationale. Le Mali présente ces départs comme une
+          affirmation de sa souveraineté.
+        sources:
+          - "Al Jazeera, le Mali fête son indépendance en pleine crise sécuritaire (sept. 2026) — https://www.aljazeera.com/news/2026/9/22/mali-marks-independence-amid-a-worsening-security-crisis"
+          - "Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"
+
+    toll:
+      text: >-
+        Au Mali, plus de 400 000 personnes étaient déplacées dans leur propre pays en juin 2026, selon le HCR. Au Burkina
+        Faso, plus de deux millions de personnes, près d'un habitant sur dix, ont dû fuir, et 800 000 vivent dans des
+        villes assiégées par des groupes armés qui contrôlent environ 40 % du territoire, selon ACAPS. Les violences
+        impliquant des groupes jihadistes dans la région sont passées de 63 en 2016 à 2 845 en 2025, d'après les relevés
+        d'ACLED cités par le Council on Foreign Relations.
+      sources:
+        - "Al Jazeera, le Mali fête son indépendance en pleine crise sécuritaire (sept. 2026) — https://www.aljazeera.com/news/2026/9/22/mali-marks-independence-amid-a-worsening-security-crisis"
+        - "ACAPS, fiche pays Burkina Faso (mise à jour de juin 2026) — https://www.acaps.org/en/countries/burkina-faso"
+        - "Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"
+
+    now:
+      text: >-
+        La guerre continue sans négociation. Le 10 septembre 2026, le JNIM attaque le camp militaire de Dioura, dans le
+        centre du Mali. Le blocus de Bamako se poursuit, et le carburant n'arrive que par convois escortés. Une analyste
+        citée par Al Jazeera craint que le durcissement de la junte comme des groupes armés n'empêche tout nouvel accord
+        de paix.
+      sources:
+        - "Al Jazeera, le Mali fête son indépendance en pleine crise sécuritaire (sept. 2026) — https://www.aljazeera.com/news/2026/9/22/mali-marks-independence-amid-a-worsening-security-crisis"
+
+    timeline:
+      - date: "2012"
+        text: Coup d'État au Mali ; des rebelles touaregs proclament l'indépendance de l'Azawad
+        source: "Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"
+      - date: "2013"
+        text: Intervention militaire française au Mali (opération Serval)
+        source: "Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"
+      - date: "2020-08"
+        text: Premier coup d'État militaire au Mali, suivi d'un second en mai 2021
+        source: "Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"
+      - date: "2021-12"
+        text: Arrivée du groupe russe Wagner au Mali
+        source: "Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"
+      - date: "2022"
+        text: La France annonce son retrait du Mali ; coup d'État au Burkina Faso
+        source: "Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"
+      - date: "2023-09"
+        text: Pacte de défense mutuelle entre le Mali, le Burkina Faso et le Niger
+        source: "Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"
+      - date: "2025-01"
+        text: Les trois pays quittent la CEDEAO
+        source: "Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"
+      - date: "2025-09"
+        text: Le JNIM commence à bloquer le carburant destiné à Bamako
+        source: "Al Jazeera, le Mali fête son indépendance en pleine crise sécuritaire (sept. 2026) — https://www.aljazeera.com/news/2026/9/22/mali-marks-independence-amid-a-worsening-security-crisis"
+      - date: "2026-04"
+        text: Offensive coordonnée du JNIM et du FLA ; le ministre de la Défense est tué, Kidal tombe
+        source: "Security Council Report, Afrique de l'Ouest et Sahel, prévisions de juillet 2026 — https://www.securitycouncilreport.org/monthly-forecast/2026-07/west-africa-and-the-sahel-17.php"
+      - date: "2026-09"
+        text: Attaque du JNIM contre le camp militaire de Dioura
+        source: "Al Jazeera, le Mali fête son indépendance en pleine crise sécuritaire (sept. 2026) — https://www.aljazeera.com/news/2026/9/22/mali-marks-independence-amid-a-worsening-security-crisis"
+
 # Registre des personnes citées dans les dossiers (hors dirigeants, déjà décrits dans network.yaml) :
 # wikidata → photo Wikimedia Commons (data/people.json, clé « p:<id> ») ; actor = id d'un acteur « person » du graphe.
 people:

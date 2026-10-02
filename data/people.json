@@ -1,4 +1,11 @@
 {
+ "leader:BF": {
+  "artist": "Autor: Stanislav Krasilnikov\nCrédito: RIA Novosti\nFonte: Agência RIA Novosti Photohost\nOriginal: Dígito\nFormato: JPEG, 5",
+  "file": "2025 Ibrahim Traore (cropped).jpg",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:2025_Ibrahim_Traore_(cropped).jpg",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/2025_Ibrahim_Traore_%28cropped%29.jpg/250px-2025_Ibrahim_Traore_%28cropped%29.jpg"
+ },
  "leader:IL": {
   "artist": "Avi Ohayon",
   "file": "Benjamin Netanyahu, February 2023.jpg",
@@ -12,6 +19,13 @@
   "license": "CC BY 4.0",
   "page": "https://commons.wikimedia.org/wiki/File:Portrait_of_Mojtaba_Khamenei.jpg",
   "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Portrait_of_Mojtaba_Khamenei.jpg/250px-Portrait_of_Mojtaba_Khamenei.jpg"
+ },
+ "leader:ML": {
+  "artist": "President of Russia,Kremlin",
+  "file": "Assimi Goïta in July 2023.jpg",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Assimi_Go%C3%AFta_in_July_2023.jpg",
+  "thumb": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/34/Assimi_Go%C3%AFta_in_July_2023.jpg/250px-Assimi_Go%C3%AFta_in_July_2023.jpg"
  },
  "leader:RU": {
   "artist": "Пресс-служба Президента России",

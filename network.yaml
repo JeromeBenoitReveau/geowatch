@@ -74,8 +74,12 @@ actors:
   ET: {name: Éthiopie, kind: state}
   CD: {name: RD Congo, kind: state}
   RW: {name: Rwanda, kind: state}
-  ML: {name: Mali, kind: state}
-  BF: {name: Burkina Faso, kind: state}
+  ML: {name: Mali, kind: state,
+       leader: {name: Assimi Goïta, wikidata: Q98497406, role: "Chef de la junte, au pouvoir depuis le coup d'État de 2020",
+                sources: ["Al Jazeera, le Mali fête son indépendance en pleine crise sécuritaire (sept. 2026) — https://www.aljazeera.com/news/2026/9/22/mali-marks-independence-amid-a-worsening-security-crisis"]}}
+  BF: {name: Burkina Faso, kind: state,
+       leader: {name: Ibrahim Traoré, wikidata: Q114341246, role: "Capitaine, chef de la junte, au pouvoir depuis le coup d'État de 2022",
+                sources: ["Council on Foreign Relations, Global Conflict Tracker : l'extrémisme violent au Sahel (juill. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/violent-extremism-sahel"]}}
   NE: {name: Niger, kind: state}
   MM: {name: Birmanie (junte militaire), kind: state}
   EU: {name: Union européenne, kind: bloc, coords: [50.85, 4.35]}  # Bruxelles, pour la carte
@@ -383,11 +387,13 @@ edges:
 
   # --- Sahel : présence militaire russe (Africa Corps, successeur de Wagner) ---
   - {from: RU, to: ML, since: "2021", types: [troops, training], status: active, confidence: high,
+     why: "Selon le Soufan Center, protéger la junte plutôt que mener une lutte durable contre l'insurrection ; selon des analystes cités par Al Jazeera, Moscou se sert de Wagner puis de l'Africa Corps pour peser sur les gouvernements africains",
      sources: ["Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region",
                "Soufan Center, les limites de l'Africa Corps : le Mali et l'offensive JNIM-FLA (mai 2026) — https://thesoufancenter.org/intelbrief-2026-may-12/"],
      verified: 2026-10,
      note: "Environ 2 000 combattants russes ; l'Africa Corps a remplacé Wagner en juin 2025. Fin avril 2026, après l'offensive du JNIM et du FLA, il s'est retiré de Kidal et du Nord pour se regrouper autour de Bamako"}
   - {from: RU, to: BF, since: "2024-01", types: [training], status: active, confidence: medium,
+     why: "Selon des analystes cités par Al Jazeera, Moscou se sert de Wagner puis de l'Africa Corps pour peser sur les gouvernements africains",
      sources: ["Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region",
                "CTC West Point, Africa Corps : arrivées au Burkina Faso (janv. 2024) et au Niger (avr. 2024) — https://ctc.westpoint.edu/africa-corps-has-russia-hit-a-ceiling-in-africa/"],
      verified: 2026-09,
@@ -424,6 +430,7 @@ edges:
      note: "En 2024, le porte-parole du renseignement militaire ukrainien dit que les rebelles ont reçu « toutes les informations nécessaires » pour l'embuscade de Tinzaouaten ; le Mali rompt ses relations avec l'Ukraine le 5 août 2024. En 2026, CNN rapporte une quinzaine de spécialistes ukrainiens des drones auprès du FLA, qui forment et coordonnent sans combattre. Kiev dément officiellement toute coopération substantielle",
      why: "Selon CNN, affaiblir la Russie partout où elle opère"}
   - {from: TR, to: ML, since: "2022-12", types: [arms], status: active, confidence: medium,
+     why: "Selon le Soufan Center, gagner en influence au Sahel depuis le départ des forces françaises en 2022",
      sources: ["DefenceWeb, le Mali reçoit de nouveaux drones Bayraktar TB2 — https://defenceweb.co.za/aerospace/aerospace-aerospace/mali-receives-more-bayraktar-tb2-uavs/",
                "The Defense Post, le Mali reçoit des drones turcs Akinci (déc. 2024) — https://thedefensepost.com/2024/12/05/mali-turkish-akinci-drones/",
                "Soufan Center, les limites de l'Africa Corps : le Mali et l'offensive JNIM-FLA (mai 2026) — https://thesoufancenter.org/intelbrief-2026-may-12/"],

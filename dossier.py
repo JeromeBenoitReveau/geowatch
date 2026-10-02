@@ -369,7 +369,7 @@ def page(dos, d):
 
 <section class="s"><h2>Qui s'affronte, et qui les soutient</h2>
 <div class="camps">{camp(0, dos["sides"][0], backers[0])}{camp(1, dos["sides"][1], backers[1])}</div>
-<p class="quiet" style="margin:16px 0 0"><a href="relations.html?e=d:{e(dos["id"])}">Croiser ce conflit avec d'autres acteurs</a> : schéma, carte, frise et points communs.</p></section>
+<p class="quiet" style="margin:16px 0 0"><a href="relations.html?e=d:{e(dos["id"])}">Croiser ce conflit avec d'autres acteurs</a> : schéma, carte et points communs.</p></section>
 
 {ppl}
 
