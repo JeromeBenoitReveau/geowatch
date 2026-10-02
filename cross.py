@@ -285,8 +285,13 @@ function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ..
     if(r.dep === "minerals") r.lines = r.vals.slice().sort((x, y) => pc(y) - pc(x));   // une ligne par minerai, avec sa part (demande de Jérôme : ne pas perdre le chiffre)
     r.value = r.dep === "minerals" ? "minerais ×" + r.fids.length : r.dep ? r.value.replace(/ [\d,]+ %$/, "") + " ×" + r.fids.length : "×" + r.fids.length; });
   if(MAP) ({P, land} = mapLayout(all, R)); else {
-  const rx = NARROW ? 125 : n === 2 ? 230 : 285, ry = n === 2 ? 0 : NARROW ? 180 : Math.min(165, H / 2 - 72), a0 = n % 2 === 0 ? -90 - 180 / n : -90;
-  all.forEach((id, i) => { const a = (a0 + 360 * i / n) * Math.PI / 180; P[id] = [CX + rx * Math.cos(a), CY + ry * Math.sin(a)]; }); }
+  // étoile : si un acteur porte TOUS les traits d'un schéma chargé, il va au centre et les autres l'entourent (sinon ses traits vers ses voisins sont trop courts pour leurs pastilles)
+  const hub = n >= 6 && RELS.length ? all.find(id => RELS.every(r => r.l.includes(id))) : null, ring = all.filter(id => id !== hub), m = ring.length;
+  if(NARROW && n > 6){ H = hub ? 70 + m * 84 : 150 + n * 52; CY = H / 2 - 4; }   // écran étroit : on allonge le dessin, la page défile
+  if(NARROW && hub){ P[hub] = [44, CY]; ring.forEach((id, i) => P[id] = [W - 62, 62 + 84 * i]); }   // étoile sur écran étroit : le centre à gauche, les autres en colonne à droite
+  else { const rx = NARROW ? 125 : n === 2 ? 230 : 285, ry = n === 2 ? 0 : NARROW ? Math.max(180, H / 2 - 75) : Math.min(165, H / 2 - 72), a0 = m % 2 === 0 ? -90 - 180 / m : -90;
+    if(hub) P[hub] = [CX, CY];
+    ring.forEach((id, i) => { const a = (a0 + 360 * i / m) * Math.PI / 180; P[id] = [CX + rx * Math.cos(a), CY + ry * Math.sin(a)]; }); } }
   const byPair = {}; RELS.forEach(f => { const l = f.l, k = [...l].sort().join("|"); (byPair[k] = byPair[k] || []).push([f, l]); });
   // pointe de flèche propre à chaque trait, proportionnelle à son épaisseur (18 px au moins) : le sens doit se lire d'un coup d'œil
   const tip = f => Math.max(18, f.width * 3.4);
@@ -329,7 +334,7 @@ function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ..
 function redraw(){ if(LAST){ draw(...LAST); detail(); } }
 // Le schéma (ou la carte) tient dans la hauteur de la fenêtre : on borne sa hauteur à ce qui reste sous lui, légende comprise
 function fitStage(){ const svg = $("#schema"); if(svg.style.display === "none" || $("#out").hidden) return;
-  const top = svg.getBoundingClientRect().top + scrollY; svg.style.maxHeight = Math.max(320, innerHeight - top - 64) + "px"; }
+  const top = svg.getBoundingClientRect().top + scrollY; svg.style.maxHeight = NARROW ? "none" : Math.max(320, innerHeight - top - 64) + "px"; }   // écran étroit : la page défile, on ne rétrécit pas le dessin
 addEventListener("resize", () => { redraw(); fitStage(); });
 // écran étroit : le détail est sous le schéma, on y fait défiler ; écran large : il est à côté, rien à faire
 function reveal(){ if(PICK && innerWidth < 1000) $("#detail").scrollIntoView({behavior: "smooth", block: "nearest"}); }
