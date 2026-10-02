@@ -47,6 +47,12 @@ def check(actors, edges, today=None, aligns=None):
                 and not all(isinstance(x, str) and "http" in x for x in a["sources"]):
             warnings.append(f"acteur {aid} : source de la note sans URL")
 
+    # compte rendu « En bref » de la page Relations : chaque acteur a son article, écrit à la main dans cross.ART
+    import cross as _cross
+    for aid in actors:
+        if aid not in _cross.ART:
+            warnings.append(f"acteur {aid} : pas d'article dans cross.ART (« le », « la », « l' », « les » ou vide) — phrases du compte rendu fausses")
+
     # dirigeants et personnes : une personne n'est un nœud que si elle a une relation PROPRE (cf. network.yaml)
     involved = {x.get("from") for x in edges} | {x.get("to") for x in edges}
     for aid, a in actors.items():

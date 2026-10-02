@@ -22,17 +22,25 @@ CSS = """
 .chip img,.fact img,.ex img{width:16px;height:16px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px var(--mist);flex:none}
 .chip button{background:none;border:0;color:var(--graphite);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;border-radius:3px}
 .chip button:hover{color:var(--ink)}
-#addbtn{font:15px var(--sans);color:var(--ink);background:none;border:1px dashed var(--graphite);border-radius:4px;padding:5px 12px;cursor:pointer}
 #reset{font:14px var(--sans);color:var(--graphite);background:none;border:0;padding:5px 4px;cursor:pointer;text-decoration:underline dashed var(--peach) 1px;text-underline-offset:3px}
 #reset:hover{color:var(--ink);text-decoration-style:solid}#reset[hidden]{display:none}
-#addbtn::before{content:"+ ";color:var(--graphite)}#addbtn:hover,#addbtn[aria-expanded=true]{border-color:var(--peach);border-style:solid}
-/* panneau de choix : tout est visible d'un coup, rangé par catégorie ; le champ ne fait que filtrer cette liste */
+/* choix des entités : UN champ avec propositions au fil de la frappe ; la liste complète par catégorie reste derrière « Voir toute la liste » */
 .picker{position:relative}.pick{position:relative;z-index:1002}
 #panel{position:absolute;left:0;right:0;top:100%;z-index:1002;border:1px solid var(--mist);border-radius:6px;background:var(--land);padding:14px 16px 6px;margin:8px 0 4px;
   max-height:70vh;overflow:auto;box-shadow:0 12px 32px #0003}
 /* voile derrière le panneau ouvert : le reste de la page s'efface, la sélection reste lisible au-dessus */
 #veil{position:fixed;inset:0;z-index:1001;background:color-mix(in srgb,var(--paper) 78%,transparent)}
-#q{font:15px var(--sans);color:var(--ink);background:var(--paper);border:1px solid var(--mist);border-radius:4px;padding:7px 10px;width:100%;max-width:340px}
+#q{font:15px var(--sans);color:var(--ink);background:var(--paper);border:1px solid var(--graphite);border-radius:4px;padding:6px 10px;flex:1 1 230px;min-width:200px;max-width:360px}
+#q:focus{border-color:var(--peach);outline:2px solid color-mix(in srgb,var(--peach) 45%,transparent);outline-offset:1px}
+#groups .hits{display:flex;flex-direction:column;gap:2px;margin:0 0 8px}
+#groups .hits button{border-color:transparent;padding:7px 9px;font-size:15px;justify-content:flex-start}#groups .hits button small{margin-left:auto;color:var(--graphite);font-size:12.5px;padding-left:12px}
+#groups .hits button:hover,#groups .hits button.on{background:color-mix(in srgb,var(--ink) 6%,var(--land));border-color:transparent}
+#groups .more{border:0;padding:4px 0;margin:2px 0 8px;color:var(--graphite);text-decoration:underline dashed var(--peach) 1px;text-underline-offset:3px}
+/* « En bref » : compte rendu assemblé par gabarits à partir des faits du graphe, chaque morceau ouvre sa fiche */
+#brief{margin:16px 0 0;max-width:46em}#brief:empty{display:none}
+#brief h2{font:500 19px/1.3 var(--serif);margin:0 0 6px}#brief p{margin:0 0 7px;font-size:15.5px;line-height:1.55}
+#brief .bf{cursor:pointer;text-decoration:underline dotted var(--graphite) 1px;text-underline-offset:3px}
+#brief .bf:hover,#brief .bf:focus-visible{text-decoration:underline solid var(--peach) 1px}#brief .why{color:var(--graphite)}
 #groups h3{font:500 13.5px var(--sans);color:var(--graphite);margin:14px 0 7px}
 #groups .g{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
 #groups button{display:inline-flex;align-items:center;gap:6px;text-align:left;font:14px var(--sans);color:var(--ink);background:none;border:1px solid var(--mist);border-radius:4px;padding:4px 9px;cursor:pointer}
@@ -112,6 +120,21 @@ CSS = """
 .none{font-size:15px;color:var(--graphite);margin:18px 0 0;max-width:46em}
 """
 
+# Article de chaque acteur, pour les phrases du compte rendu « En bref » (« les États-Unis dépendent du Canada »).
+# Écrit à la main : il ne se devine pas (« Israël », « Cuba », « Taïwan » n'en prennent pas). validate.py signale un acteur absent.
+ART = {**dict.fromkeys(("GB DK VE QA GY CA MX BR YE MA somaliland SD RW ML BF NE PK rn hezbollah hamas pij kataib_hezbollah jnim "
+                        "polisario fla").split(), "le"),
+       **dict.fromkeys("RU CN KP FR SE TR LY SY SO CD MM".split(), "la"),
+       **dict.fromkeys("IR UA IN DE AR DZ EG SA ER ET EU afd lna m23".split(), "l'"),
+       **dict.fromkeys("US NL AE rsf houthis".split(), "les"),
+       **dict.fromkeys("IL TW CU trump vance musk spacex palantir alshabab".split(), "")}
+
+def forms(k, a):
+    """Nom court (sans parenthèse) avec son article, et ses formes après « de » et « à »."""
+    short, art = a["name"].split(" (")[0], ART.get(k, "")
+    the = art + short if art.endswith("'") else f"{art} {short}".strip()
+    return {"the": the, "de": style.de(the), "a": style.a(the), "pl": art == "les"}
+
 def data(d):
     live = lambda xs: [x for x in xs if x.get("status") != "ended"]
     people = {k: v.get("thumb") for k, v in (d.get("people") or {}).items() if k in d["actors"] and v.get("thumb")}
@@ -133,7 +156,7 @@ def data(d):
     unga = d.get("unga") or {}
     agree = {f"{min(by3[a], by3[b])}|{max(by3[a], by3[b])}": v for a, row in (unga.get("pairs") or {}).items()
              for b, v in row.items() if a in by3 and b in by3}
-    return {"actors": {k: {"name": a["name"], "kind": a["kind"], **({"flag": a["flag"]} if a.get("flag") else {})} for k, a in d["actors"].items()}, "pos": pos, "num": num,
+    return {"actors": {k: {"name": a["name"], "kind": a["kind"], **forms(k, a), **({"flag": a["flag"]} if a.get("flag") else {})} for k, a in d["actors"].items()}, "pos": pos, "num": num,
             "orgs": [o for o in orgs if len(o["members"]) >= 2], "agree": agree, "agree_year": unga.get("agreement_year"),
             "edges": live(d["edges"]), "tensions": live(d["tensions"]), "mediations": live(d["mediations"]),
             "dependencies": live(d["dependencies"]), "colors": d["colors"], "people": people,
@@ -212,19 +235,19 @@ function scope(){ const ids = [];
 // ---------- Faits entre les acteurs du périmètre : un fait = un trait (deux pour une médiation) ----------
 function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : pays apportés par une ressource choisie (contour pointillé)
   D.tensions.forEach(t => { if(!S.has(t.from) || !S.has(t.to)) return; const s = TENSION[t.type];
-    F.push({group: "tension", links: [[t.from, t.to]], color: s.color, width: s.width, dash: s.dash, arrow: s.arrow, nodes: [t.from, t.to], since: t.since, kind: s.label + (t.status === "reduced" ? ", trêve" : ""), faded: t.status === "reduced",
+    F.push({group: "tension", links: [[t.from, t.to]], color: s.color, width: s.width, dash: s.dash, arrow: s.arrow, nodes: [t.from, t.to], since: t.since, kind: s.label + (t.status === "reduced" ? ", trêve" : ""), faded: t.status === "reduced", raw: t,
       html: `<div class="who">${who(t.from)}${s.arrow ? ARROW : '<span class="k">et</span>'}${who(t.to)}</div>
         <p>${s.label}. ${since(t)}${t.status === "reduced" ? "Trêve ou cessez-le-feu en cours." : ""}</p>${tail(t)}`}); });
   D.edges.forEach(x => { if(!S.has(x.from) || !S.has(x.to)) return;
     F.push({group: "support", links: [[x.from, x.to]], color: D.colors[x.types[0]] || "#888", width: WIDTH[x.confidence] || 2,
-      dash: x.status === "active" ? null : "9 5", arrow: true, nodes: [x.from, x.to], since: x.since, kind: "Soutien" + (x.status === "active" ? "" : ", " + (STATUS_FR[x.status] || x.status)), faded: x.status !== "active",
+      dash: x.status === "active" ? null : "9 5", arrow: true, nodes: [x.from, x.to], since: x.since, kind: "Soutien" + (x.status === "active" ? "" : ", " + (STATUS_FR[x.status] || x.status)), faded: x.status !== "active", raw: x,
       html: `<div class="who">${who(x.from)}${ARROW}${who(x.to)}</div>
         <p>Soutien : ${x.types.map(t => esc(TYPES_FR[t] || t)).join(", ")}. ${sinceDoc(x)}Statut : ${esc(STATUS_FR[x.status] || x.status)} ; ${esc(CONF_FR[x.confidence] || x.confidence)}.</p>
         ${x.why ? `<p>Pourquoi : ${esc(x.why)}</p>` : ""}${tail(x)}`}); });
   D.mediations.forEach(m => { if(!m.between.every(b => S.has(b))) return;
     const out = !S.has(m.mediator);   // médiateur hors sélection : pas de nœud en plus, le fait reste listé et signalé sous le schéma
     F.push({group: "mediation", out, links: out ? [] : m.between.map(b => [m.mediator, b]), color: "var(--graphite)", width: 1.6, dash: "3 5", arrow: false,
-      nodes: out ? m.between : [m.mediator, ...m.between], mediator: m.mediator, since: m.since, kind: "Médiation",
+      nodes: out ? m.between : [m.mediator, ...m.between], mediator: m.mediator, since: m.since, kind: "Médiation", raw: m,
       html: `<div class="who">${who(m.mediator)}<span class="k">médiation entre</span>${who(m.between[0])}<span class="k">et</span>${who(m.between[1])}</div>
         <p>${since(m)}${m.why ? "Pourquoi : " + esc(m.why) : ""}</p>${tail(m)}`}); });
   const res = new Set(SEL.filter(t => RES[t]).map(t => RES[t]));
@@ -236,11 +259,44 @@ function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : pa
     if(a !== b && (mode === "dep" && !a || mode === "four" && !b)) return;
     [x.from, x.supplier].forEach(id => { if(!S.has(id) && !extra.includes(id)) extra.push(id); });
     F.push({group: "lever", links: [[x.supplier, x.from]], color: DEP, width: 1 + x.share / 14, dash: "1.5 6", round: true, arrow: true,
-      nodes: [x.from, x.supplier], value: depShort(x), dep: x.type, tip: `${(D.actors[x.from] || {}).name} dépend de ${(D.actors[x.supplier] || {}).name} : ${depShort(x)}`,
+      nodes: [x.from, x.supplier], value: depShort(x), dep: x.type, raw: x, tip: `${(D.actors[x.from] || {}).name} dépend de ${(D.actors[x.supplier] || {}).name} : ${depShort(x)}`,
       html: `<div class="who">${who(x.from)}<span class="k">dépend de</span>${who(x.supplier)}</div>
         <p>${depIcon(x.type, 15)} ${depText(x)}.</p>${tail(x)}`}); });
   F.forEach((f, i) => f.id = i);
   return {F, extra, sens: {mode, nDep, nFour}}; }
+
+// ---------- « En bref » : compte rendu par GABARITS, sans modèle de langage — chaque morceau de phrase est un fait du graphe et ouvre sa fiche.
+// Ordre fixe : ce qui oppose, qui soutient qui (et pourquoi), qui négocie, qui dépend de qui. Rien n'est écrit qui ne soit dans network.yaml.
+const the = id => esc(D.actors[id].the), deN = id => esc(D.actors[id].de), cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const vb = (id, sing, plur) => D.actors[id].pl ? plur : sing;
+const et = xs => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " et " + xs[xs.length - 1];
+const bf = (f, html) => `<span class="bf" role="button" tabindex="0" data-fact="${f.id}">${html}</span>`;   // un span, pas un bouton : le texte doit pouvoir passer à la ligne
+function brief(F){ const P = [], by = g => F.filter(f => f.group === g), dp = y => y ? " depuis " + esc(when(y)) : "", MAXT = 4;
+  const T = by("tension"), S = by("support"), M = by("mediation"), L = by("lever");
+  if(T.length){ const ss = T.slice(0, MAXT).map(f => { const t = f.raw, a = t.from, b = t.to, both = cap(the(a)) + " et " + the(b);
+      return bf(f, t.type === "war" ? (t.status === "reduced" ? `${both} observent une trêve${t.since ? ", après une guerre commencée en " + esc(when(t.since)) : ""}` : `${both} sont en guerre${dp(t.since)}`)
+        : t.type === "trade_war" ? `${both} sont en guerre commerciale${dp(t.since)}` : t.type === "rivalry" ? `${both} sont en rivalité${dp(t.since)}`
+        : t.type === "sanctions" ? `${cap(the(a))} ${vb(a, "sanctionne", "sanctionnent")} ${the(b)}${dp(t.since)}`
+        : `${cap(the(a))} ${vb(a, "revendique", "revendiquent")} tout ou partie du territoire ${deN(b)}${dp(t.since)}`) + "."; });
+    if(T.length > MAXT) ss.push(`${T.length - MAXT} autre${T.length - MAXT > 1 ? "s tensions sont" : " tension est"} sur le schéma.`);
+    P.push(ss.join(" ")); }
+  if(S.length && S.length <= 4) P.push(S.map(f => { const x = f.raw;
+      return bf(f, `${cap(the(x.from))} ${vb(x.from, "soutient", "soutiennent")} ${the(x.to)}`) + ` (${x.types.map(t => esc(TYPES_FR[t] || t)).join(", ")}${x.status === "alleged" ? " ; soutien allégué" : x.status === "reduced" ? " ; soutien en baisse" : ""}).`
+        + (x.why ? ` <span class="why">Pourquoi : ${esc(x.why)}.</span>` : ""); }).join(" "));
+  else if(S.length){ const g = {}; S.forEach(f => (g[f.raw.to] = g[f.raw.to] || []).push(f));
+    const tos = Object.keys(g).sort((a, b) => g[b].length - g[a].length), shown = tos.slice(0, 4);
+    P.push(shown.map(to => `Soutiens ${deN(to)} : ${et(g[to].map(f => bf(f, the(f.raw.from))))}.`).join(" ")
+      + (tos.length > 4 ? ` D'autres soutiens sont sur le schéma.` : "") + ` <span class="why">Le pourquoi de chaque soutien s'affiche au clic.</span>`); }
+  if(M.length){ const g = {}; M.forEach(f => (g[f.raw.between.join("|")] = g[f.raw.between.join("|")] || []).push(f));   // plusieurs médiateurs pour une même paire : une seule phrase
+    P.push(Object.values(g).map(fs => `Médiation entre ${the(fs[0].raw.between[0])} et ${the(fs[0].raw.between[1])} : ${et(fs.map(f => bf(f, the(f.raw.mediator))))}.`).join(" ")); }
+  if(L.length){ const g = {}; L.forEach(f => { const x = f.raw; ((g[x.from] = g[x.from] || {})[x.supplier] = g[x.from][x.supplier] || []).push(f); });
+    const top = fs => Math.max(...fs.map(f => f.raw.share)), froms = Object.keys(g).sort((a, b) => Object.keys(g[b]).length - Object.keys(g[a]).length), shown = froms.slice(0, 4);
+    P.push(shown.map(a => { const sup = Object.keys(g[a]).sort((x, y) => top(g[a][y]) - top(g[a][x])), keep = sup.slice(0, 3);
+        return `${cap(the(a))} ${vb(a, "dépend", "dépendent")} ${et(keep.map(b => `${deN(b)} (${g[a][b].sort((x, y) => y.raw.share - x.raw.share).map(f => bf(f, esc(depShort(f.raw)))).join(", ")})`))}`
+          + (sup.length > 3 ? ` et de ${sup.length - 3} autre${sup.length - 3 > 1 ? "s fournisseurs" : " fournisseur"}` : "") + "."; }).join(" ")
+      + (froms.length > 4 ? " D'autres dépendances sont sur le schéma." : "")); }
+  if(!P.length) P.push("Aucune relation n'est documentée entre ces acteurs dans le graphe.");
+  return `<h2>En bref</h2>${P.map(x => `<p>${x}</p>`).join("")}`; }
 
 // ---------- Schéma : acteurs sur une ellipse, fixes ; plusieurs faits entre deux acteurs = traits écartés ----------
 // écran étroit : cadre plus étroit et plus haut, pour que les noms restent lisibles
@@ -419,6 +475,7 @@ function render(){ const ids = scope(), {F, extra, sens} = facts(ids), ok = ids.
   $("#empty").hidden = ok; $("#out").hidden = !ok; $(".cross").classList.toggle("has", ok);
   history.replaceState(null, "", location.pathname + (SEL.length ? "?e=" + SEL.join(",") + (VIEW === "map" ? "&v=carte" : VIEW === "communs" ? "&v=communs" : "") + (GRP == null ? "" : "&g=" + (GRP ? 1 : 0)) + (SENS && rs.length ? "&s=" + SENS : "") : ""));
   document.querySelectorAll("#seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === VIEW));
+  $("#brief").innerHTML = ok ? brief(F) : "";
   if(!ok) return;
   draw(ids, extra, F); communs(ids);
   const flat2 = VIEW === "communs";
@@ -480,20 +537,35 @@ const kindIs = (...k) => byName(Object.keys(D.actors).filter(id => k.includes(D.
 const CATS = [["Conflits", Object.keys(DOS)], ["Pays et blocs", kindIs("state", "bloc")], ["Groupes armés", kindIs("non_state")], ["Partis, personnalités et entreprises", kindIs("party", "person", "company")],
   ["Ressources et leviers", Object.keys(RES)]];
 const plain = k => DOS[k] ? DOS[k].title : RES[k] ? RES_FR[RES[k]] : D.actors[k].name;
-function panel(){ const q = flat($("#q").value.trim()); let shown = 0;
-  $("#groups").innerHTML = CATS.map(([t, items]) => { const hit = items.filter(k => !q || flat(plain(k)).includes(q)); shown += hit.length;
-    return hit.length ? `<h3>${t}</h3><div class="g">${hit.map(k => `<button type="button" data-add="${esc(k)}"${SEL.includes(k) ? " disabled" : ""}>${mark(k)}${label(k)}</button>`).join("")}</div>` : ""; }).join("");
-  $("#noq").hidden = shown > 0; }
-function toggle(open){ $("#panel").hidden = !open; $("#veil").hidden = !open; $("#addbtn").setAttribute("aria-expanded", open); if(open){ $("#q").value = ""; panel(); $("#q").focus(); } }
-$("#addbtn").addEventListener("click", () => toggle($("#panel").hidden));
-$("#q").addEventListener("input", panel);
-$("#q").addEventListener("keydown", ev => { if(ev.key === "Escape"){ toggle(false); $("#addbtn").focus(); }
-  if(ev.key === "Enter"){ const b = $("#groups button:not(:disabled)"); if(b && $("#q").value.trim()){ b.click(); $("#q").value = ""; panel(); } } });
+const CAT_OF = Object.fromEntries(CATS.flatMap(([t, items]) => items.map(k => [k, t])));
+// autres mots qui mènent à la même entité (« usa », « ue »…)
+const ALIAS = {US: "usa etats unis amerique", GB: "angleterre grande bretagne uk", EU: "ue europe", AE: "eau emirats", CD: "congo rdc", KP: "coree", NL: "hollande",
+  spacex: "starlink musk", rsf: "fsr", jnim: "al qaida sahel", MM: "myanmar", "r:chips": "semi-conducteurs puces tsmc", "r:minerals": "terres rares potasse uranium lithium", "r:food": "ble cereales"};
+const hay = k => flat(plain(k)) + " " + (ALIAS[k] || "");
+// sans rien taper : quelques entrées courantes, pas les 80 — la liste complète est derrière « Voir toute la liste »
+const COMMON = [...Object.keys(DOS), "US", "CN", "RU", "EU", "IR", "IL", "r:arms", "r:oil"].filter(k => DOS[k] || RES[k] || D.actors[k]);
+let FULL = false, HIT = 0;
+const pickBtn = (k, extra = "", cls = "") => `<button type="button" data-add="${esc(k)}"${cls ? ` class="${cls}"` : ""}${SEL.includes(k) ? " disabled" : ""}>${mark(k)}${label(k)}${extra}</button>`;
+function panel(){ const q = flat($("#q").value.trim()), all = CATS.flatMap(([, items]) => items); let html = "", shown = 1;
+  if(q){ const code = k => flat(k) === q, hits = all.filter(k => code(k) || hay(k).includes(q))   // le code pays exact (« us », « fr ») passe devant, puis les noms qui commencent par la saisie
+      .sort((a, b) => (code(b) - code(a)) || (flat(plain(b)).startsWith(q) - flat(plain(a)).startsWith(q)) || plain(a).localeCompare(plain(b), "fr")).slice(0, 8);
+    shown = hits.length; const free = hits.filter(k => !SEL.includes(k)); HIT = Math.min(HIT, Math.max(0, free.length - 1));
+    html = `<div class="hits">${hits.map(k => pickBtn(k, `<small>${esc(CAT_OF[k])}</small>`, free[HIT] === k ? "on" : "")).join("")}</div>`; }
+  else if(FULL) html = CATS.map(([t, items]) => `<h3>${t}</h3><div class="g">${items.map(k => pickBtn(k)).join("")}</div>`).join("");
+  else html = `<h3>Souvent consultés</h3><div class="g">${COMMON.map(k => pickBtn(k)).join("")}</div><button type="button" class="more" data-full="1">Voir toute la liste</button>`;
+  $("#groups").innerHTML = html; $("#noq").hidden = shown > 0; }
+function toggle(open){ $("#panel").hidden = !open; $("#veil").hidden = !open; $("#q").setAttribute("aria-expanded", open); if(!open){ $("#q").value = ""; FULL = false; HIT = 0; } else panel(); }
+$("#q").addEventListener("focus", () => toggle(true));
+$("#q").addEventListener("input", () => { HIT = 0; toggle(true); });
+$("#q").addEventListener("keydown", ev => { if(ev.key === "Escape"){ toggle(false); $("#q").blur(); }
+  if(ev.key === "ArrowDown" || ev.key === "ArrowUp"){ ev.preventDefault(); HIT = Math.max(0, HIT + (ev.key === "ArrowDown" ? 1 : -1)); panel(); }
+  if(ev.key === "Enter"){ const b = $("#groups .hits button.on") || $("#groups .hits button:not(:disabled)"); if(b){ b.click(); } } });
 document.addEventListener("click", ev => { const t = ev.target;
   if(t.dataset && t.dataset.rm != null){ ZM = null; SEL.splice(+t.dataset.rm, 1); PICK = null; return render(); }
   if($("#schema").dataset.dragged){ delete $("#schema").dataset.dragged; if(t.closest && t.closest("#schema")) return; }
-  const add = t.closest && t.closest("[data-add]"); if(add){ ZM = null; if(!SEL.includes(add.dataset.add)) SEL.push(add.dataset.add); PICK = null; return render(); }
-  if(!$("#panel").hidden && !(t.closest && (t.closest("#panel") || t.closest("#addbtn") || t.closest(".pick") || t.closest("#sug")))) toggle(false);
+  const add = t.closest && t.closest("[data-add]"); if(add){ ZM = null; if(!SEL.includes(add.dataset.add)) SEL.push(add.dataset.add); PICK = null; $("#q").value = ""; HIT = 0; return render(); }
+  if(t.dataset && t.dataset.full){ FULL = true; return panel(); }
+  if(!$("#panel").hidden && !(t.closest && (t.closest("#panel") || t.closest(".pick") || t.closest("#sug")))) toggle(false);
   if(t.id === "reset"){ SEL = []; PICK = null; ZM = null; GRP = undefined; SENS = null; toggle(false); return render(); }
   if(t.closest && t.closest("#sens button")){ SENS = t.closest("#sens button").dataset.s; PICK = null; ZM = null; return render(); }
   const ex = t.closest && t.closest("[data-ex]"); if(ex){ ev.preventDefault(); ZM = null; SEL = ex.dataset.ex.split(","); PICK = null; return render(); }
@@ -504,7 +576,7 @@ document.addEventListener("click", ev => { const t = ev.target;
   if(node){ PICK = PICK && PICK.n === node.dataset.n ? null : {n: node.dataset.n}; detail(); return reveal(); }
   if(t.closest && t.closest("#schema") && PICK){ PICK = null; detail(); } });
 ["mouseover", "focusin"].forEach(e => document.addEventListener(e, ev => { const b = ev.target.closest && ev.target.closest("[data-bridge]"); b && BR[+b.dataset.bridge] ? ghost(BR[+b.dataset.bridge]) : unghost(); }));
-document.addEventListener("keydown", ev => { const node = ev.target.closest && ev.target.closest(".node");
+document.addEventListener("keydown", ev => { const node = ev.target.closest && ev.target.closest(".node, .bf");
   if(node && (ev.key === "Enter" || ev.key === " ")){ ev.preventDefault(); node.dispatchEvent(new MouseEvent("click", {bubbles: true})); } });
 document.querySelectorAll("#seg button").forEach(b => b.addEventListener("click", () => setView(b.dataset.v)));
 VIEW === "map" ? setView("map") : render();
@@ -531,18 +603,18 @@ def page(d):
               .replace("__ACCORD__", glossary.term("taux-accord", "Taux d'accord")))
     body = f"""<main class="cross">
 <h1>Croiser des acteurs</h1>
-<p class="lede">Choisissez des pays, des groupes, un conflit ou une ressource : le schéma montre ce qui les relie, fait par fait.</p>
+<p class="lede">Tapez un pays, un groupe, un conflit ou une ressource : un compte rendu et un schéma montrent ce qui les relie, fait par fait.</p>
 <div class="picker"><div id="veil" hidden></div><div class="pick"><span id="chips" style="display:contents"></span>
-<button type="button" id="addbtn" aria-expanded="false" aria-controls="panel">Ajouter</button>
+<input type="search" id="q" role="combobox" aria-expanded="false" aria-controls="panel" aria-label="Ajouter un pays, un groupe, un conflit ou une ressource" placeholder="Ajouter : pays, conflit, ressource…" autocomplete="off">
 <button type="button" id="reset" hidden>Tout effacer</button></div>
-<div id="panel" hidden><input type="search" id="q" placeholder="Filtrer : un pays, un groupe, un conflit, une ressource" aria-label="Filtrer la liste" autocomplete="off">
-<div id="groups"></div><p class="none" id="noq" hidden>Aucun acteur ne correspond.</p></div></div>
+<div id="panel" hidden><div id="groups"></div><p class="none" id="noq" hidden>Aucun acteur ne correspond.</p></div></div>
 <p class="scope" id="scope"></p>
 <div class="seg" id="sens" role="group" aria-label="Sens des dépendances" hidden><button type="button" data-s="dep">Dépend de</button><button type="button" data-s="four">Fournit</button><button type="button" data-s="tout">Tout</button></div>
 <p class="sug" id="sug"></p>
 <div id="empty"><div class="ex"><span class="quiet">Pour commencer :</span>{examples}</div></div>
 <div id="out" hidden>
 <div class="cols"><div class="main">
+<div id="brief" aria-live="polite"></div>
 <div class="bar"><div class="seg" id="seg" role="group" aria-label="Affichage"><button type="button" data-v="schema">__ICO_GRAPH__<span>Schéma</span></button><button type="button" data-v="map">__ICO_MAP__<span>Carte</span></button><button type="button" data-v="communs">__ICO_ORGS__<span>Points communs</span></button></div>
 <button type="button" id="grp" aria-pressed="false" hidden>Regrouper les camps</button>
 <div id="zoom" hidden><button type="button" data-z="in" aria-label="Zoomer">+</button><button type="button" data-z="out" aria-label="Dézoomer">−</button><button type="button" data-z="fit">Recadrer</button></div></div>
