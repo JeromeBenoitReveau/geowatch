@@ -32,6 +32,10 @@ terms:
     aliases: [tensions]
     auto: false
     definition: Une opposition entre deux acteurs (guerre, sanctions, revendication territoriale, rivalité ou guerre commerciale). Les tensions sont affichées à part et ne comptent pas dans le calcul des blocs.
+  - id: africa-corps
+    term: Africa Corps
+    definition: La force militaire que la Russie déploie en Afrique. Elle dépend du ministère russe de la Défense et a remplacé le groupe privé Wagner après la mort de son chef en 2023.
+    example: Au Mali, l'Africa Corps a pris la suite de Wagner en juin 2025.
   - id: double-usage
     term: double usage
     definition: Des biens civils qui peuvent aussi servir à faire la guerre, comme des composants électroniques, des moteurs ou des machines-outils.

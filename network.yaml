@@ -97,6 +97,9 @@ actors:
   musk: {name: Elon Musk, kind: person, base: US, note: "Propriétaire de X, SpaceX, Tesla", wikidata: Q317521}
   spacex: {name: SpaceX (Starlink), kind: company, base: US, leader: musk,
            note: "Entreprise spatiale américaine ; son réseau de satellites Starlink fournit un accès à Internet, y compris sur le front ukrainien"}
+  palantir: {name: Palantir, kind: company, base: US,
+             leader: {name: Alex Karp, wikidata: Q19560940, role: "Cofondateur et patron de Palantir", sources: ["Bloomberg, Palantir et Israël concluent un partenariat stratégique (janv. 2024), reproduit par Palantir — https://www.palantir.com/assets/xrfr7uokpv1b/3MuEeA8MLbLDAyxixTsiIe/9e4a11a7fb058554a8a1e3cd83e31c09/C134184_finaleprint.pdf"]},
+             note: "Entreprise américaine d'analyse de données, qui fournit des logiciels d'intelligence artificielle à des armées"}
   rsf: {name: Forces de soutien rapide (FSR), kind: non_state, base: SD,
         leader: {name: "Mohamed Hamdan Dagalo, dit « Hemedti »", wikidata: Q63145660,
                  role: "Chef des FSR ; préside le gouvernement parallèle formé à Nyala en août 2025",
@@ -390,16 +393,18 @@ edges:
 
   # --- Sahel : présence militaire russe (Africa Corps, successeur de Wagner) ---
   - {from: RU, to: ML, since: "2021", types: [troops, training], status: active, confidence: high,
-     why: "Selon le Soufan Center, protéger la junte plutôt que mener une lutte durable contre l'insurrection ; selon des analystes cités par Al Jazeera, Moscou se sert de Wagner puis de l'Africa Corps pour peser sur les gouvernements africains",
+     why: "Selon le Soufan Center, protéger la junte plutôt que mener une lutte durable contre l'insurrection ; selon des analystes cités par Al Jazeera, Moscou se sert de Wagner puis de l'Africa Corps pour peser sur les gouvernements africains ; selon Carnegie, la Russie obtient en retour des concessions d'or et de minerais",
      sources: ["Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region",
-               "Soufan Center, les limites de l'Africa Corps : le Mali et l'offensive JNIM-FLA (mai 2026) — https://thesoufancenter.org/intelbrief-2026-may-12/"],
+               "Soufan Center, les limites de l'Africa Corps : le Mali et l'offensive JNIM-FLA (mai 2026) — https://thesoufancenter.org/intelbrief-2026-may-12/",
+               "Carnegie Endowment, « Russia in Africa: Examining Moscow's Influence and Its Limits » (févr. 2026) — https://carnegieendowment.org/research/2026/02/russia-role-west-southern-africa-junta-wagner-africa-corps"],
      verified: 2026-10,
-     note: "Environ 2 000 combattants russes ; l'Africa Corps a remplacé Wagner en juin 2025. Fin avril 2026, après l'offensive du JNIM et du FLA, il s'est retiré de Kidal et du Nord pour se regrouper autour de Bamako"}
+     note: "Entre 1 000 (Carnegie, fin 2025) et 2 000 (Al Jazeera, avril 2026) combattants russes selon les sources ; l'Africa Corps a remplacé Wagner en juin 2025. Fin avril 2026, après l'offensive du JNIM et du FLA, il s'est retiré de Kidal et du Nord pour se regrouper autour de Bamako"}
   - {from: RU, to: BF, since: "2024-01", types: [training], status: active, confidence: medium,
-     why: "Selon des analystes cités par Al Jazeera, Moscou se sert de Wagner puis de l'Africa Corps pour peser sur les gouvernements africains",
+     why: "Selon des analystes cités par Al Jazeera, Moscou se sert de Wagner puis de l'Africa Corps pour peser sur les gouvernements africains ; selon Carnegie, la Russie obtient en retour des concessions d'or et de minerais",
      sources: ["Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region",
-               "CTC West Point, Africa Corps : arrivées au Burkina Faso (janv. 2024) et au Niger (avr. 2024) — https://ctc.westpoint.edu/africa-corps-has-russia-hit-a-ceiling-in-africa/"],
-     verified: 2026-09,
+               "CTC West Point, Africa Corps : arrivées au Burkina Faso (janv. 2024) et au Niger (avr. 2024) — https://ctc.westpoint.edu/africa-corps-has-russia-hit-a-ceiling-in-africa/",
+               "Carnegie Endowment, « Russia in Africa: Examining Moscow's Influence and Its Limits » (févr. 2026) — https://carnegieendowment.org/research/2026/02/russia-role-west-southern-africa-junta-wagner-africa-corps"],
+     verified: 2026-10,
      note: "Entre 100 et 300 militaires russes, rôle d'encadrement"}
   - {from: RU, to: NE, since: "2024-04", types: [training], status: active, confidence: medium,
      sources: ["Al Jazeera, le rôle de la Russie dans la sécurité du Mali et du Sahel (avr. 2026) — https://www.aljazeera.com/news/2026/4/29/what-role-has-russia-played-in-malis-security-and-the-sahel-region",
@@ -447,6 +452,17 @@ edges:
      why: "Selon The New Arab, frapper les intérêts russes et le groupe Wagner hors d'Ukraine"}
 
   # --- Canada : entre les États-Unis et l'Europe ---
+  - {from: palantir, to: UA, since: "2023-05", types: [service], status: active, confidence: high,
+     why: "Alex Karp, patron de Palantir, dit vouloir aider les forces ukrainiennes à résister à l'agression russe (communiqué du gouvernement ukrainien)",
+     sources: ["Gouvernement ukrainien, mémorandum de coopération entre le ministère de la Transformation numérique et Palantir (mai 2023) — https://www.kmu.gov.ua/en/news/u-mintsyfry-pidpysano-memorandum-shchodo-spivpratsi-u-sferakh-oborony-ta-vidbudovy-ukrainy",
+               "Ukrinform, Zelensky et Fedorov reçoivent le patron de Palantir à Kyiv (mai 2026) — https://www.ukrinform.net/rubric-polytics/4122362-zelensky-fedorov-meet-ceo-of-american-company-palantir-to-discuss-defense-cooperation.html"],
+     verified: 2026-10,
+     note: "Mémorandum signé le 25 mai 2023 avec le ministère ukrainien de la Transformation numérique (défense et reconstruction). En mai 2026, le gouvernement ukrainien décrit le travail commun : analyse des attaques aériennes, traitement du renseignement par intelligence artificielle, planification des frappes en profondeur, et la plateforme Brave1 Dataroom où plus de 100 entreprises entraînent plus de 80 modèles d'intelligence artificielle sur des données du champ de bataille"}
+  - {from: palantir, to: IL, since: "2024-01", types: [service], status: active, confidence: high,
+     why: "Selon Bloomberg, Palantir a réuni son conseil d'administration à Tel-Aviv « par solidarité avec Israël » après l'attaque du 7 octobre 2023",
+     sources: ["Bloomberg, Palantir et Israël concluent un partenariat stratégique (janv. 2024), reproduit par Palantir — https://www.palantir.com/assets/xrfr7uokpv1b/3MuEeA8MLbLDAyxixTsiIe/9e4a11a7fb058554a8a1e3cd83e31c09/C134184_finaleprint.pdf"],
+     verified: 2026-10,
+     note: "« Partenariat stratégique » conclu en janvier 2024 avec le ministère israélien de la Défense pour des « missions liées à la guerre », après une rencontre à Tel-Aviv avec les cofondateurs Alex Karp et Peter Thiel. La technologie fournie n'a pas été rendue publique"}
   - {from: spacex, to: UA, since: "2022-02", types: [service], status: active, confidence: high,
      sources: ["Euronews, SpaceX et le ministère ukrainien de la Défense bloquent l'usage russe de Starlink (févr. 2026) — https://euronews.com/2026/02/02/musks-spacex-and-ukraines-defence-ministry-to-block-russias-use-of-starlink",
                "CBS News, Elon Musk dit avoir refusé une demande ukrainienne pour ne pas être complice d'un acte de guerre majeur (sept. 2023) — https://www.cbsnews.com/news/elon-musk-ukraine-russia-war-starlink-satellite-denied-major-act-of-war/",
@@ -730,6 +746,8 @@ dependencies:
   - {from: EG, supplier: RU, type: food, share: 60, year: 2026, period: "juillet 2025-janvier 2026", status: active, sources: ["USDA Foreign Agricultural Service, Egypt Grain and Feed Annual EG2026-0002 : importations de blé de juillet 2025 à janvier 2026 (mars 2026) — https://www.fas.usda.gov/data/gain-report/2026/03/Grain%20and%20Feed%20Annual_Cairo_Egypt_EG2026-0002.pdf"], verified: 2026-10, resource: "blé", note: "Part calculée à partir des tonnages USDA (5,28 Mt sur 8,8 Mt)"}
   - {from: EG, supplier: UA, type: food, share: 25, year: 2026, period: "juillet 2025-janvier 2026", status: active, sources: ["USDA Foreign Agricultural Service, Egypt Grain and Feed Annual EG2026-0002 : importations de blé de juillet 2025 à janvier 2026 (mars 2026) — https://www.fas.usda.gov/data/gain-report/2026/03/Grain%20and%20Feed%20Annual_Cairo_Egypt_EG2026-0002.pdf"], verified: 2026-10, resource: "blé", note: "Part calculée à partir des tonnages USDA (2,16 Mt sur 8,8 Mt)"}
   - {from: EG, supplier: EU, type: food, share: 13, year: 2026, period: "juillet 2025-janvier 2026", status: active, sources: ["USDA Foreign Agricultural Service, Egypt Grain and Feed Annual EG2026-0002 : importations de blé de juillet 2025 à janvier 2026 (mars 2026) — https://www.fas.usda.gov/data/gain-report/2026/03/Grain%20and%20Feed%20Annual_Cairo_Egypt_EG2026-0002.pdf"], verified: 2026-10, resource: "blé", note: "Part calculée à partir des tonnages USDA (1,12 Mt sur 8,8 Mt)"}
+  # --- puces : part MONDIALE de la capacité de production (pas une part d'importations), dite dans la note ---
+  - {from: US, supplier: TW, type: chips, share: 92, year: 2025, period: "2025", status: active, sources: ["Stimson Center, Pamela Kennedy : pourquoi Taïwan craint que « l'Amérique d'abord » n'érode son « bouclier de silicium » (oct. 2025) — https://www.stimson.org/2025/why-taiwan-fears-america-first-risks-eroding-its-silicon-shield/"], verified: 2026-10, resource: "puces avancées", note: "Part de TSMC, entreprise taïwanaise, dans la capacité mondiale de production des puces les plus avancées, et non part des importations américaines. Les contrôles américains à l'exportation interdisent à TSMC de fournir certaines de ces puces à la Chine. Sous la menace de droits de douane américains allant jusqu'à 100 %, TSMC investit 165 milliards de dollars dans six usines en Arizona (12 milliards promis en 2020, 100 milliards de plus annoncés en mars 2025)"}
   # --- dette : part d'un créancier dans la dette extérieure publique et garantie (PPG) du pays, encours fin 2024 ---
   - {from: CD, supplier: CN, type: debt, share: 44.4, year: 2024, period: "fin 2024", status: active, sources: ["Banque mondiale, International Debt Statistics : dette extérieure publique (PPG) due à China, encours 2024 — https://api.worldbank.org/v2/sources/6/country/COD/series/DT.DOD.DPPG.CD/counterpart-area/730/time/YR2024?format=json", "Banque mondiale, International Debt Statistics : dette extérieure publique (PPG) totale, encours 2024 — https://api.worldbank.org/v2/sources/6/country/COD/series/DT.DOD.DPPG.CD/counterpart-area/WLD/time/YR2024?format=json"], verified: 2026-10, note: "Part calculée à partir des encours IDS (dette due au créancier / dette publique extérieure totale)"}
   - {from: UA, supplier: EU, type: debt, share: 41.3, year: 2024, period: "fin 2024", status: active, sources: ["Banque mondiale, International Debt Statistics : dette extérieure publique (PPG) due à European Union, encours 2024 — https://api.worldbank.org/v2/sources/6/country/UKR/series/DT.DOD.DPPG.CD/counterpart-area/975/time/YR2024?format=json", "Banque mondiale, International Debt Statistics : dette extérieure publique (PPG) totale, encours 2024 — https://api.worldbank.org/v2/sources/6/country/UKR/series/DT.DOD.DPPG.CD/counterpart-area/WLD/time/YR2024?format=json"], verified: 2026-10, note: "Part calculée à partir des encours IDS (dette due au créancier / dette publique extérieure totale)"}
