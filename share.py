@@ -50,4 +50,4 @@ if __name__ == "__main__":
     shoot(card(brand.BASELINE, "Qui s'oppose à qui, qui soutient qui, et pourquoi."), OUT / "partage.png")
     for x in dossier.load():
         a, b = (s["name"] for s in x["sides"])
-        shoot(card(x["title"], f"{a} contre {b[0].lower() + b[1:]} : qui les soutient, et pourquoi.", "Dossier"), OUT / f"partage-{x['id']}.png")
+        shoot(card(x["title"], f"{a} contre {style.mid(b)} : qui les soutient, et pourquoi.", "Dossier"), OUT / f"partage-{x['id']}.png")

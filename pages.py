@@ -96,7 +96,7 @@ def conflict_row(x, d):
     return f"""<a class="card conflict" href="{e(x['id'])}.html">
 <svg class="wm" role="img" aria-label="Carte de la région : pays en guerre et soutiens étrangers" data-map='{e(json.dumps(conflict_map(x, d)))}'></svg>
 <div class="body"><h3>{e(x['title'])}</h3>
-<p class="vs">{camp_marks(x["sides"][0], d)}<span>{e(names[0])}</span><span class="vs-x">contre</span>{camp_marks(x["sides"][1], d)}<span>{e(names[1][:1].lower() + names[1][1:])}</span></p>
+<p class="vs">{camp_marks(x["sides"][0], d)}<span>{e(names[0])}</span><span class="vs-x">contre</span>{camp_marks(x["sides"][1], d)}<span>{e(style.mid(names[1]))}</span></p>
 <p class="lede1">{e(first)}</p></div></a>"""
 
 def cross_links(d):

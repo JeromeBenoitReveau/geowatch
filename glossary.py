@@ -62,7 +62,10 @@ def for_js():
 
 def page():
     import brand, style
-    items = sorted(load(), key=lambda t: t["term"].lower())
+    import unicodedata
+    # tri alphabétique français : les accents ne comptent pas (« défense » avant « double »)
+    plain = lambda s: "".join(c for c in unicodedata.normalize("NFD", s.lower()) if unicodedata.category(c) != "Mn")
+    items = sorted(load(), key=lambda t: plain(t["term"]))
     rows = "".join(f"""<div class="gl" id="{e(t['id'])}"><dt>{e(t['term'])}{f' <span class="quiet">({e(", ".join(t["aliases"]))})</span>' if t.get("aliases") else ""}</dt>
 <dd>{e(t['definition'])}{f'<br><span class="quiet">Exemple : {e(t["example"])}</span>' if t.get("example") else ""}</dd></div>""" for t in items)
     css = """.page{padding:64px 0 0}.gl{padding:14px 0;border-bottom:1px solid var(--mist);scroll-margin-top:20px}

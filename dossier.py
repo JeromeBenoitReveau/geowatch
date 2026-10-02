@@ -254,7 +254,7 @@ def hero_map(dos, d, backers, cite):
     camps = [] if m.get("regions") else [num(m["countries"][i] if "countries" in m else side_countries(sd["actors"], d))
                                           for i, sd in enumerate(dos["sides"])]
     payload = {"bounds": m["bounds"], "regions": m.get("regions"), "anchors": m["anchors"], "camps": camps,
-               "sides": [s["name"] for s in dos["sides"]], "colors": SIDE_COLORS, "contested": CONTESTED,
+               "sides": [s["name"] for s in dos["sides"]], "sides_mid": [style.mid(s["name"]) for s in dos["sides"]], "colors": SIDE_COLORS, "contested": CONTESTED,
                "arrows": arrows, "pins": m.get("pins", []), "routes": m.get("routes", []), "flows": flows}
     data = json.dumps(payload, ensure_ascii=False).replace("</", "<\\/")
     reg = m.get("regions") or {}
@@ -296,7 +296,7 @@ L.geoJSON(topojson.feature(world, world.objects.countries), {{interactive:false,
 if(M.camps.length){{ const inC = (k, id) => M.camps[k].includes(String(+id));
   L.geoJSON(topojson.feature(world, world.objects.countries), {{filter: f => inC(0, f.id) || inC(1, f.id),
     style: f => ({{color: css("--card"), weight:1, fillOpacity:.5, fillColor: inC(0, f.id) && inC(1, f.id) ? M.contested : M.colors[inC(0, f.id) ? 0 : 1]}}),
-    onEachFeature: (f, l) => l.bindTooltip(inC(0, f.id) && inC(1, f.id) ? "dans les deux camps" : "camp : " + M.sides[inC(0, f.id) ? 0 : 1].toLowerCase(), {{sticky:true}})
+    onEachFeature: (f, l) => l.bindTooltip(inC(0, f.id) && inC(1, f.id) ? "dans les deux camps" : "camp : " + M.sides_mid[inC(0, f.id) ? 0 : 1], {{sticky:true}})
   }}).addTo(map); }}
 if(M.regions){{
   const control = n => M.regions.sides[0].includes(n) ? 0 : M.regions.sides[1].includes(n) ? 1 : M.regions.contested.includes(n) ? 2 : -1;
@@ -304,7 +304,7 @@ if(M.regions){{
   L.geoJSON(reg, {{style: f => {{ const c = control(f.properties.name);
       return {{color: css("--card"), weight:1, fillOpacity: c < 0 ? 0 : .55, fillColor: c === 2 ? M.contested : M.colors[c] || "transparent"}}; }},
     onEachFeature: (f, l) => {{ const c = control(f.properties.name);
-      if(c >= 0) l.bindTooltip(f.properties.name + " — " + (c === 2 ? (M.regions.contested_label || "disputé").toLowerCase() : "tenu par " + M.sides[c].toLowerCase()), {{sticky:true}}); }}
+      if(c >= 0) l.bindTooltip(f.properties.name + " — " + (c === 2 ? (M.regions.contested_label || "disputé").toLowerCase() : "tenu par " + M.sides_mid[c]), {{sticky:true}}); }}
   }}).addTo(map); }}
 const curve = (a, b, k = .2) => {{ const mx = (a[0]+b[0])/2, my = (a[1]+b[1])/2, dx = b[0]-a[0], dy = b[1]-a[1], c = [mx - dy*k, my + dx*k];
   return Array.from({{length:30}}, (_, i) => {{ const t = i/29, u = 1-t; return [u*u*a[0]+2*u*t*c[0]+t*t*b[0], u*u*a[1]+2*u*t*c[1]+t*t*b[1]]; }}); }};
@@ -392,7 +392,7 @@ def page(dos, d):
 <section class="notes"><h2>Sources</h2><ol>{cite.html()}</ol>
 <p class="fix">Une erreur, une source manquante, une information dépassée ? {style.correction(dos["title"])}</p></section>
 </div>
-{style.foot(f'Photos {"; ".join(f"""<a href="{e(c['page'])}">{e(c['artist'] or 'auteur inconnu')}</a>, {e(c['license'])}""" for c in credits)}, via Wikimedia Commons. ' if credits else "", dos["title"])}"""
+{style.foot(f'Photos {"; ".join(f"""<a href="{e(c['page'])}">{e(c['artist'] or 'auteur inconnu')}</a>, {e(c['license'])}""" for c in credits)}, via Wikimedia Commons. ' if credits else "", dos["title"], fix=False)}"""
     extra = f'<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><style>{CSS}</style>'
     desc = style.clip(dos["lede"])
     ld = {"@context": "https://schema.org", "@type": "Article", "headline": dos["title"], "description": desc, "inLanguage": "fr",

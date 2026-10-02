@@ -210,9 +210,39 @@ def correction(page=""):
     return (f'<a href="{e(correction_url(page))}">Proposer une correction</a>{where} : un formulaire guidé, '
             f'sans connaître le code (il faut un compte GitHub, gratuit).')
 
-def foot(extra="", page=""):
+def foot(extra="", page="", fix=True):
+    """fix=False quand la page porte déjà son propre « Proposer une correction » (dossiers) : pas de doublon en pied de page."""
     return f"""<footer><div class="wrap">{extra}{e(brand.NAME)} est un projet indépendant et open source. Code sous licence MIT,
-textes et données sous licence CC BY 4.0. {correction(page)}</div></footer>"""
+textes et données sous licence CC BY 4.0.{" " + correction(page) if fix else ""}</div></footer>"""
+
+# ---------- Français des phrases générées : un nom au milieu d'une phrase, et les contractions à/de + article ----------
+import re as _re
+_ART = _re.compile(r"^(Les|Le|La|L['’])(?=\s|\w)")
+
+def mid(name):
+    """Nom placé au milieu d'une phrase : seul un ARTICLE initial perd sa majuscule (« Le Hamas » → « le Hamas »),
+    jamais un nom propre (« Israël » reste « Israël »)."""
+    return _ART.sub(lambda m: m.group().lower(), name, count=1)
+
+def _contract(prep, name):
+    """Chaque terme d'une coordination reprend la préposition : « au Hamas et au Jihad islamique », « à Israël et aux États-Unis »."""
+    def one(n):
+        if n.startswith("les "):
+            return {"à": "aux ", "de": "des "}[prep] + n[4:]
+        if n.startswith("le "):
+            return {"à": "au ", "de": "du "}[prep] + n[3:]
+        if prep == "de" and _re.match(r"[aeiouyhéèêàâîôûAEIOUYHÉÈ]", n) and not n.startswith(("la ", "l'", "l’")):
+            return "d'" + n
+        return f"{prep} {n}"
+    return " et ".join(one(p) for p in mid(name).split(" et "))
+
+def a(name):
+    """« à » + nom, avec contraction : à + le → au, à + les → aux (« au Hamas », « aux Forces de soutien rapide », « à Israël »)."""
+    return _contract("à", name)
+
+def de(name):
+    """« de » + nom, avec contraction et élision : du Hamas, des Forces…, d'Israël, de l'Iran, de la Russie."""
+    return _contract("de", name)
 
 def write(out):
     (out / "style.css").write_text(CSS.replace("__DARK__", DARK).strip() + "\n", encoding="utf-8")
