@@ -441,11 +441,13 @@ function activeAt(e, Y){
   return Y < NOW || e.status !== "ended";  // aujourd'hui : on masque ce qui est terminé
 }
 const dated = e => e.since ? `depuis ${e.since}${e.until ? ` jusqu'à ${e.until}` : ""}` : "début non daté";
+// soutien : `since` = plus ancienne date attestée par les sources, pas forcément le vrai début → « documenté depuis »
+const datedDoc = e => e.since ? `documenté depuis ${e.since}${e.until ? `, jusqu'à ${e.until}` : ""}` : "début non daté";
 // deux dimensions, deux codages : le STATUT par le tracé (plein = actif, tirets = en baisse ou allégué),
 // la CONFIANCE par l'épaisseur (épais = documenté officiellement, moyen = sources concordantes, fin = allégations)
 const DASHED = e => e.status !== "active", WIDTH = {high: 2.8, medium: 1.6, low: .8};
 const edgeList = D.edges.map((e,i) => ({id:"e"+i, from:e.from, to:e.to, arrows:"to", hidden: !activeAt(e, NOW) || !supportOn(e),
-  color:D.colors[e.types[0]]||"#888", dashes: DASHED(e), width: WIDTH[e.confidence] || 1.4, title:`${(D.actors[e.from]||{}).name||e.from} → ${(D.actors[e.to]||{}).name||e.to} : ${e.types.join(", ")} (${dated(e)})`}));
+  color:D.colors[e.types[0]]||"#888", dashes: DASHED(e), width: WIDTH[e.confidence] || 1.4, title:`${(D.actors[e.from]||{}).name||e.from} → ${(D.actors[e.to]||{}).name||e.to} : ${e.types.join(", ")} (${datedDoc(e)})`}));
 // lien d'ancrage parti/personnalité → pays (calque détail)
 const anchors = Object.entries(D.actors).filter(([id,a])=>DETAIL.has(a.kind) && D.actors[a.base])
   .map(([id,a]) => ({id:"b-"+id, from:id, to:a.base, dashes:[2,4], color:"#999", width:1, title:"rattaché à"}));
@@ -543,7 +545,9 @@ const isSimple = () => ["type", "tension", "kind", "med", "dep"].every(g => [...
 let PRESET = null, AROUND = null;
 function computeAround(){ if(!PRESET || !PRESET.around) return AROUND = null;
   const base = new Set(PRESET.around), out = new Set(base), Y = YEAR();
-  D.edges.forEach(e => { if(activeAt(e, Y) && supportOn(e) && (base.has(e.from) || base.has(e.to))){ out.add(e.from); out.add(e.to); } });
+  // question sur le soutien REÇU (panel: received) : on ne garde que ce qui va vers les acteurs de la question, pas ce qu'ils donnent
+  const recv = PRESET.panel === "received";
+  D.edges.forEach(e => { if(activeAt(e, Y) && supportOn(e) && (base.has(e.to) || (!recv && base.has(e.from)))){ out.add(e.from); out.add(e.to); } });
   TS.forEach(t => { if(activeAt(t, Y) && tensionOn(t) && (base.has(t.from) || base.has(t.to))){ out.add(t.from); out.add(t.to); } });
   // une médiation n'entre que si elle porte sur les acteurs de la question (ses deux parties y sont)
   MEDS.forEach(m => { if(medOn(m) && m.between.every(b => base.has(b))) [m.mediator, ...m.between].forEach(a => out.add(a)); });
@@ -574,7 +578,9 @@ const edgesDS = new vis.DataSet([...edgeList, ...anchors, ...tensionEdges, ...me
 // Disposition calculée UNE fois, hors écran, sur tout le graphe (tous les acteurs, tous les soutiens, toutes années),
 // puis figée (physics:false) : un pays garde sa place quels que soient les filtres, rien ne bouge tout seul.
 const net = new vis.Network($("#graph"), {nodes:nodesDS, edges:edgesDS},
-  {physics:false, interaction:{hover:true}});
+  // physics:false → pas de courbes « dynamiques » (elles s'appuient sur des points invisibles que seul le moteur physique déplace) :
+  // sans cette option, les soutiens passaient tous par un même point. Les tensions, médiations et leviers gardent leur propre courbure.
+  {physics:false, interaction:{hover:true}, edges:{smooth:{enabled:true, type:"continuous", roundness:.35}}});
 net.on("click", p => p.nodes.length ? show(p.nodes[0]) : legend());
 $("#graph").style.visibility = "hidden";
 (() => { const box = document.createElement("div");
@@ -582,7 +588,7 @@ $("#graph").style.visibility = "hidden";
   document.body.appendChild(box);
   const lay = new vis.Network(box, {nodes: nodesDS.get().map(n => ({id: n.id, size: n.size, shape: "dot"})),
       edges: [...edgeList, ...anchors].map(e => ({from: e.from, to: e.to}))},
-    {physics:{solver:"forceAtlas2Based", stabilization:{iterations:400, fit:false}}});
+    {layout:{randomSeed:7}, physics:{solver:"forceAtlas2Based", stabilization:{iterations:400, fit:false}}});
   lay.once("stabilizationIterationsDone", () => { const pos = lay.getPositions();
     lay.destroy(); box.remove();
     nodesDS.update(Object.entries(pos).map(([id, p]) => ({id, x: p.x, y: p.y})));
@@ -849,7 +855,7 @@ function drawLinks(){
     if(!a || !b || !supportOn(e) || !on(layerOf(e.from)) || !on(layerOf(e.to))) return;
     const l = L.polyline(curve(a,b), {color: D.colors[e.types[0]]||"#888", weight: WIDTH[e.confidence] || 1.4,
       opacity:.8, dashArray: DASHED(e) ? "5 5" : null})
-      .bindTooltip(`${D.actors[e.from].name} → ${D.actors[e.to].name} : ${e.types.join(", ")} (${dated(e)})`, {sticky:true})
+      .bindTooltip(`${D.actors[e.from].name} → ${D.actors[e.to].name} : ${e.types.join(", ")} (${datedDoc(e)})`, {sticky:true})
       .addTo(groups.links);
     // flèche : petit cercle plein côté bénéficiaire
     const tip = L.circleMarker(b, {radius:3, color: D.colors[e.types[0]]||"#888", fillOpacity:1, weight:0, interactive:false}).addTo(groups.links);
@@ -936,7 +942,7 @@ const STATUS_FR = {active:"actif", reduced:"en baisse", ended:"terminé", allege
 const CONF_FR = {high:"documenté officiellement", medium:"sources concordantes", low:"allégations"};
 const rel = (e, other) => `<div class="rel"><b data-id="${esc(other)}">${nm(other)}</b> <span class="mute">${e.types.map(t => TYPE_TERM[t] ? T(TYPE_TERM[t], esc(TYPES_FR[t])) : esc(TYPES_FR[t] || t)).join(", ")}</span>
   ${e.why ? `<div>${esc(e.why)}</div>` : ""}
-  <div class="mute">${T("statut", esc(STATUS_FR[e.status] || e.status))}, ${T("confiance", esc(CONF_FR[e.confidence] || e.confidence))}, ${esc(dated(e))}. ${e.note ? esc(e.note) + ". " : ""}Sources : ${(e.sources||[]).map(src).join(", ")}</div></div>`;
+  <div class="mute">${T("statut", esc(STATUS_FR[e.status] || e.status))}, ${T("confiance", esc(CONF_FR[e.confidence] || e.confidence))}, ${esc(datedDoc(e))}. ${e.note ? esc(e.note) + ". " : ""}Sources : ${(e.sources||[]).map(src).join(", ")}</div></div>`;
 document.addEventListener("click", ev => { const b = ev.target.closest("[data-id]"); if(b) show(b.dataset.id); });
 
 
@@ -967,8 +973,9 @@ function show(id){
   const local = Object.keys(D.actors).filter(x=>DETAIL.has(D.actors[x].kind) && D.actors[x].base===id);
   if(local.length) h += `<h2>Partis & personnalités</h2>` + local.map(x=>`<div class="rel"><b data-id="${esc(x)}">${nm(x)}</b> <span class="mute">${esc(KIND[D.actors[x].kind])}</span></div>`).join("");
   const out = D.edges.filter(e=>e.from===id&&e.status!=="ended"), inn = D.edges.filter(e=>e.to===id&&e.status!=="ended");
-  if(out.length) h += `<h2>Soutient</h2>` + out.map(e=>rel(e,e.to)).join("");
-  if(inn.length) h += `<h2>Soutenu par${Q("soutien")}</h2>` + inn.map(e=>rel(e,e.from)).join("");
+  const hOut = out.length ? `<h2>Soutient</h2>` + out.map(e=>rel(e,e.to)).join("") : "";
+  const hIn = inn.length ? `<h2>Soutenu par${Q("soutien")}</h2>` + inn.map(e=>rel(e,e.from)).join("") : "";
+  h += PRESET && PRESET.panel === "received" ? hIn + hOut : hOut + hIn;   // la question règle l'ordre : soutien reçu d'abord si elle porte dessus
   const deps = DEPS.filter(x => x.from === id).sort((a, b) => b.share - a.share);
   if(deps.length) h += `<h2>Dépend de${Q("levier")}</h2>` + deps.map(x => `<div class="dep"><div class="dep-h"><b data-id="${esc(x.supplier)}">${nm(x.supplier)}</b>
     <span>${depIcon(x.type)} ${esc(depText(x))}</span></div><div class="bar"><i style="width:${Math.min(100, x.share)}%"></i></div>

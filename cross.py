@@ -56,7 +56,6 @@ CSS = """
 .seg button:hover{color:var(--ink)}.seg button[aria-pressed=true]{background:color-mix(in srgb,var(--ink) 8%,var(--land));color:var(--ink)}
 .seg .ico{color:var(--peach)}.seg[data-busy] button{cursor:progress}
 .stage{position:relative}
-#frise{margin:18px 0 6px}
 #communs{margin:18px 0 6px}#communs h3{margin:22px 0 10px}#communs h3:first-child{margin-top:6px}
 .cap{font-size:13.5px;color:var(--graphite);margin:0 0 10px;max-width:46em}
 .tw{overflow-x:auto}
@@ -79,8 +78,6 @@ CSS = """
 .fr .lbl small{color:var(--graphite);font-size:12.5px}
 .fr .span{position:absolute;right:0;top:50%;height:5px;margin-top:-2.5px;border-radius:3px 0 0 3px}
 .fr .span b{position:absolute;left:-5px;top:-3.5px;width:12px;height:12px;border-radius:50%;box-shadow:0 0 0 2px var(--paper)}
-#frise.focus .row:not(.on){opacity:.3}
-@media (max-width:640px){.fr{grid-template-columns:1fr}.fr.axis>div:first-child{display:none}.fr .track{min-height:22px}}
 #grp{font:14px var(--sans);color:var(--graphite);background:none;border:1px solid var(--mist);border-radius:4px;padding:5px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
 #grp[hidden]{display:none}#grp::before{content:"";width:9px;height:9px;border-radius:50%;border:1.5px solid var(--graphite)}
 #grp:hover{border-color:var(--peach);color:var(--ink)}#grp[aria-pressed=true]{color:var(--ink)}#grp[aria-pressed=true]::before{background:var(--peach);border-color:var(--peach)}
@@ -182,6 +179,8 @@ const depShort = x => `${x.type === "debt" ? "dette" : x.type === "trade" ? (x.d
 const MONTHS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
 const when = d => { const [y, m] = String(d).split("-"); return m && MONTHS[+m - 1] ? `${MONTHS[+m - 1]} ${y}` : y; };
 const since = x => x.since ? `Depuis ${esc(when(x.since))}. ` : "";
+// soutien : `since` est la plus ancienne date attestée par les sources, pas forcément le vrai début → « documenté depuis »
+const sinceDoc = x => x.since ? `Documenté depuis ${esc(when(x.since))}. ` : "";
 const tail = x => `<p class="m">${x.note ? esc(x.note) + ". " : ""}Sources : ${(x.sources || []).map(src).join(", ")}</p>`;
 const ARROW = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="vers"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
@@ -191,7 +190,7 @@ const RES_FR = {arms: "Armes", gas: "Gaz", oil: "Pétrole", minerals: "Minerais"
 const RES = Object.fromEntries(Object.keys(RES_FR).filter(t => D.dependencies.some(x => x.type === t)).map(t => ["r:" + t, t]));
 let SEL = (new URLSearchParams(location.search).get("e") || "").split(",").filter(t => D.actors[t] || DOS[t] || RES[t]);
 let PICK = null;   // trait ou acteur mis en avant
-let VIEW = {carte: "map", frise: "frise", communs: "communs"}[new URLSearchParams(location.search).get("v")] || "schema", WORLD = null;
+let VIEW = {carte: "map", communs: "communs"}[new URLSearchParams(location.search).get("v")] || "schema", WORLD = null;
 function scope(){ const ids = [];
   SEL.forEach(t => (DOS[t] ? DOS[t].sides.flat() : [t]).forEach(id => { if(D.actors[id] && !ids.includes(id)) ids.push(id); }));
   return ids; }
@@ -206,7 +205,7 @@ function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : pa
     F.push({group: "support", links: [[x.from, x.to]], color: D.colors[x.types[0]] || "#888", width: WIDTH[x.confidence] || 2,
       dash: x.status === "active" ? null : "9 5", arrow: true, nodes: [x.from, x.to], since: x.since, kind: "Soutien" + (x.status === "active" ? "" : ", " + (STATUS_FR[x.status] || x.status)), faded: x.status !== "active",
       html: `<div class="who">${who(x.from)}${ARROW}${who(x.to)}</div>
-        <p>Soutien : ${x.types.map(t => esc(TYPES_FR[t] || t)).join(", ")}. ${since(x)}Statut : ${esc(STATUS_FR[x.status] || x.status)} ; ${esc(CONF_FR[x.confidence] || x.confidence)}.</p>
+        <p>Soutien : ${x.types.map(t => esc(TYPES_FR[t] || t)).join(", ")}. ${sinceDoc(x)}Statut : ${esc(STATUS_FR[x.status] || x.status)} ; ${esc(CONF_FR[x.confidence] || x.confidence)}.</p>
         ${x.why ? `<p>Pourquoi : ${esc(x.why)}</p>` : ""}${tail(x)}`}); });
   D.mediations.forEach(m => { if(!m.between.every(b => S.has(b))) return;
     const out = !S.has(m.mediator);   // médiateur hors sélection : pas de nœud en plus, le fait reste listé et signalé sous le schéma
@@ -369,12 +368,12 @@ function render(){ const ids = scope(), {F, extra} = facts(ids), ok = ids.length
   const sug = ids.length ? suggest(ids) : [];
   $("#sug").innerHTML = sug.length ? "À croiser aussi : " + sug.map(x => `<button type="button" data-add="${esc(x.t)}">${mark(x.t)}${label(x.t)} <small>${x.n} lien${x.n > 1 ? "s" : ""}</small></button>`).join("") : "";
   $("#empty").hidden = ok; $("#out").hidden = !ok;
-  history.replaceState(null, "", location.pathname + (SEL.length ? "?e=" + SEL.join(",") + (VIEW === "map" ? "&v=carte" : VIEW === "frise" ? "&v=frise" : VIEW === "communs" ? "&v=communs" : "") + (GRP == null ? "" : "&g=" + (GRP ? 1 : 0)) : ""));
+  history.replaceState(null, "", location.pathname + (SEL.length ? "?e=" + SEL.join(",") + (VIEW === "map" ? "&v=carte" : VIEW === "communs" ? "&v=communs" : "") + (GRP == null ? "" : "&g=" + (GRP ? 1 : 0)) : ""));
   document.querySelectorAll("#seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === VIEW));
   if(!ok) return;
-  draw(ids, extra, F); frise(F); communs(ids);
-  const flat2 = VIEW === "frise" || VIEW === "communs";
-  $("#schema").style.display = flat2 ? "none" : ""; $("#frise").hidden = VIEW !== "frise"; $("#communs").hidden = VIEW !== "communs"; if(flat2) $("#zoom").hidden = true;
+  draw(ids, extra, F); communs(ids);
+  const flat2 = VIEW === "communs";
+  $("#schema").style.display = flat2 ? "none" : ""; $("#communs").hidden = VIEW !== "communs"; if(flat2) $("#zoom").hidden = true;
   ["#legend", "#aside", "#bridges", "#detail"].forEach(q => $(q).style.display = VIEW === "communs" ? "none" : "");
   const outs = F.filter(f => f.out);
   $("#aside").innerHTML = outs.length ? "Hors sélection : " + outs.map(f => `<button type="button" data-fact="${f.id}">${nm(f.mediator)}, médiateur entre ${nm(f.nodes[0])} et ${nm(f.nodes[1])}</button>`).join(" ; ") + "." : "";
@@ -393,25 +392,6 @@ function render(){ const ids = scope(), {F, extra} = facts(ids), ok = ids.length
     `<h3>${t}</h3>` + F.filter(f => f.group === g).map(card).join("")).join("") : '<p class="none">Aucun fait entre ces acteurs dans le graphe.</p>');
   window.FACTS = F; if(PICK && !(PICK.r != null ? RELS[PICK.r] : PICK.f != null ? F[PICK.f] : ids.concat(extra).includes(PICK.n) || CAMPS[PICK.n])) PICK = null;
   detail(); }
-
-// ---------- Frise : une ligne par fait daté, du début à aujourd'hui. Échelle resserrée vers le passé (racine du temps écoulé)
-// pour que les dernières années gardent de la place. Les dépendances n'y sont pas : ce sont des mesures sur une période. ----------
-const yearOf = d => { const [y, m] = String(d).split("-"); return +y + (m ? (+m - 1) / 12 : 0); };
-function frise(F){ const now = new Date().getFullYear() + new Date().getMonth() / 12;
-  const dated = F.filter(f => f.since && f.group !== "lever").sort((a, b) => yearOf(a.since) - yearOf(b.since)), nodate = F.filter(f => !f.since && f.group !== "lever");
-  if(!dated.length){ $("#frise").innerHTML = '<p class="none" style="margin:0">Aucun fait daté entre ces acteurs.</p>'; return; }
-  const span = Math.max(4, now - yearOf(dated[0].since) + .6), X = t => 100 * (1 - Math.sqrt(Math.max(0, now - t)) / Math.sqrt(span));
-  const first = Math.ceil(now - span), cand = [...new Set([first, 1950, 1980, 1990, 2000, 2010, 2014, 2018, 2020, ...Array.from({length: 7}, (_, i) => Math.floor(now) - i)])]
-    .filter(y => y >= first && y <= now).sort((a, b) => b - a), ticks = [];
-  cand.forEach(y => { if(!ticks.length || X(ticks[ticks.length - 1]) - X(y) > 7) ticks.push(y); });
-  const grid = ticks.map(y => `<i class="tk" style="left:${X(y).toFixed(2)}%"></i>`).join("");
-  const head = f => (f.html.match(/<div class="who">([\s\S]*?)<\/div>/) || [])[1] || "";
-  const bar = f => { const c = f.color, bg = f.faded ? `repeating-linear-gradient(90deg,${c} 0 8px,transparent 8px 13px)` : c;
-    return `<span class="span" style="left:${X(yearOf(f.since)).toFixed(2)}%;background:${bg}"><b style="background:${c}"></b></span>`; };
-  $("#frise").innerHTML = `<div class="fr axis"><div></div><div class="track">${ticks.map(y => `<span class="yr" style="left:${X(y).toFixed(2)}%">${y}</span>`).join("")}</div></div>`
-    + dated.map(f => `<div class="fr row" data-f="${f.id}" tabindex="0" role="button"><div class="lbl"><div class="who">${head(f)}</div><small>${esc(f.kind)}, depuis ${esc(when(f.since))}</small></div><div class="track">${grid}${bar(f)}</div></div>`).join("")
-    + (nodate.length ? `<p class="none">Sans date de début dans le graphe : ${nodate.map(f => `<button type="button" data-fact="${f.id}">${head(f).replace(/<img[^>]*>/g, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()} (${esc(f.kind.toLowerCase())})</button>`).join(" ; ")}.</p>` : "")
-    + (F.some(f => f.group === "lever") ? '<p class="none">Les dépendances n\'apparaissent pas sur la frise : ce sont des mesures sur une période, pas des événements datés.</p>' : ""); }
 
 // ---------- Points communs : ce que les PAYS choisis partagent sans se le devoir — organisations et votes à l'ONU.
 // Mesures et appartenances sourcées (alignments.yaml, Voeten) ; un groupe armé, un parti ou un bloc n'y figure pas. ----------
@@ -433,8 +413,6 @@ function communs(ids){ const st = ids.filter(id => D.actors[id].kind === "state"
   $("#communs").innerHTML = h + skip; }
 
 function detail(){ const F = window.FACTS, svg = $("#schema"), box = $("#detail");
-  document.querySelectorAll("#frise .row").forEach(r => r.classList.toggle("on", !!PICK && PICK.f === +r.dataset.f));
-  $("#frise").classList.toggle("focus", !!PICK && PICK.f != null);
   const camp = PICK && PICK.n ? CAMPS[PICK.n] : null, rel = PICK && PICK.r != null ? RELS[PICK.r] : null;
   const on = !PICK ? [] : F.filter(f => rel ? rel.fids.includes(f.id) : PICK.f != null ? f.id === PICK.f : camp ? f.nodes.some(x => camp.members.includes(x)) : f.nodes.includes(PICK.n));
   svg.classList.toggle("focus", !!PICK);
@@ -470,14 +448,13 @@ document.addEventListener("click", ev => { const t = ev.target;
   if(t.id === "reset"){ SEL = []; PICK = null; ZM = null; GRP = undefined; toggle(false); return render(); }
   const ex = t.closest && t.closest("[data-ex]"); if(ex){ ev.preventDefault(); ZM = null; SEL = ex.dataset.ex.split(","); PICK = null; return render(); }
   if(t.dataset && t.dataset.fact != null){ PICK = {f: +t.dataset.fact}; return detail(); }
-  const row = t.closest && t.closest("#frise .row"); if(row){ PICK = PICK && PICK.f === +row.dataset.f ? null : {f: +row.dataset.f}; return detail(); }
   const rel = t.closest && t.closest(".rel"), node = t.closest && t.closest(".node");
   if(rel){ PICK = PICK && PICK.r === +rel.dataset.r ? null : {r: +rel.dataset.r}; return detail(); }
   if(t.closest && t.closest("#grp")){ GRP = $("#grp").getAttribute("aria-pressed") !== "true"; PICK = null; return render(); }
   if(node){ PICK = PICK && PICK.n === node.dataset.n ? null : {n: node.dataset.n}; return detail(); }
   if(t.closest && t.closest("#schema") && PICK){ PICK = null; detail(); } });
 ["mouseover", "focusin"].forEach(e => document.addEventListener(e, ev => { const b = ev.target.closest && ev.target.closest("[data-bridge]"); b && BR[+b.dataset.bridge] ? ghost(BR[+b.dataset.bridge]) : unghost(); }));
-document.addEventListener("keydown", ev => { const node = ev.target.closest && (ev.target.closest(".node") || ev.target.closest("#frise .row"));
+document.addEventListener("keydown", ev => { const node = ev.target.closest && ev.target.closest(".node");
   if(node && (ev.key === "Enter" || ev.key === " ")){ ev.preventDefault(); node.dispatchEvent(new MouseEvent("click", {bubbles: true})); } });
 document.querySelectorAll("#seg button").forEach(b => b.addEventListener("click", () => setView(b.dataset.v)));
 VIEW === "map" ? setView("map") : render();
@@ -514,10 +491,10 @@ def page(d):
 <p class="sug" id="sug"></p>
 <div id="empty"><div class="ex"><span class="quiet">Pour commencer :</span>{examples}</div></div>
 <div id="out" hidden>
-<div class="bar"><div class="seg" id="seg" role="group" aria-label="Affichage"><button type="button" data-v="schema">__ICO_GRAPH__<span>Schéma</span></button><button type="button" data-v="map">__ICO_MAP__<span>Carte</span></button><button type="button" data-v="frise"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 6h9M8 12h12M13 18h8"/></svg><span>Frise</span></button><button type="button" data-v="communs">__ICO_ORGS__<span>Points communs</span></button></div>
+<div class="bar"><div class="seg" id="seg" role="group" aria-label="Affichage"><button type="button" data-v="schema">__ICO_GRAPH__<span>Schéma</span></button><button type="button" data-v="map">__ICO_MAP__<span>Carte</span></button><button type="button" data-v="communs">__ICO_ORGS__<span>Points communs</span></button></div>
 <button type="button" id="grp" aria-pressed="false" hidden>Regrouper les camps</button>
 <div id="zoom" hidden><button type="button" data-z="in" aria-label="Zoomer">+</button><button type="button" data-z="out" aria-label="Dézoomer">−</button><button type="button" data-z="fit">Recadrer</button></div></div>
-<div class="stage"><div id="frise" hidden></div><div id="communs" hidden></div><svg id="schema" role="group" aria-label="Schéma des relations entre les acteurs choisis"></svg></div>
+<div class="stage"><div id="communs" hidden></div><svg id="schema" role="group" aria-label="Schéma des relations entre les acteurs choisis"></svg></div>
 <div class="legend" id="legend"></div>
 <p class="scope" id="aside"></p>
 <p class="sug" id="bridges"></p>

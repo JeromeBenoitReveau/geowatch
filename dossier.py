@@ -349,16 +349,6 @@ def page(dos, d):
   {backers_block(bs, d, g, cite) or '<p style="color:var(--graphite)">Aucun soutien documenté.</p>'}</div>"""
 
     events = [(str(t["date"]), glossed(t["text"], g) + cite([t["source"]])) for t in dos.get("timeline", [])]
-    for bs, s in zip(backers, dos["sides"]):
-        by_date = {}
-        for x in bs:
-            if x.get("since"):
-                by_date.setdefault(str(x["since"]), []).append(x)
-        for dt, xs in by_date.items():
-            names = list(dict.fromkeys(e(d["actors"][x["from"]]["name"]) for x in xs))
-            who = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " et " + names[-1]
-            what = "premier soutien documenté" if len(xs) == 1 else "premiers soutiens documentés"
-            events.append((dt, f"{who} : {what} à {e(s['name'][:1].lower() + s['name'][1:])}" + cite([xs[0]["sources"][0]])))
     events.sort(key=lambda ev: ev[0])
 
     frac = fractures(dos, d, g, cite)

@@ -132,7 +132,8 @@ actif, tirets = en baisse ou allégué), la <b>confiance</b> à l'épaisseur (é
 <p>Sites les plus cités : {", ".join(f"{e(dom)} ({n})" for dom, n in domains.most_common(8))}.</p>
 <p><b>Dates</b> : <code>since</code> est la plus ancienne date documentée par les sources citées — pas forcément le vrai
 début d'une relation (l'aide américaine à l'Ukraine est datée de 2022 car la source couvre la période depuis l'invasion) ;
-<code>until</code> marque une fin. Le curseur « Année » du site n'affiche que les relations actives l'année choisie ;
+<code>until</code> marque une fin. C'est pourquoi le site écrit « documenté depuis » pour un soutien, et « depuis » seulement pour
+un événement daté (une guerre, une médiation). Le curseur « Année » du site n'affiche que les relations actives l'année choisie ;
 {sum(1 for x in edges if not x.get("since"))} relation(s) sans date restent affichées toutes les années.</p>
 <p><code>validate.py</code> refuse une relation sans source, avec un acteur inconnu ou une valeur hors liste, et tourne sur
 GitHub à chaque modification. <code>update_network.py</code> peut proposer des mises à jour (Claude + recherche web) dans un
@@ -150,8 +151,8 @@ soutiens étrangers, les enjeux, le coût humain, la chronologie et la situation
 Les camps et les soutiens sont <b>lus dans le graphe</b> : un dossier ne peut pas contredire <code>network.yaml</code>.</p>
 <p>Chaque soutien peut porter un <b>« pourquoi »</b> (champ <code>why</code>) : la motivation de l'acteur en une phrase.
 C'est une <b>analyse, pas un fait</b> : elle est attribuée à qui la formule (« selon Crisis Group… ») et couverte par une
-source de la relation. Quand les analyses divergent, le dossier doit le dire plutôt que trancher. Dans la chronologie,
-« premier soutien documenté » renvoie à la date <code>since</code>, la plus ancienne attestée par les sources.</p>
+source de la relation. Quand les analyses divergent, le dossier doit le dire plutôt que trancher. La chronologie d'un dossier ne
+contient que des événements rédigés et sourcés : aucune date n'y est tirée automatiquement du graphe.</p>
 <p>Dossiers publiés : {", ".join(f'<a href="{e(x["id"])}.html">{e(x["title"])}</a>' for x in d.get("dossiers", [])) or "aucun"}.
 {sum(1 for x in edges if x.get("why"))} relation(s) sur {len(edges)} ont un « pourquoi ».</p>
 

@@ -10,6 +10,8 @@
 # dossier   : id d'un dossier de dossiers.yaml → « around » = les acteurs de ses deux camps, lus dans les données
 # types     : types de soutien affichés (arms, troops, financial, training, intelligence, political, economic, dual_use) ;
 #             absent = tous, [] = aucun
+# panel     : received = la question porte sur le soutien REÇU par les acteurs : « Soutenu par » passe en premier dans le
+#             panneau, et le graphe ne garde que les soutiens qui vont vers eux
 # tensions  : types de tension affichés (war, sanctions, claims, rivalry, trade_war) ; absent = tous, [] = aucune
 # kinds     : acteurs affichés (core = États et blocs, non_state, party, person) ; absent = États, blocs, groupes armés
 # colormode : carte — formal (liens formels) | votes (votes à l'ONU)
@@ -23,6 +25,7 @@ presets:
     question: Qui arme l'Ukraine ?
     view: graphe
     focus: UA
+    panel: received
     around: [UA]
     types: [arms, financial, intelligence]
     tensions: []
@@ -37,6 +40,7 @@ presets:
     question: Qui soutient l'Iran ?
     view: graphe
     focus: IR
+    panel: received
     around: [IR]
     tensions: []
 

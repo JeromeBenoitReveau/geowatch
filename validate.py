@@ -340,6 +340,8 @@ def check_presets(presets, actors, aligns, dossiers):
             for v in p.get(k) or []:
                 if v not in allowed:
                     errors.append(f"{where} : {k} « {v} » invalide")
+        if p.get("panel") not in (None, "received"):
+            errors.append(f"{where} : panel « {p['panel']} » invalide (received)")
         if p.get("colormode") not in (None, "formal", "votes"):
             errors.append(f"{where} : colormode « {p['colormode']} » invalide")
         if p.get("view") == "organisations":
