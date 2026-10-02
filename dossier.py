@@ -46,7 +46,7 @@ h3.sub{font:500 17px/1.3 var(--serif);margin:0 0 10px}.meds{display:grid;gap:10p
 .backers-title{font-size:15px;color:var(--graphite);margin:0 0 4px}
 .backer{display:grid;grid-template-columns:22px 1fr;gap:4px 12px;padding:12px 0;border-top:1px solid var(--mist)}
 .backer img{width:22px;height:22px;border-radius:50%;margin-top:2px}
-.backer .name{font-weight:600}.backer .kind{color:var(--graphite);font-size:14px;margin-left:6px}
+.backer .name{font-weight:600}.backer .kind{color:var(--graphite);font-size:14px;margin-left:6px}.backer .to{display:block;margin-left:0}
 .backer .why{grid-column:2;font-size:15.5px;line-height:1.55}
 .backer details{grid-column:2;font-size:14px;color:var(--graphite)}.backer summary{cursor:pointer;width:max-content}
 .backer details p{margin:6px 0 0}
@@ -148,7 +148,7 @@ def flag(aid, d):
     ok = kind == "state" or aid == "EU"
     return f'<img src="{e(style.flag_url(aid, d["actors"][aid]))}" alt="">' if ok else '<span></span>'
 
-def backers_block(bs, d, g, cite):
+def backers_block(bs, d, g, cite, multi=False):
     """Une ligne par soutien ; ceux qui partagent le même « pourquoi » sont regroupés sur une ligne."""
     groups = {}
     for x in bs:
@@ -157,11 +157,12 @@ def backers_block(bs, d, g, cite):
     for why, xs in groups.items():
         names = list(dict.fromkeys(e(d["actors"][x["from"]]["name"]) for x in xs))   # un pays qui soutient deux acteurs d'un camp : cité une fois
         kinds = sorted({TYPES_FR.get(t, t) for x in xs for t in x["types"]})
+        to = list(dict.fromkeys(d["actors"][x["to"]]["name"] for x in xs)) if multi else []   # camp à plusieurs acteurs : dire lequel est soutenu
         alleged = any(x["status"] == "alleged" for x in xs)
         notes = [x for x in xs if x.get("note")]
         srcs = [s for x in xs for s in x["sources"]]
         rows.append(f"""<div class="backer">{flag(xs[0]["from"], d) if len(xs) == 1 else flag("EU", d) if any(x["from"] == "EU" for x in xs) else flag(xs[0]["from"], d)}
-  <div><span class="name">{", ".join(names)}</span><span class="kind">{e(", ".join(kinds))}</span>{'<span class="alleged">allégué</span>' if alleged else ""}</div>
+  <div><span class="name">{", ".join(names)}</span><span class="kind">{e(", ".join(kinds))}</span>{f'<span class="kind to">{"bénéficiaires" if len(to) > 1 else "bénéficiaire"} : {e(", ".join(to))}</span>' if to else ""}{'<span class="alleged">allégué</span>' if alleged else ""}</div>
   <div class="why">{glossed(xs[0]["why"], g) if xs[0].get("why") else '<span style="color:var(--graphite)">Motivation pas encore documentée.</span>'}{cite(srcs)}</div>
   {"".join(f'<div class="lever">{style.dep_icon(dp["type"])} {e(d["actors"][dp["from"]]["name"])} : <b>{dp["share"]} %</b> de ses armes importées viennent de ce fournisseur ({e(d["actors"][dp["supplier"]]["name"])}, {e(dp.get("period") or str(dp["year"]))}){cite(dp["sources"])}{(" " + e(dp["note"]) + ".") if dp.get("note") else ""}</div>'
            for dp in d.get("dependencies", []) for x in xs
@@ -346,7 +347,7 @@ def page(dos, d):
   {f'<div class="lead">{e(lead["name"])}</div>' if lead else ""}</div></div>
   <p>{glossed(s["text"], g)}{cite(s.get("sources"))}</p>
   <p class="backers-title">{(n := len({x["from"] for x in bs}))} soutien{"s" if n > 1 else ""} étranger{"s" if n > 1 else ""}</p>
-  {backers_block(bs, d, g, cite) or '<p style="color:var(--graphite)">Aucun soutien documenté.</p>'}</div>"""
+  {backers_block(bs, d, g, cite, len(s["actors"]) > 1) or '<p style="color:var(--graphite)">Aucun soutien documenté.</p>'}</div>"""
 
     events = [(str(t["date"]), glossed(t["text"], g) + cite([t["source"]])) for t in dos.get("timeline", [])]
     events.sort(key=lambda ev: ev[0])
