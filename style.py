@@ -6,7 +6,7 @@ from urllib.parse import quote
 import brand
 
 DARK = ("color-scheme:dark;--paper:#141821;--ink:#e8ebf0;--graphite:#9ba3b0;--mist:#29303b;"
-        "--ocean:#0d131b;--land:#1b212b;--peach:#f4b393;--a:#3987e5;--b:#d95926")
+        "--ocean:#0d131b;--land:#1b212b;--peach:#f4b393;--brand:#f4b393;--a:#3987e5;--b:#d95926")
 # appliqué avant le premier affichage, pour éviter un flash du mauvais thème
 THEME_INIT = '<script>try{const t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(_){}</script>'
 
@@ -15,7 +15,7 @@ FONTS = ("https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,40
 
 CSS = """
 :root{--paper:#f7f8f7;--ink:#16181d;--graphite:#5f6670;--mist:#e3e6e9;--ocean:#e6ebef;--land:#fdfdfc;
-  --peach:#e3936c;--a:#2a78d6;--b:#eb6834;--line:var(--mist);--card:var(--land);--fg:var(--ink);--bg:var(--paper);--mute:var(--graphite);
+  --peach:#e3936c;--brand:var(--ink);--a:#2a78d6;--b:#eb6834;--line:var(--mist);--card:var(--land);--fg:var(--ink);--bg:var(--paper);--mute:var(--graphite);
   --serif:"Newsreader",Georgia,serif;--sans:"Public Sans",system-ui,sans-serif}
 /* sombre : gris très légèrement bleutés ; la pêche s'éclaircit pour rester lisible.
    Thème du système par défaut ; l'interrupteur du menu le force (attribut data-theme, gardé dans le navigateur) */
@@ -51,7 +51,7 @@ a:focus-visible,summary:focus-visible,button:focus-visible,input:focus-visible,s
 .theme:hover{color:var(--ink)}.theme .sun{display:none}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .theme .sun{display:block}:root:not([data-theme=light]) .theme .moon{display:none}}
 :root[data-theme=dark] .theme .sun{display:block}:root[data-theme=dark] .theme .moon{display:none}
-.brand{font-family:var(--serif);font-size:20px;display:inline-flex;align-items:center;gap:9px;color:var(--peach)}.brand .logo{flex:none}
+.brand{font-family:var(--serif);font-size:20px;display:inline-flex;align-items:center;gap:9px;color:var(--brand)}.brand .logo{flex:none}
 h1{font:400 44px/1.1 var(--serif);letter-spacing:-.01em;margin:0 0 14px}
 h2{font:400 26px/1.25 var(--serif);margin:0 0 18px}
 h3{font:500 19px/1.3 var(--serif);margin:0 0 4px}

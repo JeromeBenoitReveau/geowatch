@@ -266,8 +266,9 @@ function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ..
   const rx = NARROW ? 125 : n === 2 ? 230 : 285, ry = n === 2 ? 0 : NARROW ? 180 : 165, a0 = n % 2 === 0 ? -90 - 180 / n : -90;
   all.forEach((id, i) => { const a = (a0 + 360 * i / n) * Math.PI / 180; P[id] = [CX + rx * Math.cos(a), CY + ry * Math.sin(a)]; }); }
   const byPair = {}; RELS.forEach(f => { const l = f.l, k = [...l].sort().join("|"); (byPair[k] = byPair[k] || []).push([f, l]); });
-  const cols = [...new Set(RELS.filter(f => f.arrow).map(f => f.color))];
-  let s = `<defs>${cols.map((c, i) => `<marker id="mk${i}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`).join("")}
+  // pointe de flèche propre à chaque trait, proportionnelle à son épaisseur (18 px au moins) : le sens doit se lire d'un coup d'œil
+  const tip = f => Math.max(18, f.width * 3.4);
+  let s = `<defs>${RELS.filter(f => f.arrow).map(f => `<marker id="mk${f.id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="${tip(f).toFixed(1)}" markerHeight="${tip(f).toFixed(1)}" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0.6L10 5L0 9.4z" fill="${f.color}" stroke="var(--paper)" stroke-width=".7"/></marker>`).join("")}
     <clipPath id="cp"><circle r="${R - 3}"/></clipPath></defs>${land ? `<g class="land">${land}</g>` : ""}`;
   Object.entries(byPair).forEach(([k, list]) => { const [u, v] = k.split("|"), [x1, y1] = P[u], [x2, y2] = P[v];
     const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy), nx = -dy / len, ny = dx / len;
@@ -276,7 +277,7 @@ function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ..
       const end = (px, py, q) => { const ex = mx - px, ey = my - py, d = Math.hypot(ex, ey) || 1; return [px + ex / d * (rad(q) + 5), py + ey / d * (rad(q) + 5)]; };
       const [fa, fb] = l[0] === u ? [end(x1, y1, u), end(x2, y2, v)] : [end(x2, y2, v), end(x1, y1, u)];
       const path = `M${fa[0].toFixed(1)} ${fa[1].toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${fb[0].toFixed(1)} ${fb[1].toFixed(1)}`;
-      s += `<g class="rel" data-r="${f.id}"><path d="${path}" fill="none" stroke="${f.color}" stroke-width="${f.width.toFixed(1)}"${f.dash ? ` stroke-dasharray="${f.dash}"` : ""}${f.round ? ' stroke-linecap="round"' : ""}${f.arrow ? ` marker-end="url(#mk${cols.indexOf(f.color)})"` : ""}/>
+      s += `<g class="rel" data-r="${f.id}"><path d="${path}" fill="none" stroke="${f.color}" stroke-width="${f.width.toFixed(1)}"${f.dash ? ` stroke-dasharray="${f.dash}"` : ""}${f.round ? ' stroke-linecap="round"' : ""}${f.arrow ? ` marker-end="url(#mk${f.id})"` : ""}/>
         ${f.value ? (() => { const w = f.value.length * 6.3 + (f.dep ? 30 : 18), lx = (x1 + x2) / 2 + nx * off, ly = (y1 + y2) / 2 + ny * off;
           return `<g transform="translate(${(lx - w / 2).toFixed(1)} ${(ly - 10).toFixed(1)})"><title>${esc(f.tip)}</title><rect class="pill" width="${w.toFixed(1)}" height="20" rx="10"/>
             ${f.dep ? `<svg x="8" y="4.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${DEP}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${DEP_ICON[f.dep] || ""}</svg>` : ""}

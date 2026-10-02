@@ -482,7 +482,7 @@ const depIcon = (t, size = 14) => `<svg class="dep-ico" viewBox="0 0 24 24" widt
 const depText = x => `${String(x.share).replace(".", ",")} % ${x.type === "debt" ? "de sa dette publique extérieure"
   : x.type === "trade" ? (x.direction === "exports" ? "de ses exportations" : "de ses importations de marchandises")
   : "de ses importations " + depWhat(x)} (${x.period || x.year})`;
-const depEdges = DEPS.map((x, i) => ({id: "d" + i, from: x.supplier, to: x.from, arrows: {to: {enabled: true, scaleFactor: .4}}, physics: false,
+const depEdges = DEPS.map((x, i) => ({id: "d" + i, from: x.supplier, to: x.from, arrows: {to: {enabled: true, scaleFactor: .9}}, physics: false,
   width: .6 + x.share/25, dashes: DEP.dashes, color: {color: DEP.color, opacity: .9}, smooth: {type: "curvedCW", roundness: .25}, hidden: true,
   title: `${(D.actors[x.from]||{}).name} dépend de ${(D.actors[x.supplier]||{}).name} : ${depText(x)}`}));
 const depsVisible = () => DEPS.map((x, i) => ({id: "d" + i, hidden: !depOn(x)}));
