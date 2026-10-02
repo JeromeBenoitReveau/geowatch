@@ -7,7 +7,15 @@ import json
 import brand, dossier, glossary, style
 
 CSS = """
-.cross{padding:56px 0 0}.cross h1{margin-bottom:8px}
+/* page plus large que le reste du site : le schéma et son panneau de détail tiennent côte à côte */
+.wrap{max-width:1280px}
+.cross{padding:40px 0 0}.cross h1{margin-bottom:8px}
+/* une sélection est en cours : l'en-tête se resserre pour que le schéma tienne dans la fenêtre */
+.cross.has{padding-top:18px}.cross.has h1{font-size:26px;margin:0}.cross.has .lede{display:none}.cross.has .pick{margin-top:10px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr);gap:0 28px}
+@media (min-width:1000px){.cols{grid-template-columns:minmax(0,1fr) 340px}
+  .side{position:sticky;top:10px;align-self:start;max-height:calc(100vh - 20px);overflow:auto}
+  .side #detail{border-top:0;border-left:1px solid var(--mist);padding:2px 0 0 20px;margin-top:14px;min-height:240px}}
 .pick{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:22px 0 6px}
 .chip{display:inline-flex;align-items:center;gap:7px;padding:5px 6px 5px 10px;border:1px solid var(--mist);border-radius:4px;background:var(--land);font-size:15px}
 .chip .dep-ico,#groups .dep-ico,.sug .dep-ico{flex:none}
@@ -33,7 +41,7 @@ CSS = """
 .scope{font-size:13.5px;color:var(--graphite);margin:0;min-height:1.6em}
 .scope button{display:inline;text-align:left;background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-decoration:underline dashed var(--peach) 1px;text-underline-offset:3px}
 .scope button:hover{text-decoration-style:solid}
-.sug{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13.5px;color:var(--graphite);margin:10px 0 0}
+.sug{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:13.5px;color:var(--graphite);margin:6px 0 0}
 .sug:empty{display:none}
 .sug button{display:inline-flex;align-items:center;gap:6px;font:14px var(--sans);color:var(--ink);background:none;border:1px dashed var(--graphite);border-radius:4px;padding:4px 9px;cursor:pointer}
 .sug button:hover{border-color:var(--peach);border-style:solid}.sug button::before{content:"+";color:var(--graphite)}
@@ -49,7 +57,7 @@ CSS = """
 #schema .ini{font-size:13px;font-weight:600;fill:var(--paper)}
 #schema.ghosted .rel{opacity:.18}#schema .gl{font-size:13px;paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
 #schema .rel{transition:opacity .15s}#schema.focus .rel:not(.on){opacity:.14}#schema.focus .node:not(.on){opacity:.35}
-.bar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:26px 0 0;min-height:30px}
+.bar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:14px 0 0;min-height:30px}
 /* contrôle segmenté Schéma / Carte : même dessin que celui de la vue d'ensemble (vue-d-ensemble.html) */
 .seg{display:inline-flex;flex-wrap:wrap;padding:3px;gap:2px;border:1px solid var(--mist);border-radius:7px;background:var(--land)}
 .seg button{display:flex;align-items:center;gap:7px;padding:6px 12px;border:0;border-radius:5px;background:none;font:14px var(--sans);color:var(--graphite);cursor:pointer;white-space:nowrap}
@@ -226,7 +234,13 @@ function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : pa
 
 // ---------- Schéma : acteurs sur une ellipse, fixes ; plusieurs faits entre deux acteurs = traits écartés ----------
 // écran étroit : cadre plus étroit et plus haut, pour que les noms restent lisibles
-const NARROW = innerWidth < 600, W = NARROW ? 400 : 760, H = 470, CX = W / 2, CY = H / 2 - 4;
+const NARROW = innerWidth < 600, W = NARROW ? 400 : 760, CX = W / 2;
+// hauteur du dessin : celle qui reste dans la fenêtre sous la barre des vues, ramenée à l'échelle du dessin — le schéma
+// s'aplatit au lieu de rétrécir, les textes gardent leur taille
+let H = 470, CY = H / 2 - 4;
+function stageH(n = 4){ const svg = $("#schema"), w = svg.parentNode.clientWidth || W, room = innerHeight - (svg.getBoundingClientRect().top + scrollY) - 64;
+  // beaucoup d'acteurs : on garde de la hauteur (quitte à défiler un peu) plutôt que d'écraser le schéma
+  H = NARROW ? 470 : Math.round(Math.max(Math.min(470, 300 + Math.max(0, n - 4) * 45), Math.min(470, W * room / w))); CY = H / 2 - 4; }
 // Carte : mêmes traits, acteurs posés sur leur pays (Natural Earth, sans tuiles). Cadre ajusté aux acteurs choisis, zoom plafonné ;
 // deux acteurs au même endroit (un groupe armé et son pays) sont écartés juste assez pour rester lisibles.
 let ZM = null, BASE = null, LAST = null, GEO = null, BR = [], RELS = [], CAMPS = {}, DISP = id => id;
@@ -253,6 +267,7 @@ function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ..
   CAMPS = grouped ? possible : {}; const of = {}; Object.entries(CAMPS).forEach(([g, c]) => c.members.forEach(id => of[id] = g)); DISP = id => of[id] || id;
   $("#grp").hidden = MAP || VIEW !== "schema" || !Object.keys(possible).length; $("#grp").setAttribute("aria-pressed", grouped);
   const all = [...new Set([...ids, ...extra].map(DISP))], n = all.length, rad = id => CAMPS[id] ? 38 : R; let P = {}, land = "";
+  stageH(n);
   // traits affichés : un par fait, ou un par groupe de faits de même nature entre les deux mêmes ronds
   RELS = []; const idx = {};
   F.forEach(f => f.links.forEach(l => { const u = DISP(l[0]), v = DISP(l[1]); if(u === v) return;
@@ -262,13 +277,14 @@ function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ..
   RELS.forEach(r => { if(r.fids.length < 2) return; r.tip = r.fids.length + " faits de même nature";
     r.value = r.dep ? r.value.replace(/ [\d,]+ %$/, "") + " ×" + r.fids.length : "×" + r.fids.length; });
   if(MAP) ({P, land} = mapLayout(all, R)); else {
-  const rx = NARROW ? 125 : n === 2 ? 230 : 285, ry = n === 2 ? 0 : NARROW ? 180 : 165, a0 = n % 2 === 0 ? -90 - 180 / n : -90;
+  const rx = NARROW ? 125 : n === 2 ? 230 : 285, ry = n === 2 ? 0 : NARROW ? 180 : Math.min(165, H / 2 - 72), a0 = n % 2 === 0 ? -90 - 180 / n : -90;
   all.forEach((id, i) => { const a = (a0 + 360 * i / n) * Math.PI / 180; P[id] = [CX + rx * Math.cos(a), CY + ry * Math.sin(a)]; }); }
   const byPair = {}; RELS.forEach(f => { const l = f.l, k = [...l].sort().join("|"); (byPair[k] = byPair[k] || []).push([f, l]); });
   // pointe de flèche propre à chaque trait, proportionnelle à son épaisseur (18 px au moins) : le sens doit se lire d'un coup d'œil
   const tip = f => Math.max(18, f.width * 3.4);
   let s = `<defs>${RELS.filter(f => f.arrow).map(f => `<marker id="mk${f.id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="${tip(f).toFixed(1)}" markerHeight="${tip(f).toFixed(1)}" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0.6L10 5L0 9.4z" fill="${f.color}" stroke="var(--paper)" stroke-width=".7"/></marker>`).join("")}
     <clipPath id="cp"><circle r="${R - 3}"/></clipPath></defs>${land ? `<g class="land">${land}</g>` : ""}`;
+  const placed = all.map(id => ({x: P[id][0] - rad(id) - 4, y: P[id][1] - rad(id) - 4, w: 2 * rad(id) + 8, h: 2 * rad(id) + 8}));
   Object.entries(byPair).forEach(([k, list]) => { const [u, v] = k.split("|"), [x1, y1] = P[u], [x2, y2] = P[v];
     const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy), nx = -dy / len, ny = dx / len;
     list.forEach(([f, l], i) => { const off = (i - (list.length - 1) / 2) * Math.min(38, len / 5);
@@ -277,7 +293,13 @@ function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ..
       const [fa, fb] = l[0] === u ? [end(x1, y1, u), end(x2, y2, v)] : [end(x2, y2, v), end(x1, y1, u)];
       const path = `M${fa[0].toFixed(1)} ${fa[1].toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${fb[0].toFixed(1)} ${fb[1].toFixed(1)}`;
       s += `<g class="rel" data-r="${f.id}"><path d="${path}" fill="none" stroke="${f.color}" stroke-width="${f.width.toFixed(1)}"${f.dash ? ` stroke-dasharray="${f.dash}"` : ""}${f.round ? ' stroke-linecap="round"' : ""}${f.arrow ? ` marker-end="url(#mk${f.id})"` : ""}/>
-        ${f.value ? (() => { const w = f.value.length * 6.3 + (f.dep ? 30 : 18), lx = (x1 + x2) / 2 + nx * off, ly = (y1 + y2) / 2 + ny * off;
+        ${f.value ? (() => { const w = f.value.length * 6.3 + (f.dep ? 30 : 18);
+          // la pastille est posée SUR son trait, vers le pays qui dépend (côté flèche), à la première place libre de toute autre pastille et de tout rond
+          const on = t => [(1 - t) ** 2 * fa[0] + 2 * (1 - t) * t * mx + t * t * fb[0], (1 - t) ** 2 * fa[1] + 2 * (1 - t) * t * my + t * t * fb[1]];
+          const box = t => { const [cx, cy] = on(t); return {x: cx - w / 2 - 3, y: cy - 13, w: w + 6, h: 26, cx, cy}; };
+          const free = b => !placed.some(p => b.x < p.x + p.w && b.x + b.w > p.x && b.y < p.y + p.h && b.y + b.h > p.y);
+          const b = (f.dep ? [.66, .56, .76, .46, .36, .86, .26] : [.5, .4, .6, .3, .7]).map(box).find(free) || box(f.dep ? .66 : .5);
+          placed.push(b); const lx = b.cx, ly = b.cy;
           return `<g transform="translate(${(lx - w / 2).toFixed(1)} ${(ly - 10).toFixed(1)})"><title>${esc(f.tip)}</title><rect class="pill" width="${w.toFixed(1)}" height="20" rx="10"/>
             ${f.dep ? `<svg x="8" y="4.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${DEP}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${DEP_ICON[f.dep] || ""}</svg>` : ""}
             <text class="val" x="${f.dep ? 23 : 9}" y="14.2">${esc(f.value)}</text></g>`; })() : ""}
@@ -293,10 +315,16 @@ function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ..
       <circle class="ring" r="${R}"/>${pic(id) ? `<image href="${esc(pic(id))}" x="${-R + 3}" y="${-R + 3}" width="${2 * R - 6}" height="${2 * R - 6}" clip-path="url(#cp)" preserveAspectRatio="xMidYMid slice"/>`
         : `<circle r="${R - 3}" fill="var(--graphite)"/><text class="ini" text-anchor="middle" y="4.5">${esc(name.slice(0, 2).toUpperCase())}</text>`}
       <text class="lab" text-anchor="${MAP && x > W - 90 ? "end" : MAP && x < 90 ? "start" : "middle"}" x="${MAP && x > W - 90 ? R : MAP && x < 90 ? -R : 0}" y="${up && !MAP ? -R - 9 : R + (MAP ? 16 : 20)}">${esc(name)}</text></g>`; });
-  const svg = $("#schema"); svg.setAttribute("viewBox", MAP ? `0 0 ${W} ${H}` : `0 ${n === 2 ? 130 : -14} ${W} ${n === 2 ? 200 : H + 6}`);
+  const svg = $("#schema"); svg.setAttribute("viewBox", MAP ? `0 0 ${W} ${H}` : `0 ${n === 2 ? CY - 100 : -14} ${W} ${n === 2 ? 200 : H + 6}`);
   svg.classList.toggle("map", !!MAP); svg.innerHTML = s; GEO = {P, R, MAP, n}; $("#zoom").hidden = !MAP; LAST = [ids, extra, F]; }
 // zoom autour d'un point, déplacement à la souris ; les ronds et les textes gardent leur taille, un acteur hors cadre reste au bord
 function redraw(){ if(LAST){ draw(...LAST); detail(); } }
+// Le schéma (ou la carte) tient dans la hauteur de la fenêtre : on borne sa hauteur à ce qui reste sous lui, légende comprise
+function fitStage(){ const svg = $("#schema"); if(svg.style.display === "none" || $("#out").hidden) return;
+  const top = svg.getBoundingClientRect().top + scrollY; svg.style.maxHeight = Math.max(320, innerHeight - top - 64) + "px"; }
+addEventListener("resize", () => { redraw(); fitStage(); });
+// écran étroit : le détail est sous le schéma, on y fait défiler ; écran large : il est à côté, rien à faire
+function reveal(){ if(PICK && innerWidth < 1000) $("#detail").scrollIntoView({behavior: "smooth", block: "nearest"}); }
 function zoomBy(r, c = [W / 2, H / 2]){ if(!BASE) return; const z = ZM || BASE, k = Math.max(BASE.k * .6, Math.min(9000, z.k * r)), q = k / z.k;
   ZM = {k, T: [c[0] + (z.T[0] - c[0]) * q, c[1] + (z.T[1] - c[1]) * q]}; redraw(); }
 (() => { const svg = $("#schema"); let drag = null, raf = 0;
@@ -367,7 +395,7 @@ function render(){ const ids = scope(), {F, extra} = facts(ids), ok = ids.length
   $("#reset").hidden = SEL.length < 2;
   const sug = ids.length ? suggest(ids) : [];
   $("#sug").innerHTML = sug.length ? "À croiser aussi : " + sug.map(x => `<button type="button" data-add="${esc(x.t)}">${mark(x.t)}${label(x.t)} <small>${x.n} lien${x.n > 1 ? "s" : ""}</small></button>`).join("") : "";
-  $("#empty").hidden = ok; $("#out").hidden = !ok;
+  $("#empty").hidden = ok; $("#out").hidden = !ok; $(".cross").classList.toggle("has", ok);
   history.replaceState(null, "", location.pathname + (SEL.length ? "?e=" + SEL.join(",") + (VIEW === "map" ? "&v=carte" : VIEW === "communs" ? "&v=communs" : "") + (GRP == null ? "" : "&g=" + (GRP ? 1 : 0)) : ""));
   document.querySelectorAll("#seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === VIEW));
   if(!ok) return;
@@ -391,7 +419,7 @@ function render(){ const ids = scope(), {F, extra} = facts(ids), ok = ids.length
   $("#all").innerHTML = `<summary>Tous les faits (${F.length}) et leurs sources</summary>` + (F.length ? GROUPS.filter(([g]) => F.some(f => f.group === g)).map(([g, t]) =>
     `<h3>${t}</h3>` + F.filter(f => f.group === g).map(card).join("")).join("") : '<p class="none">Aucun fait entre ces acteurs dans le graphe.</p>');
   window.FACTS = F; if(PICK && !(PICK.r != null ? RELS[PICK.r] : PICK.f != null ? F[PICK.f] : ids.concat(extra).includes(PICK.n) || CAMPS[PICK.n])) PICK = null;
-  detail(); }
+  detail(); fitStage(); }
 
 // ---------- Points communs : ce que les PAYS choisis partagent sans se le devoir — organisations et votes à l'ONU.
 // Mesures et appartenances sourcées (alignments.yaml, Voeten) ; un groupe armé, un parti ou un bloc n'y figure pas. ----------
@@ -447,11 +475,11 @@ document.addEventListener("click", ev => { const t = ev.target;
   if(!$("#panel").hidden && !(t.closest && (t.closest("#panel") || t.closest("#addbtn") || t.closest(".pick") || t.closest("#sug")))) toggle(false);
   if(t.id === "reset"){ SEL = []; PICK = null; ZM = null; GRP = undefined; toggle(false); return render(); }
   const ex = t.closest && t.closest("[data-ex]"); if(ex){ ev.preventDefault(); ZM = null; SEL = ex.dataset.ex.split(","); PICK = null; return render(); }
-  if(t.dataset && t.dataset.fact != null){ PICK = {f: +t.dataset.fact}; return detail(); }
+  if(t.dataset && t.dataset.fact != null){ PICK = {f: +t.dataset.fact}; detail(); return reveal(); }
   const rel = t.closest && t.closest(".rel"), node = t.closest && t.closest(".node");
-  if(rel){ PICK = PICK && PICK.r === +rel.dataset.r ? null : {r: +rel.dataset.r}; return detail(); }
+  if(rel){ PICK = PICK && PICK.r === +rel.dataset.r ? null : {r: +rel.dataset.r}; detail(); return reveal(); }
   if(t.closest && t.closest("#grp")){ GRP = $("#grp").getAttribute("aria-pressed") !== "true"; PICK = null; return render(); }
-  if(node){ PICK = PICK && PICK.n === node.dataset.n ? null : {n: node.dataset.n}; return detail(); }
+  if(node){ PICK = PICK && PICK.n === node.dataset.n ? null : {n: node.dataset.n}; detail(); return reveal(); }
   if(t.closest && t.closest("#schema") && PICK){ PICK = null; detail(); } });
 ["mouseover", "focusin"].forEach(e => document.addEventListener(e, ev => { const b = ev.target.closest && ev.target.closest("[data-bridge]"); b && BR[+b.dataset.bridge] ? ghost(BR[+b.dataset.bridge]) : unghost(); }));
 document.addEventListener("keydown", ev => { const node = ev.target.closest && ev.target.closest(".node");
@@ -491,14 +519,15 @@ def page(d):
 <p class="sug" id="sug"></p>
 <div id="empty"><div class="ex"><span class="quiet">Pour commencer :</span>{examples}</div></div>
 <div id="out" hidden>
+<div class="cols"><div class="main">
 <div class="bar"><div class="seg" id="seg" role="group" aria-label="Affichage"><button type="button" data-v="schema">__ICO_GRAPH__<span>Schéma</span></button><button type="button" data-v="map">__ICO_MAP__<span>Carte</span></button><button type="button" data-v="communs">__ICO_ORGS__<span>Points communs</span></button></div>
 <button type="button" id="grp" aria-pressed="false" hidden>Regrouper les camps</button>
 <div id="zoom" hidden><button type="button" data-z="in" aria-label="Zoomer">+</button><button type="button" data-z="out" aria-label="Dézoomer">−</button><button type="button" data-z="fit">Recadrer</button></div></div>
 <div class="stage"><div id="communs" hidden></div><svg id="schema" role="group" aria-label="Schéma des relations entre les acteurs choisis"></svg></div>
 <div class="legend" id="legend"></div>
 <p class="scope" id="aside"></p>
-<p class="sug" id="bridges"></p>
-<div id="detail" aria-live="polite"></div>
+<p class="sug" id="bridges"></p></div>
+<aside class="side"><div id="detail" aria-live="polite"></div></aside></div>
 <p class="none" id="none"></p>
 <details class="all" id="all"></details>
 </div>
