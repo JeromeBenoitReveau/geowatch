@@ -62,6 +62,7 @@ CSS = """
 .seg{display:inline-flex;flex-wrap:wrap;padding:3px;gap:2px;border:1px solid var(--mist);border-radius:7px;background:var(--land)}
 .seg button{display:flex;align-items:center;gap:7px;padding:6px 12px;border:0;border-radius:5px;background:none;font:14px var(--sans);color:var(--graphite);cursor:pointer;white-space:nowrap}
 .seg button:hover{color:var(--ink)}.seg button[aria-pressed=true]{background:color-mix(in srgb,var(--ink) 8%,var(--land));color:var(--ink)}
+#sens{margin:6px 0 2px}#sens[hidden]{display:none}#sens button{padding:4px 11px;font-size:13.5px}#sens button:disabled{opacity:.45;cursor:default}
 .seg .ico{color:var(--peach)}.seg[data-busy] button{cursor:progress}
 .stage{position:relative}
 #communs{margin:18px 0 6px}#communs h3{margin:22px 0 10px}#communs h3:first-child{margin-top:6px}
@@ -197,6 +198,7 @@ const ARROW = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" strok
 const RES_FR = {arms: "Armes", gas: "Gaz", oil: "Pétrole", minerals: "Minerais", food: "Denrées", debt: "Dette", trade: "Commerce"};
 const RES = Object.fromEntries(Object.keys(RES_FR).filter(t => D.dependencies.some(x => x.type === t)).map(t => ["r:" + t, t]));
 let SEL = (new URLSearchParams(location.search).get("e") || "").split(",").filter(t => D.actors[t] || DOS[t] || RES[t]);
+let SENS = {dep: "dep", four: "four", tout: "tout"}[new URLSearchParams(location.search).get("s")] || null;
 let PICK = null;   // trait ou acteur mis en avant
 let VIEW = {carte: "map", communs: "communs"}[new URLSearchParams(location.search).get("v")] || "schema", WORLD = null;
 function scope(){ const ids = [];
@@ -222,15 +224,19 @@ function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : pa
       html: `<div class="who">${who(m.mediator)}<span class="k">médiation entre</span>${who(m.between[0])}<span class="k">et</span>${who(m.between[1])}</div>
         <p>${since(m)}${m.why ? "Pourquoi : " + esc(m.why) : ""}</p>${tail(m)}`}); });
   const res = new Set(SEL.filter(t => RES[t]).map(t => RES[t]));
+  // Sens des dépendances apportées par une ressource : « dep » = ce dont la sélection dépend, « four » = qui dépend d'elle, « tout »
+  const brought = D.dependencies.filter(x => res.has(x.type) && S.has(x.from) !== S.has(x.supplier));
+  const nDep = brought.filter(x => S.has(x.from)).length, nFour = brought.length - nDep, mode = SENS === "four" && nFour ? "four" : SENS === "tout" || !nDep ? "tout" : "dep";
   D.dependencies.forEach(x => { const a = S.has(x.from), b = S.has(x.supplier);
     if(!(a && b) && !(res.has(x.type) && (a || b))) return;
+    if(a !== b && (mode === "dep" && !a || mode === "four" && !b)) return;
     [x.from, x.supplier].forEach(id => { if(!S.has(id) && !extra.includes(id)) extra.push(id); });
     F.push({group: "lever", links: [[x.supplier, x.from]], color: DEP, width: 1 + x.share / 14, dash: "1.5 6", round: true, arrow: true,
       nodes: [x.from, x.supplier], value: depShort(x), dep: x.type, tip: `${(D.actors[x.from] || {}).name} dépend de ${(D.actors[x.supplier] || {}).name} : ${depShort(x)}`,
       html: `<div class="who">${who(x.from)}<span class="k">dépend de</span>${who(x.supplier)}</div>
         <p>${depIcon(x.type, 15)} ${depText(x)}.</p>${tail(x)}`}); });
   F.forEach((f, i) => f.id = i);
-  return {F, extra}; }
+  return {F, extra, sens: {mode, nDep, nFour}}; }
 
 // ---------- Schéma : acteurs sur une ellipse, fixes ; plusieurs faits entre deux acteurs = traits écartés ----------
 // écran étroit : cadre plus étroit et plus haut, pour que les noms restent lisibles
@@ -385,7 +391,7 @@ const stroke = (c, o = {}) => `<svg width="30" height="8" aria-hidden="true"><pa
 const GROUPS = [["tension", "Qui s'affronte"], ["support", "Qui soutient qui, et pourquoi"], ["mediation", "Qui négocie"], ["lever", "Qui dépend de qui"]];
 const card = f => `<div class="fact">${f.html}</div>`;
 
-function render(){ const ids = scope(), {F, extra} = facts(ids), ok = ids.length >= 1 && ids.length + extra.length >= 2;
+function render(){ const ids = scope(), {F, extra, sens} = facts(ids), ok = ids.length >= 1 && ids.length + extra.length >= 2;
   const rs = SEL.filter(t => RES[t]);
   $("#chips").innerHTML = SEL.map((t, i) => `<span class="chip">${mark(t)}${label(t)}<button type="button" data-rm="${i}" aria-label="Retirer ${label(t)}">×</button></span>`).join("");
   panel();
@@ -394,11 +400,15 @@ function render(){ const ids = scope(), {F, extra} = facts(ids), ok = ids.length
     + rs.map(t => !ids.length ? `${label(t)} : ajoutez un pays pour voir ses dépendances. `
         : F.some(f => f.dep === RES[t]) ? `${label(t)} ajoute les pays liés à la sélection par cette ressource (contour pointillé). ` : `${label(t)} : aucune dépendance chiffrée pour cette sélection. `).join("")
     ;
+  $("#sens").hidden = !(sens.nDep || sens.nFour);   // toujours là dès qu'une ressource apporte des pays ; un sens vide est grisé
+  document.querySelectorAll("#sens button").forEach(b => { b.setAttribute("aria-pressed", b.dataset.s === (sens.nDep && sens.nFour ? sens.mode : sens.nDep ? "dep" : "four"));
+    b.disabled = b.dataset.s === "dep" ? !sens.nDep : b.dataset.s === "four" ? !sens.nFour : !(sens.nDep && sens.nFour);
+    b.title = b.disabled ? b.dataset.s === "tout" ? "Un seul sens existe pour cette sélection" : "Aucune dépendance dans ce sens pour cette sélection" : ""; });
   $("#reset").hidden = SEL.length < 2;
   const sug = ids.length ? suggest(ids) : [];
   $("#sug").innerHTML = sug.length ? "À croiser aussi : " + sug.map(x => `<button type="button" data-add="${esc(x.t)}">${mark(x.t)}${label(x.t)} <small>${x.n} lien${x.n > 1 ? "s" : ""}</small></button>`).join("") : "";
   $("#empty").hidden = ok; $("#out").hidden = !ok; $(".cross").classList.toggle("has", ok);
-  history.replaceState(null, "", location.pathname + (SEL.length ? "?e=" + SEL.join(",") + (VIEW === "map" ? "&v=carte" : VIEW === "communs" ? "&v=communs" : "") + (GRP == null ? "" : "&g=" + (GRP ? 1 : 0)) : ""));
+  history.replaceState(null, "", location.pathname + (SEL.length ? "?e=" + SEL.join(",") + (VIEW === "map" ? "&v=carte" : VIEW === "communs" ? "&v=communs" : "") + (GRP == null ? "" : "&g=" + (GRP ? 1 : 0)) + (SENS && rs.length ? "&s=" + SENS : "") : ""));
   document.querySelectorAll("#seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === VIEW));
   if(!ok) return;
   draw(ids, extra, F); communs(ids);
@@ -475,7 +485,8 @@ document.addEventListener("click", ev => { const t = ev.target;
   if($("#schema").dataset.dragged){ delete $("#schema").dataset.dragged; if(t.closest && t.closest("#schema")) return; }
   const add = t.closest && t.closest("[data-add]"); if(add){ ZM = null; if(!SEL.includes(add.dataset.add)) SEL.push(add.dataset.add); PICK = null; return render(); }
   if(!$("#panel").hidden && !(t.closest && (t.closest("#panel") || t.closest("#addbtn") || t.closest(".pick") || t.closest("#sug")))) toggle(false);
-  if(t.id === "reset"){ SEL = []; PICK = null; ZM = null; GRP = undefined; toggle(false); return render(); }
+  if(t.id === "reset"){ SEL = []; PICK = null; ZM = null; GRP = undefined; SENS = null; toggle(false); return render(); }
+  if(t.closest && t.closest("#sens button")){ SENS = t.closest("#sens button").dataset.s; PICK = null; ZM = null; return render(); }
   const ex = t.closest && t.closest("[data-ex]"); if(ex){ ev.preventDefault(); ZM = null; SEL = ex.dataset.ex.split(","); PICK = null; return render(); }
   if(t.dataset && t.dataset.fact != null){ PICK = {f: +t.dataset.fact}; detail(); return reveal(); }
   const rel = t.closest && t.closest(".rel"), node = t.closest && t.closest(".node");
@@ -518,6 +529,7 @@ def page(d):
 <div id="panel" hidden><input type="search" id="q" placeholder="Filtrer : un pays, un groupe, un conflit, une ressource" aria-label="Filtrer la liste" autocomplete="off">
 <div id="groups"></div><p class="none" id="noq" hidden>Aucun acteur ne correspond.</p></div></div>
 <p class="scope" id="scope"></p>
+<div class="seg" id="sens" role="group" aria-label="Sens des dépendances" hidden><button type="button" data-s="dep">Dépend de</button><button type="button" data-s="four">Fournit</button><button type="button" data-s="tout">Tout</button></div>
 <p class="sug" id="sug"></p>
 <div id="empty"><div class="ex"><span class="quiet">Pour commencer :</span>{examples}</div></div>
 <div id="out" hidden>
