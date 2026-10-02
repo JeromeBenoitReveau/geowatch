@@ -35,7 +35,7 @@ CSS = """
 #q{font:15px var(--sans);color:var(--ink);background:var(--paper);border:1px solid var(--mist);border-radius:4px;padding:7px 10px;width:100%;max-width:340px}
 #groups h3{font:500 13.5px var(--sans);color:var(--graphite);margin:14px 0 7px}
 #groups .g{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
-#groups button{display:inline-flex;align-items:center;gap:6px;font:14px var(--sans);color:var(--ink);background:none;border:1px solid var(--mist);border-radius:4px;padding:4px 9px;cursor:pointer}
+#groups button{display:inline-flex;align-items:center;gap:6px;text-align:left;font:14px var(--sans);color:var(--ink);background:none;border:1px solid var(--mist);border-radius:4px;padding:4px 9px;cursor:pointer}
 #groups button:hover{border-color:var(--peach)}#groups button:disabled{color:var(--graphite);opacity:.45;cursor:default;border-color:var(--mist)}
 #groups img{width:15px;height:15px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px var(--mist)}
 .scope{font-size:13.5px;color:var(--graphite);margin:0;min-height:1.6em}
@@ -43,7 +43,7 @@ CSS = """
 .scope button:hover{text-decoration-style:solid}
 .sug{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:13.5px;color:var(--graphite);margin:6px 0 0}
 .sug:empty{display:none}
-.sug button{display:inline-flex;align-items:center;gap:6px;font:14px var(--sans);color:var(--ink);background:none;border:1px dashed var(--graphite);border-radius:4px;padding:4px 9px;cursor:pointer}
+.sug button{display:inline-flex;align-items:center;gap:6px;text-align:left;font:14px var(--sans);color:var(--ink);background:none;border:1px dashed var(--graphite);border-radius:4px;padding:4px 9px;cursor:pointer}
 .sug button:hover{border-color:var(--peach);border-style:solid}.sug button::before{content:"+";color:var(--graphite)}
 .sug img{width:15px;height:15px;border-radius:50%;object-fit:cover}.sug small{color:var(--graphite);font-size:12px}
 .ex{display:flex;flex-direction:column;gap:10px;margin:28px 0 0;font-size:16px}
@@ -77,6 +77,8 @@ CSS = """
 .pc td{text-align:center;border-top:1px solid var(--mist);padding:7px 4px;font-variant-numeric:tabular-nums}
 .pc td.v{border:2px solid var(--paper);border-radius:4px}.pc td.x{color:var(--graphite)}
 .pc .dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--ink)}
+@media (max-width:599px){.bar{flex-wrap:wrap}#seg{flex-wrap:nowrap}#seg button{padding:6px 9px}
+.pc{font-size:13px}.pc th{white-space:normal;padding-right:8px}.pc th.c{min-width:50px;padding:0 2px 8px}.pc td{padding:7px 2px}}
 .fr{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:0 18px;align-items:center}
 .fr .track{position:relative;height:100%;min-height:38px}
 .fr.axis .track{min-height:22px}.fr .yr{position:absolute;top:0;transform:translateX(-50%);font-size:12px;color:var(--graphite);font-variant-numeric:tabular-nums}
@@ -421,7 +423,7 @@ function render(){ const ids = scope(), {F, extra, sens} = facts(ids), ok = ids.
   $("#schema").style.display = flat2 ? "none" : ""; $("#communs").hidden = VIEW !== "communs"; if(flat2) $("#zoom").hidden = true;
   ["#legend", "#aside", "#bridges", "#detail"].forEach(q => $(q).style.display = VIEW === "communs" ? "none" : "");
   const outs = F.filter(f => f.out);
-  $("#aside").innerHTML = outs.length ? "Hors sélection : " + outs.map(f => `<button type="button" data-fact="${f.id}">${nm(f.mediator)}, médiateur entre ${nm(f.nodes[0])} et ${nm(f.nodes[1])}</button>`).join(" ; ") + "." : "";
+  $("#aside").innerHTML = outs.length ? "Hors sélection : " + outs.map(f => `<button type="button" data-fact="${f.id}">${nm(f.mediator)}, médiateur entre ${nm(f.nodes[0])} et ${nm(f.nodes[1])}</button>`).join(" ; ") : "";
   BR = bridges(ids, extra, F);
   $("#bridges").innerHTML = BR.length ? "Reliés aussi par : " + BR.map((x, i) => `<button type="button" data-add="${esc(x.c)}" data-bridge="${i}" title="${esc(x.near.map(a => D.actors[a].name + " (" + bridgeWhy(x, a) + ")").join(" ; "))}">${img(x.c)}${nm(x.c)} <small>${x.near.map(nm).join(", ")}</small></button>`).join("") : "";
   const has = g => F.some(f => f.group === g && !f.out), sup = [...new Set(F.filter(f => f.group === "support").map(f => f.color))];

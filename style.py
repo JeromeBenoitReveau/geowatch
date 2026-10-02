@@ -81,6 +81,8 @@ a.term.q:hover{border-color:var(--peach);color:var(--ink)}
 .notes li{break-inside:avoid;margin:0 0 6px}.notes li:target{color:var(--ink)}.notes .fix{margin:28px 0 0;font-size:15px;color:var(--ink)}
 footer{border-top:1px solid var(--mist);margin-top:64px;padding:20px 0 40px;font-size:13.5px;color:var(--graphite)}
 @media (max-width:760px){h1{font-size:34px}.lede{font-size:19px}.notes ol{columns:1}.menus{gap:18px}}
+/* téléphone : le menu tient sur une ligne, sans couper « Vue d'ensemble » ni « À propos » */
+@media (max-width:480px){.menus{gap:11px;font-size:13.5px;flex-wrap:wrap}.menus .menu-link,.menu summary{white-space:nowrap}.menu summary{gap:4px}.top{position:relative}.top .theme{position:absolute;top:26px;right:0}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 """
 
