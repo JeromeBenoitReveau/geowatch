@@ -19,7 +19,7 @@ CSS = """
 .conflict .vs img,.conflict .vs .ns{width:16px;height:16px;border-radius:50%;object-fit:cover;flex:none;box-shadow:0 0 0 1px var(--mist)}
 .conflict .vs .ns{display:inline-flex;align-items:center;justify-content:center;background:var(--graphite);color:var(--paper)}
 .conflict .vs .vs-x{color:var(--graphite)}
-.conflict p.lede1{margin:0;font-size:14px;line-height:1.45;color:var(--graphite);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.conflict p.lede1{margin:0;font-size:14px;line-height:1.45;color:var(--graphite)}  /* jamais coupé : le résumé est écrit pour tenir */
 .crossq{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .crossq .card{padding:16px 18px}.crossq h3{font-size:17px;margin:0}.crossq p{margin:4px 0 0;font-size:14px;color:var(--graphite)}
 .crossq .marks{display:flex;align-items:center;gap:6px;margin:0 0 10px;min-height:20px}
@@ -92,7 +92,8 @@ def camp_marks(side, d):
 
 def conflict_row(x, d):
     names = [s["name"] for s in x["sides"]]
-    first = " ".join(x["lede"].split()).split(". ")[0].rstrip(".") + "."
+    # résumé court rédigé pour la carte (champ card) ; à défaut, la première phrase du dossier
+    first = x.get("card") or " ".join(x["lede"].split()).split(". ")[0].rstrip(".") + "."
     return f"""<a class="card conflict" href="{e(x['id'])}.html">
 <svg class="wm" role="img" aria-label="Carte de la région : pays en guerre et soutiens étrangers" data-map='{e(json.dumps(conflict_map(x, d)))}'></svg>
 <div class="body"><h3>{e(x['title'])}</h3>

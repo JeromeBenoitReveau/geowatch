@@ -3,6 +3,7 @@
 # Chaque paragraphe cite ses sources ; une interprétation (« pourquoi ») est attribuée à qui la formule.
 #
 # id        : nom de la page (site/<id>.html)
+# card      : résumé court de la carte d'accueil, écrit pour tenir en entier (≤ 130 caractères), tiré du texte du dossier
 # sides     : les camps ; actors = ids de network.yaml. Soutiens ET dirigeant (champ leader) lus dans le graphe.
 # people    : « Les personnes qui comptent » : [{who: id du registre people (fin du fichier), role, text, sources}] ;
 #             les dirigeants des camps et les médiations (network.yaml) s'y ajoutent d'eux-mêmes
@@ -14,6 +15,7 @@
 dossiers:
   - id: soudan
     title: La guerre au Soudan
+    card: "Depuis 2023, deux anciens alliés se disputent le pays ; près de 14 millions de personnes ont fui."
     since: "2023-04"
     verified: 2026-09
 
@@ -183,6 +185,7 @@ dossiers:
 
   - id: ukraine
     title: La guerre en Ukraine
+    card: "Depuis 2022, la Russie envahit son voisin et occupe environ 20 % de son territoire."
     since: "2022-02"
     verified: 2026-09
 
@@ -352,6 +355,7 @@ dossiers:
 
   - id: iran
     title: La guerre entre Israël, les États-Unis et l'Iran
+    card: "Frappes israélo-américaines en février 2026, riposte iranienne ; un cessez-le-feu fragile tient depuis avril."
     since: "2026-02"
     verified: 2026-09
 
@@ -531,6 +535,7 @@ dossiers:
 
   - id: gaza
     title: La guerre à Gaza
+    card: "1 200 morts en Israël le 7 octobre 2023, plus de 70 000 à Gaza depuis ; un cessez-le-feu tient depuis octobre 2025."
     since: "2023-10"
     verified: 2026-09
 

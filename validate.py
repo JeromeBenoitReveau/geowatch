@@ -184,6 +184,10 @@ def check_dossiers(dossiers, actors, edges):
                 errors.append(f"dossier {k} : champ {f} manquant")
         if len(x.get("sides") or []) != 2:
             errors.append(f"dossier {k} : il faut exactement deux camps (sides)")
+        if not x.get("card"):
+            warnings.append(f"dossier {k} : pas de résumé court (card) pour la carte d'accueil")
+        elif len(x["card"]) > 130:
+            errors.append(f"dossier {k} : card trop long ({len(x['card'])} caractères, 130 au plus) — il serait coupé sur l'accueil")
         if not has_url(x.get("lede_sources")):
             errors.append(f"dossier {k} : lede_sources avec URL requises")
         for f in ("origins", "toll", "now", "history"):

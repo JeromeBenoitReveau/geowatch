@@ -97,7 +97,11 @@ actors:
   m23: {name: AFC/M23, kind: non_state, base: CD}
   houthis:  {name: Houthis (Ansar Allah), kind: non_state, base: YE}
   hezbollah: {name: Hezbollah, kind: non_state, base: LB}
-  hamas: {name: Hamas, kind: non_state, base: PS}
+  hamas: {name: Hamas, kind: non_state, base: PS,
+          leader: {name: "Khalil al-Hayya", wikidata: Q12210796,
+                   role: "Chef du bureau politique du Hamas, élu le 20 juillet 2026",
+                   sources: ["Al Jazeera, « Who is Khalil al-Hayya, Hamas's newly elected political chief? » (juill. 2026) — https://www.aljazeera.com/news/2026/7/20/who-is-khalil-al-hayya-hamas-newly-elected-political-chief",
+                             "France 24, « Who is Khalil al-Hayya, Hamas's new leader? » (juill. 2026) — https://www.france24.com/en/middle-east/20260720-who-is-khalil-al-hayya-hamas-s-new-leader"]}}
   pij: {name: Jihad islamique palestinien, kind: non_state, base: PS}
   kataib_hezbollah: {name: Kataeb Hezbollah, kind: non_state, base: IQ}
   jnim: {name: JNIM (Groupe de soutien à l'islam et aux musulmans), kind: non_state, base: ML,
