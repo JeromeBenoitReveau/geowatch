@@ -177,7 +177,7 @@ Premier type : la part d'un fournisseur dans les importations d'armes majeures d
 C'est une part des <i>importations</i>, pas de tout l'armement : pour un grand exportateur (États-Unis, Allemagne, Chine,
 Israël, Royaume-Uni), une note le rappelle.
 Énergie et ressources : part d'un fournisseur dans les importations de gaz (Conseil de l'UE), de pétrole (Reuters/Kpler,
-Eurostat), de terres rares (USGS) ou de blé (USDA). Les sources sont plus dispersées que pour les armes : seules les parts
+Eurostat, agence américaine d'information sur l'énergie), de minerais critiques (USGS : terres rares, antimoine, graphite, lithium, gallium, germanium), d'uranium (Agence d'approvisionnement d'Euratom) ou de blé (USDA). Les sources sont plus dispersées que pour les armes : seules les parts
 publiées ou calculables à partir de volumes publiés sont retenues, et une part calculée le dit dans sa note.
 Dette : part d'un créancier dans la dette extérieure publique et garantie par l'État (PPG) d'un pays, encours fin 2024,
 calculée à partir de la base <a href="https://datatopics.worldbank.org/debt/ids/">International Debt Statistics</a> de la
