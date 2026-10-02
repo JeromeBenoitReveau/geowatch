@@ -4,7 +4,7 @@ import re, sys
 from datetime import date
 import network
 
-KINDS = {"state", "non_state", "bloc", "party", "person", "company"}
+KINDS = {"state", "non_state", "bloc", "party", "person", "company", "passage"}
 TYPES = {"arms", "financial", "training", "troops", "intelligence", "political", "economic", "dual_use", "service"}
 STATUSES = {"active", "reduced", "ended", "alleged"}
 CONFIDENCES = {"high", "medium", "low"}
@@ -31,6 +31,14 @@ def check(actors, edges, today=None, aligns=None):
             warnings.append(f"acteur {aid} : non étatique sans base ISO2 (pas de fiche pays hôte)")
         if a.get("kind") in ("party", "person", "company") and not re.fullmatch(r"[A-Z]{2}", str(a.get("base", ""))):
             errors.append(f"acteur {aid} : un parti, une personne ou une entreprise doit avoir une base ISO2 (pays d'ancrage)")
+        if a.get("kind") == "passage":
+            if a.get("coords") is None:
+                errors.append(f"acteur {aid} : un passage doit avoir des coords [lat, lon]")
+            for r in a.get("riparian") or []:
+                if actors.get(r, {}).get("kind") != "state":
+                    errors.append(f"acteur {aid} : riverain « {r} » n'est pas un État de actors")
+            if not (a.get("sources") and all("http" in str(x) for x in a["sources"])):
+                errors.append(f"acteur {aid} : un passage doit citer ses sources avec URL")
         if a.get("wikidata") is not None and not re.fullmatch(r"Q\d+", str(a["wikidata"])):
             errors.append(f"acteur {aid} : wikidata doit être un identifiant Qxxx")
         c = a.get("coords")

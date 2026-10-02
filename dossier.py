@@ -179,7 +179,7 @@ def fractures(dos, d, g, cite):
     if not ts:
         return ""
     name = lambda a: e(d["actors"][a]["name"])
-    label = {"war": "Guerre", "sanctions": "Sanctions", "claims": "Revendication territoriale", "rivalry": "Rivalité", "trade_war": "Guerre commerciale"}
+    label = {"war": "Guerre", "sanctions": "Sanctions", "claims": "Revendication territoriale", "rivalry": "Rivalité", "trade_war": "Guerre commerciale", "blockade": "Entrave à la navigation"}
     link = lambda t: f"{name(t['from'])} {'→' if t['type'] in ('sanctions', 'claims') else 'et'} {name(t['to'])}"
     when = lambda t: ", ".join(x for x in (f"depuis {fr_date(t['since'])}" if t.get("since") else "",
                                             "trêve ou cessez-le-feu" if t["status"] == "reduced" else "") if x)

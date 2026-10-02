@@ -27,7 +27,7 @@ def dependencies():
 DEPENDENCY_TYPES = {"arms": "armes", "gas": "gaz", "oil": "pétrole", "minerals": "minerais", "food": "denrées", "debt": "dette", "trade": "commerce", "chips": "puces", "electricity": "électricité"}
 
 TENSION_TYPES = {"war": "guerre", "sanctions": "sanctionne", "claims": "revendique un territoire de", "rivalry": "rivalité avec",
-                 "trade_war": "guerre commerciale avec"}
+                 "trade_war": "guerre commerciale avec", "blockade": "entrave la navigation dans"}
 
 def leader(actors, aid):
     """Dirigeant d'un acteur : {name, role, sources, photo_key, actor} ou None. Le champ leader est soit un dict
@@ -83,7 +83,7 @@ def influence(actors, edges, al):
         tied = [g["id"] for g in ties.get(aid, [])]
         pb = best(aid)
         via_all = sorted({e["from"] for e in edges if e["to"] == aid and e["status"] == "active"})
-        if a["kind"] in ("party", "person", "company"):   # jamais classés dans un bloc
+        if a["kind"] in ("party", "person", "company", "passage"):   # jamais classés dans un bloc
             out[aid] = {"bloc": None, "role": "none", "level": 0, "via": [], "ties": tied}
         elif pb:
             top = max(pb.values())

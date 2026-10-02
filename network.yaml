@@ -2,8 +2,10 @@
 # Mise à jour : `python update_network.py IR` propose des changements dans
 # network.pending.yaml → tu relis → tu reportes ici. Rien n'est ajouté sans relecture.
 #
-# kind   : state | non_state | bloc | party | person | company
+# kind   : state | non_state | bloc | party | person | company | passage
 # base   : pays d'ancrage (ISO2) — obligatoire pour non_state, party, person, company
+# passage : détroit ou canal dont dépend le commerce mondial ; `coords` obligatoires, `riparian` = États riverains (ils le bordent,
+#           ils ne le « détiennent » pas : un détroit international n'appartient pas à ses riverains)
 # company : entreprise qui pèse sur un conflit par une ACTION documentée (service, arme, plateforme), jamais par sa seule taille
 # member_of : blocs dont l'État est membre (ex. [EU]) — sert au « zoom » sur un bloc
 # wikidata : identifiant Qxxx (personnes) — sert à récupérer la photo sur Wikimedia Commons
@@ -75,6 +77,8 @@ actors:
   ET: {name: Éthiopie, kind: state}
   CD: {name: RD Congo, kind: state}
   RW: {name: Rwanda, kind: state}
+  OM: {name: Oman, kind: state}
+  DJ: {name: Djibouti, kind: state}
   ML: {name: Mali, kind: state,
        leader: {name: Assimi Goïta, wikidata: Q98497406, role: "Chef de la junte, au pouvoir depuis le coup d'État de 2020",
                 sources: ["Al Jazeera, le Mali fête son indépendance en pleine crise sécuritaire (sept. 2026) — https://www.aljazeera.com/news/2026/9/22/mali-marks-independence-amid-a-worsening-security-crisis"]}}
@@ -97,6 +101,13 @@ actors:
   musk: {name: Elon Musk, kind: person, base: US, note: "Propriétaire de X, SpaceX, Tesla", wikidata: Q317521}
   spacex: {name: SpaceX (Starlink), kind: company, base: US, leader: musk,
            note: "Entreprise spatiale américaine ; son réseau de satellites Starlink fournit un accès à Internet, y compris sur le front ukrainien"}
+  ormuz: {name: Détroit d'Ormuz, kind: passage, coords: [26.6, 56.5], riparian: [IR, OM],
+          note: "Entre l'Iran et Oman, à la sortie du golfe Persique ; sa partie la plus étroite est dans leurs eaux territoriales. En 2024, 20 millions de barils de pétrole y passaient chaque jour, soit environ 20 % de la consommation mondiale et plus du quart du commerce maritime de pétrole, ainsi qu'un cinquième du gaz naturel liquéfié. 84 % du pétrole brut qui y passe va en Asie ; la Chine, l'Inde, le Japon et la Corée du Sud en reçoivent 69 % à eux quatre",
+          sources: ["Agence américaine d'information sur l'énergie (EIA), le détroit d'Ormuz reste un point de passage critique du pétrole (juin 2025) — https://eia.gov/todayinenergy/detail.php?id=65504",
+                    "Bibliothèque de la Chambre des communes, « Reopening the Strait of Hormuz » (juin 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10636/"]}
+  bab_el_mandeb: {name: Détroit de Bab el-Mandeb, kind: passage, coords: [12.58, 43.33], riparian: [YE, DJ],
+                  note: "Entre le Yémen et Djibouti, à l'entrée sud de la mer Rouge, sur la route du canal de Suez. Par la mer Rouge passent environ 12 % du commerce mondial, 30 % du trafic de conteneurs et 15 % du pétrole transporté par mer. Les attaques ont fait perdre à l'Égypte 30 à 40 % de ses 9,4 milliards de dollars de recettes annuelles du canal de Suez",
+                  sources: ["Africa Center for Strategic Studies, l'emprise des Houthis sur la mer Rouge et ses effets en Afrique (sept. 2026) — https://africacenter.org/spotlight/2026-houthi-red-sea-threats/"]}
   palantir: {name: Palantir, kind: company, base: US,
              leader: {name: Alex Karp, wikidata: Q19560940, role: "Cofondateur et patron de Palantir", sources: ["Bloomberg, Palantir et Israël concluent un partenariat stratégique (janv. 2024), reproduit par Palantir — https://www.palantir.com/assets/xrfr7uokpv1b/3MuEeA8MLbLDAyxixTsiIe/9e4a11a7fb058554a8a1e3cd83e31c09/C134184_finaleprint.pdf"]},
              note: "Entreprise américaine d'analyse de données, qui fournit des logiciels d'intelligence artificielle à des armées"}
@@ -585,6 +596,13 @@ tensions:
                "Al Jazeera, entrée en vigueur de la riposte canadienne (sept. 2026) — https://www.aljazeera.com/news/2026/9/8/canadas-retaliatory-tariffs-on-20bn-of-us-goods-take-effect",
                "Al Jazeera, des responsables américains et les séparatistes de l'Alberta (janv. 2026) — https://www.aljazeera.com/news/2026/1/30/are-trump-officials-driving-albertas-separatist-movement-in-canada"],
      verified: 2026-10, note: "Droits de douane américains à partir de février-mars 2025. Échec des négociations le 21 août 2026 : 50 % de droits américains sur 20 milliards de dollars de produits canadiens, riposte canadienne équivalente en vigueur depuis le 8 septembre ; Washington invoque un « traitement discriminatoire » des produits américains, Mark Carney dit avoir « quitté la table d'un mauvais accord ». Le 29 septembre, les États-Unis interdisent l'importation de produits laitiers, de motos et d'alcools canadiens. Donald Trump évoque à plusieurs reprises le Canada comme « 51e État » ; Mark Carney dit avoir examiné le risque d'une attaque américaine, qu'il juge extrême et très peu probable. Le mouvement séparatiste Alberta Prosperity Project a rencontré au moins trois fois des responsables américains à Washington depuis avril 2025 et demandé une ligne de crédit de 500 milliards de dollars ; le secrétaire américain au Trésor, Scott Bessent, a dit qu'il fallait laisser l'Alberta « descendre vers les États-Unis ». Washington affirme qu'aucun soutien ni engagement n'a été donné ; Mark Carney demande le respect de la souveraineté canadienne"}
+  - {from: IR, to: ormuz, type: blockade, since: "2026-03", status: active, confidence: high,
+     sources: ["Al Jazeera, comment une chute de 95 % du trafic à Ormuz a changé le transport maritime mondial (août 2026) — https://www.aljazeera.com/news/2026/8/27/how-a-95-percent-drop-in-hormuz-traffic-changed-global-shipping",
+               "Bibliothèque de la Chambre des communes, « Reopening the Strait of Hormuz » (juin 2026) — https://commonslibrary.parliament.uk/research-briefings/cbp-10636/"],
+     verified: 2026-10, note: "Les Gardiens de la révolution annoncent la fermeture du détroit le 2 mars 2026, deux jours après les premières frappes américaines et israéliennes ; l'Iran ne laisse passer que les navires d'États qu'il juge « non hostiles ». Le trafic tombe d'une centaine de navires par jour à environ cinq. Un accord provisoire le remonte à une vingtaine le 17 juin, avant un retour à cinq à la mi-juillet. Les États-Unis imposent depuis le 13 avril un contre-blocus des ports iraniens. Au Conseil de sécurité de l'ONU, la Chine et la Russie ont opposé leur veto, le 7 avril, à une résolution sur la protection de la navigation ; le Pakistan mène la médiation"}
+  - {from: houthis, to: bab_el_mandeb, type: blockade, since: "2023-11", status: active, confidence: high,
+     sources: ["Africa Center for Strategic Studies, l'emprise des Houthis sur la mer Rouge et ses effets en Afrique (sept. 2026) — https://africacenter.org/spotlight/2026-houthi-red-sea-threats/"],
+     verified: 2026-10, note: "530 attaques contre des navires en deux ans à partir de novembre 2023, puis une accalmie ; les Houthis reprennent leurs attaques en mer Rouge et dans le golfe d'Aden en juillet 2026 (12 attaques ou tentatives recensées)"}
   - {from: US, to: MX, type: trade_war, since: "2025-02", status: active, confidence: high,
      sources: ["Service de recherche du Congrès américain, « Mexico: Background and Key Issues in U.S. Relations » (févr. 2026) — https://www.congress.gov/crs_external_products/R/PDF/R48859/R48859.1.pdf",
                "Al Jazeera, Sheinbaum et les négociations commerciales avec Washington (sept. 2026) — https://www.aljazeera.com/news/2026/9/18/mexicos-sheinbaum-says-she-spoke-with-trump-as-trade-negotiations-continue"],

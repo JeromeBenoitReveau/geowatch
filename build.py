@@ -236,9 +236,9 @@ const $ = s => document.querySelector(s);
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl = u => /^(https?:\/\/|photos\/[\w.-]+$)/.test(u||"") ? esc(u) : "#";
 const nm = id => esc((D.actors[id]||{}).name || id);
-const KIND = {state:"État", non_state:"acteur armé non étatique", bloc:"bloc", party:"parti politique", person:"personnalité", company:"entreprise"};
+const KIND = {state:"État", non_state:"acteur armé non étatique", bloc:"bloc", party:"parti politique", person:"personnalité", company:"entreprise", passage:"point de passage"};
 const SHAPE = {non_state:"diamond", party:"square", person:"triangle", company:"hexagon"};
-const DETAIL = new Set(["party","person","company"]);
+const DETAIL = new Set(["party","person","company","passage"]);
 // drapeau : champ flag de l'acteur (territoire sans code pays), sinon flag-icons d'après le code ISO2
 const flag = id => (D.actors[id] || {}).flag || `https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/${id.toLowerCase()}.svg`;
 const CONTESTED = "#c98a1b";
@@ -247,7 +247,8 @@ const GLYPH = {
   non_state: '<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/>',
   party: '<path d="m9 12 2 2 4-4"/><path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v12H5V7Z"/><path d="M22 19H2"/>',
   person: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
-  company: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>'};
+  company: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>',
+  passage: '<path d="M12 22V8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/><circle cx="12" cy="5" r="3"/>'};
 const badge = (kind, bg) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 36 36"><circle cx="12" cy="12" r="18" fill="${bg}"/>` +
   `<g fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${GLYPH[kind]}</g></svg>`);
@@ -404,7 +405,7 @@ function tiers(id){ const gs = D.align.groups.filter(g => g.entity===id);
     <span class="mute">${g.members.map(cname).join(", ")}${g.note ? "<br>"+esc(g.note) : ""}<br>${g.sources.map(src).join(", ")}</span></div>`).join("") : ""; }
 const fg = getComputedStyle(document.body).color;
 const outCount = id => D.edges.filter(e=>e.from===id && e.status!=="ended").length;
-const layer = id => { const k = D.actors[id].kind; return k==="state"||k==="bloc" ? "core" : k==="company" ? "person" : k; };   // les entreprises partagent le calque des personnalités  // core, non_state, party, person
+const layer = id => { const k = D.actors[id].kind; return k==="state"||k==="bloc" ? "core" : k==="company" || k==="passage" ? "person" : k; };   // les entreprises partagent le calque des personnalités  // core, non_state, party, person
 const checked = (grp, v) => { const i = document.querySelector(`#rel-filters input[data-g="${grp}"][value="${v}"]`); return !i || i.checked; };
 const visible = l => checked("kind", l);
 const supportOn = e => e.types.some(t => checked("type", t));
@@ -459,7 +460,8 @@ const TENSION = {war:{label:"guerre", color:"#b91c1c", width:3.2, dashes:false, 
   sanctions:{label:"sanctionne", color:"#7c3aed", width:1.8, dashes:[8,5], arrows:"to"},
   claims:{label:"revendique", color:"#d97706", width:1.8, dashes:[3,4], arrows:"to"},
   rivalry:{label:"rivalité", color:"#64748b", width:1.8, dashes:[10,6], arrows:""},
-  trade_war:{label:"guerre commerciale", color:"#be185d", width:1.8, dashes:[12,4,2,4], arrows:""}};
+  trade_war:{label:"guerre commerciale", color:"#be185d", width:1.8, dashes:[12,4,2,4], arrows:""},
+  blockade:{label:"entrave la navigation", color:"#0f766e", width:2.2, dashes:[2,5], arrows:"to"}};
 const TS = D.tensions || [], BG = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
 const tensionTitle = t => `${(D.actors[t.from]||{}).name||t.from} ${t.type==="war"||t.type==="rivalry"||t.type==="trade_war" ? "⟷" : "→"} ${(D.actors[t.to]||{}).name||t.to} : ${TENSION[t.type].label}${t.status==="reduced" ? " (trêve ou cessez-le-feu)" : ""} (${dated(t)})`;
 const tensionEdges = TS.map((t,i) => { const s = TENSION[t.type];
@@ -500,7 +502,7 @@ const Q = id => GL[id] ? `<a class="term q" href="glossaire.html#${id}" target="
 // ---------- Légende-filtres (barre de gauche) : soutiens, tensions, acteurs ----------
 const TYPES_FR = {arms:"armes", troops:"troupes", financial:"argent", training:"entraînement", intelligence:"renseignement",
   political:"politique", economic:"économique", dual_use:"double usage", service:"service stratégique"};
-const TYPE_TERM = {dual_use:"double-usage"}, TENSION_TERM = {war:"guerre", sanctions:"sanctions", claims:"revendication", rivalry:"rivalite", trade_war:"guerre-commerciale"};
+const TYPE_TERM = {dual_use:"double-usage"}, TENSION_TERM = {war:"guerre", sanctions:"sanctions", claims:"revendication", rivalry:"rivalite", trade_war:"guerre-commerciale", blockade:"entrave-navigation"};
 // vue simplifiée par défaut (lisible au premier coup d'œil) ; « tout afficher » en un clic
 // (moins de 15 relations : les guerres et les troupes engagées ; les questions en haut de la vue mènent plus loin)
 const SIMPLE = {type: ["troops"], tension: ["war"], kind: ["core", "non_state"], med: [], dep: []};
@@ -533,7 +535,7 @@ const glyph = k => k==="core"
     ${row("med", "on", stroke(MED.color, {w: MED.width, dash: MED.dashes.join(" "), arrow: false}), "négocie entre deux camps")}</div>
   <div class="fg" style="margin-top:14px">${head(`Acteurs${Q("acteur")}`, "kind")}
     ${row("kind", "core", glyph("core"), "États et blocs (drapeau)")}${row("kind", "non_state", glyph("non_state"), "groupes armés")}
-    ${row("kind", "party", glyph("party"), "partis")}${row("kind", "person", glyph("person"), "personnalités et entreprises")}
+    ${row("kind", "party", glyph("party"), "partis")}${row("kind", "person", glyph("person"), "personnalités, entreprises, passages")}
     <div class="contour graph-only">Couleur du contour : ${T("bloc", "bloc d'influence")}. ${Object.values(BLOCS).map(b =>
       `<span class="key"><i style="background:${b.color}"></i>${esc(b.name)}</span>`).join("")}<span class="key"><i style="background:${CONTESTED}"></i>${T("dispute", "disputé")}</span></div></div>`;
   box.addEventListener("click", ev => { const b = ev.target.closest("button[data-all],button[data-none]"); if(!b) return;
@@ -991,7 +993,8 @@ function show(id){
       : `<b data-id="${esc(m.mediator)}">${nm(m.mediator)}</b> négocie avec ${m.between.filter(b => b !== id).map(b => `<b data-id="${esc(b)}">${nm(b)}</b>`).join("")}`}
     ${m.why ? `<div>${esc(m.why)}</div>` : ""}<div class="mute">${esc(dated(m))}. ${m.note ? esc(m.note) + ". " : ""}Sources : ${(m.sources||[]).map(src).join(", ")}</div></div>`).join("");
   if(tens.length) h += `<h2>Tensions${Q("tension")}</h2>` + tens.map(t => { const other = t.from===id ? t.to : t.from, s = TENSION[t.type];
-    const verb = t.type==="sanctions" ? (t.from===id ? "sanctionne" : "sanctionné par") : t.type==="claims" ? (t.from===id ? "revendique un territoire de" : "territoire revendiqué par") : s.label + " avec";
+    const verb = t.type==="sanctions" ? (t.from===id ? "sanctionne" : "sanctionné par") : t.type==="claims" ? (t.from===id ? "revendique un territoire de" : "territoire revendiqué par")
+      : t.type==="blockade" ? (t.from===id ? "entrave la navigation dans" : "navigation entravée par") : s.label + " avec";
     return `<div class="rel"><b style="color:${s.color}">■</b> ${esc(verb[0].toUpperCase() + verb.slice(1))} <b data-id="${esc(other)}">${nm(other)}</b>
       <div class="mute">${t.status==="reduced" ? "trêve ou cessez-le-feu · " : ""}${esc(dated(t))} · ${(t.sources||[]).map(src).join(", ")}${t.note ? "<br>"+esc(t.note) : ""}</div></div>`; }).join("");
   if(p){ const g=p.government||{}, t=p.population_trend, wb=!!p.population;

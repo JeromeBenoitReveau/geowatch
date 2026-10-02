@@ -49,7 +49,7 @@ def page(d):
     kind_fr = {"state": ("État", "États"), "bloc": ("bloc", "blocs"),
                "non_state": ("groupe armé non étatique", "groupes armés non étatiques"),
                "party": ("parti", "partis"), "person": ("personnalité", "personnalités"),
-               "company": ("entreprise", "entreprises")}
+               "company": ("entreprise", "entreprises"), "passage": ("point de passage", "points de passage")}
     role_fr = {"member": ("membre", "membres"), "satellite": ("satellite", "satellites"),
                "contested": ("disputé", "disputés"), "none": ("non classé", "non classés")}
     fr = lambda table, k, n: table.get(k, (k, k))[n > 1]

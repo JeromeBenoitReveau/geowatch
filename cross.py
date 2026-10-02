@@ -127,11 +127,14 @@ ART = {**dict.fromkeys(("GB DK VE QA GY CA MX BR YE MA somaliland SD RW ML BF NE
        **dict.fromkeys("RU CN KP FR SE TR LY SY SO CD MM".split(), "la"),
        **dict.fromkeys("IR UA IN DE AR DZ EG SA ER ET EU afd lna m23".split(), "l'"),
        **dict.fromkeys("US NL AE rsf houthis".split(), "les"),
-       **dict.fromkeys("IL TW CU trump vance musk spacex palantir alshabab".split(), "")}
+       **dict.fromkeys("IL TW CU OM DJ trump vance musk spacex palantir alshabab".split(), ""),
+       "ormuz": "le", "bab_el_mandeb": "le"}
 
 def forms(k, a):
     """Nom court (sans parenthèse) avec son article, et ses formes après « de » et « à »."""
     short, art = a["name"].split(" (")[0], ART.get(k, "")
+    if a["kind"] == "passage":   # « le détroit d'Ormuz » : nom commun, minuscule dans une phrase
+        short = short[0].lower() + short[1:]
     the = art + short if art.endswith("'") else f"{art} {short}".strip()
     return {"the": the, "de": style.de(the), "a": style.a(the), "pl": art == "les"}
 
@@ -156,7 +159,7 @@ def data(d):
     unga = d.get("unga") or {}
     agree = {f"{min(by3[a], by3[b])}|{max(by3[a], by3[b])}": v for a, row in (unga.get("pairs") or {}).items()
              for b, v in row.items() if a in by3 and b in by3}
-    return {"actors": {k: {"name": a["name"], "kind": a["kind"], **forms(k, a), **({"flag": a["flag"]} if a.get("flag") else {})} for k, a in d["actors"].items()}, "pos": pos, "num": num,
+    return {"actors": {k: {"name": a["name"], "kind": a["kind"], **forms(k, a), **({"riparian": a["riparian"], "note": a.get("note"), "sources": a.get("sources")} if a.get("riparian") else {}), **({"flag": a["flag"]} if a.get("flag") else {})} for k, a in d["actors"].items()}, "pos": pos, "num": num,
             "orgs": [o for o in orgs if len(o["members"]) >= 2], "agree": agree, "agree_year": unga.get("agreement_year"),
             "edges": live(d["edges"]), "tensions": live(d["tensions"]), "mediations": live(d["mediations"]),
             "dependencies": live(d["dependencies"]), "colors": d["colors"], "people": people,
@@ -175,7 +178,8 @@ const GLYPH = {
   non_state: '<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/>',
   party: '<path d="m9 12 2 2 4-4"/><path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v12H5V7Z"/><path d="M22 19H2"/>',
   person: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
-  company: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>'};
+  company: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>',
+  passage: '<path d="M12 22V8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/><circle cx="12" cy="5" r="3"/>'};
 const badge = (kind, bg) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 36 36"><circle cx="12" cy="12" r="18" fill="${bg}"/>` +
   `<g fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${GLYPH[kind]}</g></svg>`);
@@ -195,7 +199,8 @@ const TENSION = {war:{label:"Guerre", color:"#b91c1c", width:4, dash:null, arrow
   sanctions:{label:"Sanctions", color:"#7c3aed", width:2, dash:"8 5", arrow:true},
   claims:{label:"Revendication", color:"#d97706", width:2, dash:"3 4", arrow:true},
   rivalry:{label:"Rivalité", color:"#64748b", width:2, dash:"10 6", arrow:false},
-  trade_war:{label:"Guerre commerciale", color:"#be185d", width:2, dash:"12 4 2 4", arrow:false}};
+  trade_war:{label:"Guerre commerciale", color:"#be185d", width:2, dash:"12 4 2 4", arrow:false},
+  blockade:{label:"Entrave à la navigation", color:"#0f766e", width:2.4, dash:"2 5", arrow:true}};
 const STATUS_FR = {active:"actif", reduced:"en baisse", alleged:"allégué"};
 const CONF_FR = {high:"documenté officiellement", medium:"sources concordantes", low:"allégations"};
 const WIDTH = {high: 3.2, medium: 2.2, low: 1.3}, DEP = "#b08968";
@@ -250,6 +255,9 @@ function facts(ids){ const S = new Set(ids), F = [], extra = [];   // extra : pa
       nodes: out ? m.between : [m.mediator, ...m.between], mediator: m.mediator, since: m.since, kind: "Médiation", raw: m,
       html: `<div class="who">${who(m.mediator)}<span class="k">médiation entre</span>${who(m.between[0])}<span class="k">et</span>${who(m.between[1])}</div>
         <p>${since(m)}${m.why ? "Pourquoi : " + esc(m.why) : ""}</p>${tail(m)}`}); });
+  ids.forEach(p => (D.actors[p].riparian || []).forEach(r => { if(!S.has(r)) return; const a = D.actors[p];
+    F.push({group: "riparian", links: [[r, p]], color: "var(--graphite)", width: 1.4, dash: null, arrow: false, nodes: [r, p], kind: "Riverain", raw: {state: r, passage: p},
+      html: `<div class="who">${who(r)}<span class="k">borde</span>${who(p)}</div><p>État riverain : il borde le passage, sans le posséder.</p>${tail(a)}`}); }));
   const res = new Set(SEL.filter(t => RES[t]).map(t => RES[t]));
   // Sens des dépendances apportées par une ressource : « dep » = ce dont la sélection dépend, « four » = qui dépend d'elle, « tout »
   const brought = D.dependencies.filter(x => res.has(x.type) && S.has(x.from) !== S.has(x.supplier));
@@ -276,6 +284,7 @@ function brief(F){ const P = [], by = g => F.filter(f => f.group === g), dp = y 
   if(T.length){ const ss = T.slice(0, MAXT).map(f => { const t = f.raw, a = t.from, b = t.to, both = cap(the(a)) + " et " + the(b);
       return bf(f, t.type === "war" ? (t.status === "reduced" ? `${both} observent une trêve${t.since ? ", après une guerre commencée en " + esc(when(t.since)) : ""}` : `${both} sont en guerre${dp(t.since)}`)
         : t.type === "trade_war" ? `${both} sont en guerre commerciale${dp(t.since)}` : t.type === "rivalry" ? `${both} sont en rivalité${dp(t.since)}`
+        : t.type === "blockade" ? `${cap(the(a))} ${vb(a, "entrave", "entravent")} la navigation dans ${the(b)}${dp(t.since)}`
         : t.type === "sanctions" ? `${cap(the(a))} ${vb(a, "sanctionne", "sanctionnent")} ${the(b)}${dp(t.since)}`
         : `${cap(the(a))} ${vb(a, "revendique", "revendiquent")} tout ou partie du territoire ${deN(b)}${dp(t.since)}`) + "."; });
     if(T.length > MAXT) ss.push(`${T.length - MAXT} autre${T.length - MAXT > 1 ? "s tensions sont" : " tension est"} sur le schéma.`);
@@ -287,6 +296,8 @@ function brief(F){ const P = [], by = g => F.filter(f => f.group === g), dp = y 
     const tos = Object.keys(g).sort((a, b) => g[b].length - g[a].length), shown = tos.slice(0, 4);
     P.push(shown.map(to => `Soutiens ${deN(to)} : ${et(g[to].map(f => bf(f, the(f.raw.from))))}.`).join(" ")
       + (tos.length > 4 ? ` D'autres soutiens sont sur le schéma.` : "") + ` <span class="why">Le pourquoi de chaque soutien s'affiche au clic.</span>`); }
+  const R = by("riparian"); if(R.length){ const g = {}; R.forEach(f => (g[f.raw.passage] = g[f.raw.passage] || []).push(f));
+    P.push(Object.entries(g).map(([p, fs]) => `${fs.length > 1 ? "Riverains" : "Riverain"} ${deN(p)} : ${et(fs.map(f => bf(f, the(f.raw.state))))}.`).join(" ")); }
   if(M.length){ const g = {}; M.forEach(f => (g[f.raw.between.join("|")] = g[f.raw.between.join("|")] || []).push(f));   // plusieurs médiateurs pour une même paire : une seule phrase
     P.push(Object.values(g).map(fs => `Médiation entre ${the(fs[0].raw.between[0])} et ${the(fs[0].raw.between[1])} : ${et(fs.map(f => bf(f, the(f.raw.mediator))))}.`).join(" ")); }
   if(L.length){ const g = {}; L.forEach(f => { const x = f.raw; ((g[x.from] = g[x.from] || {})[x.supplier] = g[x.from][x.supplier] || []).push(f); });
@@ -453,7 +464,7 @@ function ghost(x){ const svg = $("#schema"); unghost(); if(!GEO || GEO.MAP || VI
 function unghost(){ const g = $("#schema .ghost"); if(g) g.remove(); $("#schema").classList.remove("ghosted"); }
 
 const stroke = (c, o = {}) => `<svg width="30" height="8" aria-hidden="true"><path d="M1 4H29" stroke="${c}" stroke-width="${o.w || 2.5}"${o.dash ? ` stroke-dasharray="${o.dash}"` : ""} stroke-linecap="${o.round ? "round" : "butt"}"/></svg>`;
-const GROUPS = [["tension", "Qui s'affronte"], ["support", "Qui soutient qui, et pourquoi"], ["mediation", "Qui négocie"], ["lever", "Qui dépend de qui"]];
+const GROUPS = [["riparian", "Qui borde quoi"], ["tension", "Qui s'affronte"], ["support", "Qui soutient qui, et pourquoi"], ["mediation", "Qui négocie"], ["lever", "Qui dépend de qui"]];
 const card = f => `<div class="fact">${f.html}</div>`;
 
 function render(){ const ids = scope(), {F, extra, sens} = facts(ids), ok = ids.length >= 1 && ids.length + extra.length >= 2;
@@ -492,7 +503,8 @@ function render(){ const ids = scope(), {F, extra, sens} = facts(ids), ok = ids.
     has("mediation") && `<span>${stroke("var(--graphite)", {w: 1.6, dash: "3 5"})}__MEDIATION__</span>`,
     has("lever") && `<span>${stroke(DEP, {w: 3, dash: "1.5 6", round: true})}__LEVIER__ (épaisseur : part mesurée)</span>`
       + [...new Set(F.filter(f => f.dep).map(f => f.dep))].map(t => `<span>${depIcon(t)}${DEP_NAME[t] || t}</span>`).join("")].filter(Boolean).join("");
-  const pairs = []; ids.forEach((a, i) => ids.slice(i + 1).forEach(b => { if(!F.some(f => f.nodes.includes(a) && f.nodes.includes(b))) pairs.push(`${nm(a)} et ${nm(b)}`); }));
+  const pairs = [], isP = id => D.actors[id].kind === "passage";   // un passage n'a pas de « relation » à attendre avec chaque pays
+  ids.forEach((a, i) => ids.slice(i + 1).forEach(b => { if(!isP(a) && !isP(b) && !F.some(f => f.nodes.includes(a) && f.nodes.includes(b))) pairs.push(`${nm(a)} et ${nm(b)}`); }));
   $("#none").innerHTML = pairs.length ? `Ce que le graphe ne contient pas : aucune relation documentée entre ${pairs.join(" ; ")}. Cela ne prouve pas qu'il n'y en a pas, seulement qu'aucune n'est sourcée ici.` : "";
   $("#all").innerHTML = `<summary>Tous les faits (${F.length}) et leurs sources</summary>` + (F.length ? GROUPS.filter(([g]) => F.some(f => f.group === g)).map(([g, t]) =>
     `<h3>${t}</h3>` + F.filter(f => f.group === g).map(card).join("")).join("") : '<p class="none">Aucun fait entre ces acteurs dans le graphe.</p>');
@@ -534,13 +546,13 @@ function detail(){ const F = window.FACTS, svg = $("#schema"), box = $("#detail"
 const flat = v => String(v).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const byName = ks => ks.sort((a, b) => D.actors[a].name.localeCompare(D.actors[b].name, "fr"));
 const kindIs = (...k) => byName(Object.keys(D.actors).filter(id => k.includes(D.actors[id].kind)));
-const CATS = [["Conflits", Object.keys(DOS)], ["Pays et blocs", kindIs("state", "bloc")], ["Groupes armés", kindIs("non_state")], ["Partis, personnalités et entreprises", kindIs("party", "person", "company")],
+const CATS = [["Conflits", Object.keys(DOS)], ["Pays et blocs", kindIs("state", "bloc")], ["Groupes armés", kindIs("non_state")], ["Détroits et passages", kindIs("passage")], ["Partis, personnalités et entreprises", kindIs("party", "person", "company")],
   ["Ressources et leviers", Object.keys(RES)]];
 const plain = k => DOS[k] ? DOS[k].title : RES[k] ? RES_FR[RES[k]] : D.actors[k].name;
 const CAT_OF = Object.fromEntries(CATS.flatMap(([t, items]) => items.map(k => [k, t])));
 // autres mots qui mènent à la même entité (« usa », « ue »…)
 const ALIAS = {US: "usa etats unis amerique", GB: "angleterre grande bretagne uk", EU: "ue europe", AE: "eau emirats", CD: "congo rdc", KP: "coree", NL: "hollande",
-  spacex: "starlink musk", rsf: "fsr", jnim: "al qaida sahel", MM: "myanmar", "r:chips": "semi-conducteurs puces tsmc", "r:minerals": "terres rares potasse uranium lithium", "r:food": "ble cereales"};
+  spacex: "starlink musk", rsf: "fsr", jnim: "al qaida sahel", MM: "myanmar", "r:chips": "semi-conducteurs puces tsmc", "r:minerals": "terres rares potasse uranium lithium", "r:food": "ble cereales", ormuz: "hormuz golfe persique", bab_el_mandeb: "mer rouge suez aden"};
 const hay = k => flat(plain(k)) + " " + (ALIAS[k] || "");
 // sans rien taper : quelques entrées courantes, pas les 80 — la liste complète est derrière « Voir toute la liste »
 const COMMON = [...Object.keys(DOS), "US", "CN", "RU", "EU", "IR", "IL", "r:arms", "r:oil"].filter(k => DOS[k] || RES[k] || D.actors[k]);

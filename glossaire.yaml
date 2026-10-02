@@ -73,6 +73,10 @@ terms:
     term: rivalité
     aliases: [rivalités]
     definition: Une concurrence stratégique durable, sans guerre ouverte, qui porte sur l'influence, les armements ou les alliances.
+  - id: entrave-navigation
+    term: entrave à la navigation
+    definition: Un acteur empêche ou menace le passage des navires de commerce dans un détroit ou une mer, par un blocus, des mines ou des attaques.
+    example: Depuis mars 2026, l'Iran ne laisse passer qu'une poignée de navires par le détroit d'Ormuz.
   - id: guerre-commerciale
     term: guerre commerciale
     aliases: [guerres commerciales]
