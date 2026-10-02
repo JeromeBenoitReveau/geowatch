@@ -15,8 +15,8 @@ CSS = """
 .chip button{background:none;border:0;color:var(--graphite);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;border-radius:3px}
 .chip button:hover{color:var(--ink)}
 #addbtn{font:15px var(--sans);color:var(--ink);background:none;border:1px dashed var(--graphite);border-radius:4px;padding:5px 12px;cursor:pointer}
-#reset{font:14px var(--sans);color:var(--graphite);background:none;border:0;padding:5px 4px;cursor:pointer;text-decoration:underline;text-decoration-color:var(--mist);text-underline-offset:3px}
-#reset:hover{color:var(--ink);text-decoration-color:var(--peach)}#reset[hidden]{display:none}
+#reset{font:14px var(--sans);color:var(--graphite);background:none;border:0;padding:5px 4px;cursor:pointer;text-decoration:underline dashed var(--peach) 1px;text-underline-offset:3px}
+#reset:hover{color:var(--ink);text-decoration-style:solid}#reset[hidden]{display:none}
 #addbtn::before{content:"+ ";color:var(--graphite)}#addbtn:hover,#addbtn[aria-expanded=true]{border-color:var(--peach);border-style:solid}
 /* panneau de choix : tout est visible d'un coup, rangé par catégorie ; le champ ne fait que filtrer cette liste */
 .picker{position:relative}.pick{position:relative;z-index:1002}
@@ -31,7 +31,8 @@ CSS = """
 #groups button:hover{border-color:var(--peach)}#groups button:disabled{color:var(--graphite);opacity:.45;cursor:default;border-color:var(--mist)}
 #groups img{width:15px;height:15px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px var(--mist)}
 .scope{font-size:13.5px;color:var(--graphite);margin:0;min-height:1.6em}
-.scope button{display:inline;text-align:left;background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-decoration:underline;text-decoration-color:var(--peach);text-underline-offset:3px}
+.scope button{display:inline;text-align:left;background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-decoration:underline dashed var(--peach) 1px;text-underline-offset:3px}
+.scope button:hover{text-decoration-style:solid}
 .sug{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13.5px;color:var(--graphite);margin:10px 0 0}
 .sug:empty{display:none}
 .sug button{display:inline-flex;align-items:center;gap:6px;font:14px var(--sans);color:var(--ink);background:none;border:1px dashed var(--graphite);border-radius:4px;padding:4px 9px;cursor:pointer}

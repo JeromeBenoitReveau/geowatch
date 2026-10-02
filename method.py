@@ -59,7 +59,7 @@ table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}th,td{tex
 th{color:var(--graphite);font-weight:500}.scroll{overflow-x:auto}code{font-size:13.5px}
 .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px 28px;margin:16px 0}
 .flow div{font-size:14.5px}.flow b{display:block;font-family:var(--serif);font-weight:500;font-size:17px;margin-bottom:2px}
-nav.toc{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px;color:var(--graphite);margin:18px 0 0}nav.toc a{text-decoration:none}nav.toc a:hover{text-decoration:underline}
+nav.toc{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px;color:var(--graphite);margin:18px 0 0}nav.toc a{text-decoration:none}nav.toc a:hover{text-decoration:underline solid var(--peach) 1px}
 .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:20px;margin:28px 0 0}
 .kpi b{display:block;font:400 32px/1 var(--serif);font-variant-numeric:tabular-nums;margin-bottom:4px}.kpi span{font-size:14px;color:var(--graphite)}
 </style>"""

@@ -25,8 +25,9 @@ CSS = """
 /* la pêche est l'accent de l'interface (liens, onglet actif, survol, focus, logo) ; jamais une couleur de données */
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration-thickness:1.5px;text-underline-offset:3px;text-decoration-color:var(--peach)}
-a:hover{text-decoration-thickness:2px}
+/* liens : souligné en tirets d'1 px ; au survol, même épaisseur mais trait plein (choix de Jérôme, 2026-10-02) */
+a,.lk{color:inherit;text-decoration:underline dashed var(--peach) 1px;text-underline-offset:3px}
+a:hover,.lk:hover{text-decoration-style:solid}
 a:focus-visible,summary:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--peach);outline-offset:3px;border-radius:2px}
 .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:22px 0 0;font-size:15px}
@@ -50,7 +51,7 @@ a:focus-visible,summary:focus-visible,button:focus-visible,input:focus-visible,s
 .theme:hover{color:var(--ink)}.theme .sun{display:none}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .theme .sun{display:block}:root:not([data-theme=light]) .theme .moon{display:none}}
 :root[data-theme=dark] .theme .sun{display:block}:root[data-theme=dark] .theme .moon{display:none}
-.brand{font-family:var(--serif);font-size:20px;display:inline-flex;align-items:center;gap:9px}.brand .logo{flex:none}
+.brand{font-family:var(--serif);font-size:20px;display:inline-flex;align-items:center;gap:9px;color:var(--peach)}.brand .logo{flex:none}
 h1{font:400 44px/1.1 var(--serif);letter-spacing:-.01em;margin:0 0 14px}
 h2{font:400 26px/1.25 var(--serif);margin:0 0 18px}
 h3{font:500 19px/1.3 var(--serif);margin:0 0 4px}
@@ -63,7 +64,7 @@ section.s{padding:56px 0 0}
 a.card{transition:border-color .15s}a.card:hover{border-color:var(--peach)}
 .tint{background:color-mix(in srgb,var(--ink) 5%,var(--land));border-radius:4px}
 sup.fns{font:500 11px/1 var(--sans);color:var(--graphite);margin-left:1px;white-space:nowrap}
-sup.fns a{text-decoration:none;padding:0 1px}sup.fns a:hover{color:var(--ink);text-decoration:underline}
+sup.fns a{text-decoration:none;padding:0 1px}sup.fns a:hover{color:var(--ink);text-decoration:underline solid 1px}
 .dep-ico{vertical-align:-2px;flex:none}
 abbr{text-decoration:underline dotted var(--graphite);text-underline-offset:3px;cursor:help}
 /* termes du glossaire (glossary.py) : souligné pointillé, définition au survol ou au focus, clic vers glossaire.html */

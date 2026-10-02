@@ -62,6 +62,9 @@ Motifs de l'intervention américaine au Venezuela : note de la tension États-Un
 ## Lighthouse (2026-10-02, lancé en local : `npm_config_registry=https://registry.npmjs.org npx lighthouse …`, le registre npm par défaut du poste exige une connexion)
 Accessibilité, bonnes pratiques et référencement à 100 sur l'accueil, le glossaire, Relations, la vue d'ensemble et le dossier Iran. Corrigé : nom accessible (aria-label) des drapeaux cliquables de la carte des dossiers ; plus AUCUNE requête vers Wikimedia (cookies tiers) — vignettes dans `data/photos/` (ingest.photos(), db.load_people() renvoie `photos/<clé>.<ext>` si le fichier existe) et drapeau du Somaliland dans `data/flags/` (champ `flag: "flags/…"`), copiés dans site/ par build.py. Reste : sur le dossier Ukraine, deux drapeaux de la carte se chevauchent (cible tactile < 24 px, accessibilité 96) ; cartes source absentes pour vis-network et Leaflet (bibliothèques tierces).
 
+## Liens et titre du site (2026-10-02, choix de Jérôme)
+Liens : souligné pêche EN TIRETS d'1 px ; au survol, même épaisseur, trait plein (style.py, règle `a` ; mêmes règles pour les boutons qui ressemblent à des liens). Les termes du glossaire gardent leur pointillé gris. Le nom « Lignes de force » dans l'en-tête est en pêche, clair comme sombre — exception assumée à la règle « jamais de pêche pour le texte en mode clair » ; contraste faible en mode clair (≈ 2,4:1), à surveiller dans Lighthouse.
+
 ## Adresses des pages (2026-10-02, demande de Jérôme : l'adresse porte le titre de la page)
 `relations.html` (page « Croiser des acteurs », module cross.py) et `vue-d-ensemble.html` (explorateur, build.py). Les anciennes adresses `croiser.html` et `explorer.html` restent publiées comme pages de redirection (build.MOVED : elles transmettent la sélection `?e=…` et l'ancre, sont en noindex et hors du plan du site). Les autres pages portaient déjà leur titre (manifeste, methode, glossaire, un fichier par dossier).
 

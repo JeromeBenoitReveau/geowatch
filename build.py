@@ -121,7 +121,8 @@ body{font:14.5px/1.5 var(--sans);display:grid;grid-template-columns:auto minmax(
 /* légende = filtres : chaque ligne montre le trait tel qu'il est dessiné, et sa case l'affiche ou le masque */
 .fg{margin-top:4px}.fg-h{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 4px}
 .fg-h b{font-weight:600}.fg-h span{font-size:12.5px;color:var(--graphite)}
-.fg-h button{background:none;border:0;padding:0 2px;font:inherit;color:inherit;cursor:pointer;text-decoration:underline;text-decoration-color:var(--peach);text-underline-offset:2px}
+.fg-h button{background:none;border:0;padding:0 2px;font:inherit;color:inherit;cursor:pointer;text-decoration:underline dashed var(--peach) 1px;text-underline-offset:3px}
+.fg-h button:hover,#viewnote button:hover{text-decoration-style:solid}
 #controls .fg label{display:flex;align-items:center;gap:8px;margin:2px 0}.fg svg{flex:none}
 .fg .note,#map-key .note{display:flex;align-items:center;gap:8px;color:var(--graphite);font-size:12.5px;margin:2px 0 0 22px}
 #map-key .note{margin-left:0}.fg .contour{color:var(--graphite);font-size:12.5px;margin-top:4px}.ramp{height:9px;border-radius:2px;margin:4px 0 2px}.ramp-l{display:flex;justify-content:space-between;font-size:12px;color:var(--graphite)}
@@ -155,7 +156,7 @@ body.map #controls .graph-only,body.venn #controls .graph-only,body.map #control
 #presets a:hover,#presets a:focus-visible{background:color-mix(in srgb,var(--ink) 6%,var(--land))}#presets a[aria-current]{box-shadow:inset 2px 0 0 var(--peach)}
 #viewnote{font-size:12.5px;color:var(--graphite);background:color-mix(in srgb,var(--paper) 88%,transparent);padding:2px 10px;border-radius:10px}
 #viewnote:empty{display:none}
-#viewnote button{background:none;border:0;padding:0;font:inherit;color:var(--ink);cursor:pointer;text-decoration:underline;text-decoration-color:var(--peach);text-underline-offset:2px}
+#viewnote button{background:none;border:0;padding:0;font:inherit;color:var(--ink);cursor:pointer;text-decoration:underline dashed var(--peach) 1px;text-underline-offset:3px}
 #views a{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:5px;color:var(--graphite);text-decoration:none;white-space:nowrap;font-size:14px}
 #views a:hover{color:var(--ink)}#views a[aria-current]{background:color-mix(in srgb,var(--ink) 8%,var(--land));color:var(--ink)}
 #views .ico{color:var(--peach)}
