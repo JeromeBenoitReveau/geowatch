@@ -284,6 +284,16 @@ dossiers:
           Washington de se concentrer entièrement sur la Chine. La guerre en Ukraine se joue aussi dans cette rivalité.
         sources:
           - "Commission du Congrès américain sur la Chine (USCC), fiche Chine-Russie (août 2026) — https://www.uscc.gov/research/china-russia-fact-sheet-short-primer-relationship"
+      - label: Les communications par satellite
+        icon: route
+        text: >-
+          L'armée ukrainienne dépend de Starlink, le réseau de satellites de l'entreprise américaine SpaceX, pour ses
+          communications et ses drones. Une entreprise privée décide donc où le service fonctionne : en 2022, Elon Musk
+          a refusé de l'étendre jusqu'à la Crimée. Depuis février 2026, seuls les terminaux enregistrés fonctionnent en
+          Ukraine, ce qui coupe ceux que l'armée russe utilisait sans autorisation.
+        sources:
+          - "CBS News, Elon Musk dit avoir refusé une demande ukrainienne pour ne pas être complice d'un acte de guerre majeur (sept. 2023) — https://www.cbsnews.com/news/elon-musk-ukraine-russia-war-starlink-satellite-denied-major-act-of-war/"
+          - "Euronews, SpaceX et le ministère ukrainien de la Défense bloquent l'usage russe de Starlink (févr. 2026) — https://euronews.com/2026/02/02/musks-spacex-and-ukraines-defence-ministry-to-block-russias-use-of-starlink"
 
     toll:
       text: >-
@@ -324,6 +334,12 @@ dossiers:
       - date: "2022-02"
         text: Invasion russe à grande échelle
         source: "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
+      - date: "2022-09"
+        text: Elon Musk refuse d'étendre Starlink jusqu'à la Crimée pour une attaque ukrainienne
+        source: "CBS News, Elon Musk dit avoir refusé une demande ukrainienne pour ne pas être complice d'un acte de guerre majeur (sept. 2023) — https://www.cbsnews.com/news/elon-musk-ukraine-russia-war-starlink-satellite-denied-major-act-of-war/"
+      - date: "2026-02"
+        text: Starlink ne fonctionne plus que sur les terminaux enregistrés ; ceux de l'armée russe sont coupés
+        source: "Euronews, SpaceX et le ministère ukrainien de la Défense bloquent l'usage russe de Starlink (févr. 2026) — https://euronews.com/2026/02/02/musks-spacex-and-ukraines-defence-ministry-to-block-russias-use-of-starlink"
       - date: "2026-02"
         text: Premier gain territorial mensuel de l'Ukraine depuis 2023
         source: "Council on Foreign Relations, Global Conflict Tracker : la guerre en Ukraine (sept. 2026) — https://www.cfr.org/global-conflict-tracker/conflict/conflict-ukraine"
@@ -332,6 +348,14 @@ dossiers:
         source: "Al Jazeera (sept. 2026) — https://www.aljazeera.com/news/2026/9/5/russias-putin-meets-us-envoys-to-discuss-trump-proposal-to-end-ukraine-war"
 
     people:
+      - who: musk
+        role: Patron de SpaceX, qui exploite Starlink
+        text: >-
+          Décide où le réseau Starlink fonctionne sur le front. Il a refusé en 2022 de l'étendre jusqu'à la Crimée et,
+          selon une enquête de Reuters qu'il dément, a fait couper le service pendant la contre-offensive de Kherson.
+        sources:
+          - "CBS News, Elon Musk dit avoir refusé une demande ukrainienne pour ne pas être complice d'un acte de guerre majeur (sept. 2023) — https://www.cbsnews.com/news/elon-musk-ukraine-russia-war-starlink-satellite-denied-major-act-of-war/"
+          - "Kyiv Independent, reprise de l'enquête de Reuters : Musk a ordonné une coupure de Starlink pendant la contre-offensive de Kherson en 2022 (juill. 2025) — https://kyivindependent.com/musk-ordered-starlink-shutdown-over-kherson-during-ukraines-2022-counteroffensive-reuters-reports/"
       - who: witkoff
         role: Émissaire spécial de Donald Trump
         text: >-
@@ -816,6 +840,7 @@ people:
   kushner: {name: Jared Kushner, wikidata: Q13628723}
   ouchakov: {name: Iouri Ouchakov, wikidata: Q4479563}
   vance: {name: JD Vance, actor: vance}
+  musk: {name: Elon Musk, actor: musk}
   araghchi: {name: Abbas Araghchi, wikidata: Q7459020}
   sharif: {name: Shehbaz Sharif, wikidata: Q2096387}
   munir: {name: Asim Munir, wikidata: Q4806973}

@@ -4,8 +4,8 @@ import re, sys
 from datetime import date
 import network
 
-KINDS = {"state", "non_state", "bloc", "party", "person"}
-TYPES = {"arms", "financial", "training", "troops", "intelligence", "political", "economic", "dual_use"}
+KINDS = {"state", "non_state", "bloc", "party", "person", "company"}
+TYPES = {"arms", "financial", "training", "troops", "intelligence", "political", "economic", "dual_use", "service"}
 STATUSES = {"active", "reduced", "ended", "alleged"}
 CONFIDENCES = {"high", "medium", "low"}
 STALE_MONTHS = 6
@@ -29,8 +29,8 @@ def check(actors, edges, today=None, aligns=None):
             errors.append(f"acteur {aid} : flag doit être une URL https ou un fichier de data/flags/ (« flags/nom.svg »)")
         if a.get("kind") == "non_state" and not re.fullmatch(r"[A-Z]{2}", str(a.get("base", ""))):
             warnings.append(f"acteur {aid} : non étatique sans base ISO2 (pas de fiche pays hôte)")
-        if a.get("kind") in ("party", "person") and not re.fullmatch(r"[A-Z]{2}", str(a.get("base", ""))):
-            errors.append(f"acteur {aid} : un parti ou une personne doit avoir une base ISO2 (pays d'ancrage)")
+        if a.get("kind") in ("party", "person", "company") and not re.fullmatch(r"[A-Z]{2}", str(a.get("base", ""))):
+            errors.append(f"acteur {aid} : un parti, une personne ou une entreprise doit avoir une base ISO2 (pays d'ancrage)")
         if a.get("wikidata") is not None and not re.fullmatch(r"Q\d+", str(a["wikidata"])):
             errors.append(f"acteur {aid} : wikidata doit être un identifiant Qxxx")
         c = a.get("coords")

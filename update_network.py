@@ -20,7 +20,7 @@ changes:
   - action: add | update | end
     from: <id>        # ISO2 pour un État, snake_case pour un acteur non étatique
     to: <id>
-    types: [arms | financial | training | troops | intelligence | political | economic | dual_use]
+    types: [arms | financial | training | troops | intelligence | political | economic | dual_use | service]
     status: active | reduced | ended | alleged
     confidence: high | medium | low
     sources: ["<titre + URL réelle trouvée>"]

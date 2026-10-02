@@ -83,7 +83,7 @@ def influence(actors, edges, al):
         tied = [g["id"] for g in ties.get(aid, [])]
         pb = best(aid)
         via_all = sorted({e["from"] for e in edges if e["to"] == aid and e["status"] == "active"})
-        if a["kind"] in ("party", "person"):
+        if a["kind"] in ("party", "person", "company"):   # jamais classés dans un bloc
             out[aid] = {"bloc": None, "role": "none", "level": 0, "via": [], "ties": tied}
         elif pb:
             top = max(pb.values())
@@ -118,7 +118,7 @@ def proxies_in(country_iso, actors):
     """Acteurs non étatiques basés dans un pays (ex. YE → houthis)."""
     return [a for a, v in actors.items() if v.get("base") == country_iso and v["kind"] == "non_state"]
 
-def based_in(country_iso, actors, kinds=("party", "person")):
+def based_in(country_iso, actors, kinds=("party", "person", "company")):
     """Partis et personnalités rattachés à un pays (ex. DE → afd)."""
     return [a for a, v in actors.items() if v.get("base") == country_iso and v["kind"] in kinds]
 

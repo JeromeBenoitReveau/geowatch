@@ -12,7 +12,7 @@ PATH = Path(__file__).with_name("dossiers.yaml")
 URL = re.compile(r"https?://\S+")
 TYPES_FR = {"arms": "armes", "financial": "argent", "training": "entraînement", "troops": "troupes",
             "intelligence": "renseignement", "political": "soutien politique", "economic": "soutien économique",
-            "dual_use": "matériel à double usage"}
+            "dual_use": "matériel à double usage", "service": "service stratégique"}
 MONTHS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juill.", "août", "sept.", "oct.", "nov.", "déc."]
 
 

@@ -151,7 +151,8 @@ const flag = id => (D.actors[id] || {}).flag || `https://cdn.jsdelivr.net/npm/fl
 const GLYPH = {
   non_state: '<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/>',
   party: '<path d="m9 12 2 2 4-4"/><path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v12H5V7Z"/><path d="M22 19H2"/>',
-  person: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'};
+  person: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  company: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>'};
 const badge = (kind, bg) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 36 36"><circle cx="12" cy="12" r="18" fill="${bg}"/>` +
   `<g fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${GLYPH[kind]}</g></svg>`);
@@ -166,7 +167,7 @@ const src = s => { const m = String(s).match(/https?:\/\/[^\s<]+/); if(!m) retur
   let host = m[0]; try { host = new URL(m[0]).hostname.replace(/^www\./, ""); } catch(_) {}
   return `<a href="${esc(m[0])}" target="_blank" rel="noopener" title="${esc(String(s).slice(0, m.index).replace(/[\s—]+$/, ""))}">${esc(host)}</a>`; };
 const TYPES_FR = {arms:"armes", troops:"troupes", financial:"argent", training:"entraînement", intelligence:"renseignement",
-  political:"politique", economic:"économique", dual_use:"double usage"};
+  political:"politique", economic:"économique", dual_use:"double usage", service:"service stratégique"};
 const TENSION = {war:{label:"Guerre", color:"#b91c1c", width:4, dash:null, arrow:false},
   sanctions:{label:"Sanctions", color:"#7c3aed", width:2, dash:"8 5", arrow:true},
   claims:{label:"Revendication", color:"#d97706", width:2, dash:"3 4", arrow:true},
@@ -475,7 +476,7 @@ function detail(){ const F = window.FACTS, svg = $("#schema"), box = $("#detail"
 const flat = v => String(v).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const byName = ks => ks.sort((a, b) => D.actors[a].name.localeCompare(D.actors[b].name, "fr"));
 const kindIs = (...k) => byName(Object.keys(D.actors).filter(id => k.includes(D.actors[id].kind)));
-const CATS = [["Conflits", Object.keys(DOS)], ["Pays et blocs", kindIs("state", "bloc")], ["Groupes armés", kindIs("non_state")], ["Partis et personnalités", kindIs("party", "person")],
+const CATS = [["Conflits", Object.keys(DOS)], ["Pays et blocs", kindIs("state", "bloc")], ["Groupes armés", kindIs("non_state")], ["Partis, personnalités et entreprises", kindIs("party", "person", "company")],
   ["Ressources et leviers", Object.keys(RES)]];
 const plain = k => DOS[k] ? DOS[k].title : RES[k] ? RES_FR[RES[k]] : D.actors[k].name;
 function panel(){ const q = flat($("#q").value.trim()); let shown = 0;

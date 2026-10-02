@@ -2,8 +2,9 @@
 # Mise à jour : `python update_network.py IR` propose des changements dans
 # network.pending.yaml → tu relis → tu reportes ici. Rien n'est ajouté sans relecture.
 #
-# kind   : state | non_state | bloc | party | person
-# base   : pays d'ancrage (ISO2) — obligatoire pour non_state, party, person
+# kind   : state | non_state | bloc | party | person | company
+# base   : pays d'ancrage (ISO2) — obligatoire pour non_state, party, person, company
+# company : entreprise qui pèse sur un conflit par une ACTION documentée (service, arme, plateforme), jamais par sa seule taille
 # member_of : blocs dont l'État est membre (ex. [EU]) — sert au « zoom » sur un bloc
 # wikidata : identifiant Qxxx (personnes) — sert à récupérer la photo sur Wikimedia Commons
 # leader : qui dirige l'acteur — {name, wikidata, role, sources} ou id d'un acteur « person » (ex. US: trump).
@@ -94,6 +95,8 @@ actors:
   trump: {name: Donald Trump, kind: person, base: US, note: "Président des États-Unis", wikidata: Q22686}
   vance: {name: JD Vance, kind: person, base: US, note: "Vice-président des États-Unis", wikidata: Q28935729}
   musk: {name: Elon Musk, kind: person, base: US, note: "Propriétaire de X, SpaceX, Tesla", wikidata: Q317521}
+  spacex: {name: SpaceX (Starlink), kind: company, base: US, leader: musk,
+           note: "Entreprise spatiale américaine ; son réseau de satellites Starlink fournit un accès à Internet, y compris sur le front ukrainien"}
   rsf: {name: Forces de soutien rapide (FSR), kind: non_state, base: SD,
         leader: {name: "Mohamed Hamdan Dagalo, dit « Hemedti »", wikidata: Q63145660,
                  role: "Chef des FSR ; préside le gouvernement parallèle formé à Nyala en août 2025",
@@ -444,6 +447,12 @@ edges:
      why: "Selon The New Arab, frapper les intérêts russes et le groupe Wagner hors d'Ukraine"}
 
   # --- Canada : entre les États-Unis et l'Europe ---
+  - {from: spacex, to: UA, since: "2022-02", types: [service], status: active, confidence: high,
+     sources: ["Euronews, SpaceX et le ministère ukrainien de la Défense bloquent l'usage russe de Starlink (févr. 2026) — https://euronews.com/2026/02/02/musks-spacex-and-ukraines-defence-ministry-to-block-russias-use-of-starlink",
+               "CBS News, Elon Musk dit avoir refusé une demande ukrainienne pour ne pas être complice d'un acte de guerre majeur (sept. 2023) — https://www.cbsnews.com/news/elon-musk-ukraine-russia-war-starlink-satellite-denied-major-act-of-war/",
+               "Kyiv Independent, reprise de l'enquête de Reuters : Musk a ordonné une coupure de Starlink pendant la contre-offensive de Kherson en 2022 (juill. 2025) — https://kyivindependent.com/musk-ordered-starlink-shutdown-over-kherson-during-ukraines-2022-counteroffensive-reuters-reports/"],
+     verified: 2026-10,
+     note: "Internet par satellite pour l'armée, les hôpitaux et les écoles : plus de 50 000 terminaux Starlink reçus par l'Ukraine depuis 2022. L'entreprise décide où le service fonctionne. En septembre 2022, Elon Musk refuse d'étendre la couverture jusqu'à la Crimée pour une attaque ukrainienne contre la flotte russe ; il dit avoir voulu éviter d'être « complice d'un acte de guerre majeur ». Selon une enquête de Reuters fondée sur trois sources, il a aussi fait couper le service près de Beryslav pendant la contre-offensive de Kherson, à l'automne 2022 ; Elon Musk dément couper ses terminaux. L'armée russe a utilisé des terminaux sans autorisation, notamment sur des drones d'attaque ; depuis février 2026, seuls les terminaux enregistrés auprès du ministère ukrainien de la Défense fonctionnent en Ukraine"}
   - {from: CA, to: UA, since: "2022", types: [arms, financial, training], status: active, confidence: high,
      sources: ["Gouvernement du Canada, soutien à l'Ukraine quatre ans après l'invasion (févr. 2026) — https://www.canada.ca/en/department-national-defence/news/2026/02/government-of-canada-reaffirms-unwavering-support-for-ukraine-four-years-into-russias-full-scale-invasion.html",
                "Kiel Institute, Ukraine Support Tracker (aides recensées depuis février 2022) — https://www.kielinstitut.de/topics/war-against-ukraine/ukraine-support-tracker/"],

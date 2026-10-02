@@ -8,7 +8,7 @@ import brand, cross, db, dossier, glossary, method, network, pages, presets, sty
 OUT = Path("site")
 DATA_LICENSE = "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/ — Lignes de force, network.yaml"
 TYPE_COLORS = {"arms": "#d64545", "troops": "#8b1e1e", "financial": "#2f8f5b", "training": "#c98a1b",
-               "intelligence": "#6b4fbb", "political": "#3a6fd8", "economic": "#1f9aa5", "dual_use": "#b0569a"}
+               "intelligence": "#6b4fbb", "political": "#3a6fd8", "economic": "#1f9aa5", "dual_use": "#b0569a", "service": "#0e7490"}
 
 EXPLORER_DESC = ("Alliances, soutiens, tensions et dépendances d’un coup d’œil : une carte du monde, un graphe "
                  "et des cercles d’organisations. Données sourcées.")
@@ -175,7 +175,7 @@ body.venn #graph,body.venn .graph-only{display:none}#venn svg{width:100%;height:
 .mk{display:flex;align-items:center;justify-content:center;cursor:pointer}
 .mk img{width:100%;height:100%;border-radius:50%;box-shadow:0 0 0 1.5px var(--card),0 1px 4px #0006}
 .mk i{display:block;width:12px;height:12px;background:#6b4fbb;box-shadow:0 0 0 1.5px var(--card)}
-.mk.non_state i{background:#d64545;transform:rotate(45deg)}.mk.party i{background:#6b4fbb}
+.mk.non_state i{background:#d64545;transform:rotate(45deg)}.mk.party i{background:#6b4fbb}.mk.company i{background:#6b4fbb}
 .mk.person i{background:#6b4fbb;clip-path:polygon(50% 0,100% 100%,0 100%);box-shadow:none;width:14px;height:13px}
 aside{width:380px;overflow:auto;border-left:1px solid var(--mist)}aside a{color:inherit}#panel{padding:4px 24px 40px}
 aside.closed{width:44px;overflow:hidden;cursor:pointer}aside.closed #panel{display:none}
@@ -236,9 +236,9 @@ const $ = s => document.querySelector(s);
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl = u => /^(https?:\/\/|photos\/[\w.-]+$)/.test(u||"") ? esc(u) : "#";
 const nm = id => esc((D.actors[id]||{}).name || id);
-const KIND = {state:"État", non_state:"acteur armé non étatique", bloc:"bloc", party:"parti politique", person:"personnalité"};
-const SHAPE = {non_state:"diamond", party:"square", person:"triangle"};
-const DETAIL = new Set(["party","person"]);
+const KIND = {state:"État", non_state:"acteur armé non étatique", bloc:"bloc", party:"parti politique", person:"personnalité", company:"entreprise"};
+const SHAPE = {non_state:"diamond", party:"square", person:"triangle", company:"hexagon"};
+const DETAIL = new Set(["party","person","company"]);
 // drapeau : champ flag de l'acteur (territoire sans code pays), sinon flag-icons d'après le code ISO2
 const flag = id => (D.actors[id] || {}).flag || `https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/1x1/${id.toLowerCase()}.svg`;
 const CONTESTED = "#c98a1b";
@@ -246,7 +246,8 @@ const CONTESTED = "#c98a1b";
 const GLYPH = {
   non_state: '<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/>',
   party: '<path d="m9 12 2 2 4-4"/><path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v12H5V7Z"/><path d="M22 19H2"/>',
-  person: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'};
+  person: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  company: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>'};
 const badge = (kind, bg) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 36 36"><circle cx="12" cy="12" r="18" fill="${bg}"/>` +
   `<g fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${GLYPH[kind]}</g></svg>`);
@@ -403,7 +404,7 @@ function tiers(id){ const gs = D.align.groups.filter(g => g.entity===id);
     <span class="mute">${g.members.map(cname).join(", ")}${g.note ? "<br>"+esc(g.note) : ""}<br>${g.sources.map(src).join(", ")}</span></div>`).join("") : ""; }
 const fg = getComputedStyle(document.body).color;
 const outCount = id => D.edges.filter(e=>e.from===id && e.status!=="ended").length;
-const layer = id => { const k = D.actors[id].kind; return k==="state"||k==="bloc" ? "core" : k; };  // core, non_state, party, person
+const layer = id => { const k = D.actors[id].kind; return k==="state"||k==="bloc" ? "core" : k==="company" ? "person" : k; };   // les entreprises partagent le calque des personnalités  // core, non_state, party, person
 const checked = (grp, v) => { const i = document.querySelector(`#rel-filters input[data-g="${grp}"][value="${v}"]`); return !i || i.checked; };
 const visible = l => checked("kind", l);
 const supportOn = e => e.types.some(t => checked("type", t));
@@ -497,7 +498,7 @@ const Q = id => GL[id] ? `<a class="term q" href="glossaire.html#${id}" target="
 
 // ---------- Légende-filtres (barre de gauche) : soutiens, tensions, acteurs ----------
 const TYPES_FR = {arms:"armes", troops:"troupes", financial:"argent", training:"entraînement", intelligence:"renseignement",
-  political:"politique", economic:"économique", dual_use:"double usage"};
+  political:"politique", economic:"économique", dual_use:"double usage", service:"service stratégique"};
 const TYPE_TERM = {dual_use:"double-usage"}, TENSION_TERM = {war:"guerre", sanctions:"sanctions", claims:"revendication", rivalry:"rivalite", trade_war:"guerre-commerciale"};
 // vue simplifiée par défaut (lisible au premier coup d'œil) ; « tout afficher » en un clic
 // (moins de 15 relations : les guerres et les troupes engagées ; les questions en haut de la vue mènent plus loin)
@@ -531,7 +532,7 @@ const glyph = k => k==="core"
     ${row("med", "on", stroke(MED.color, {w: MED.width, dash: MED.dashes.join(" "), arrow: false}), "négocie entre deux camps")}</div>
   <div class="fg" style="margin-top:14px">${head(`Acteurs${Q("acteur")}`, "kind")}
     ${row("kind", "core", glyph("core"), "États et blocs (drapeau)")}${row("kind", "non_state", glyph("non_state"), "groupes armés")}
-    ${row("kind", "party", glyph("party"), "partis")}${row("kind", "person", glyph("person"), "personnalités")}
+    ${row("kind", "party", glyph("party"), "partis")}${row("kind", "person", glyph("person"), "personnalités et entreprises")}
     <div class="contour graph-only">Couleur du contour : ${T("bloc", "bloc d'influence")}. ${Object.values(BLOCS).map(b =>
       `<span class="key"><i style="background:${b.color}"></i>${esc(b.name)}</span>`).join("")}<span class="key"><i style="background:${CONTESTED}"></i>${T("dispute", "disputé")}</span></div></div>`;
   box.addEventListener("click", ev => { const b = ev.target.closest("button[data-all],button[data-none]"); if(!b) return;
