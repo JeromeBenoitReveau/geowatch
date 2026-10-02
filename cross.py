@@ -185,7 +185,7 @@ const depText = x => `${pct(x)} ${x.type === "debt" ? "de sa dette publique ext�
   : "de ses importations " + depWhat(x)} (${esc(x.period || x.year)})`;
 // pictogrammes des dépendances (Lucide, ISC) : la ressource se lit d'un coup d'œil, le chiffre reste à côté
 const DEP_ICON = __DEP_ICONS__;
-const DEP_NAME = {oil: "pétrole", gas: "gaz", arms: "armes", minerals: "minerais", food: "denrées", debt: "dette", trade: "commerce", chips: "puces"};
+const DEP_NAME = {oil: "pétrole", gas: "gaz", arms: "armes", minerals: "minerais", food: "denrées", debt: "dette", trade: "commerce", chips: "puces", electricity: "électricité"};
 const depIcon = (t, size = 14) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${DEP}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${DEP_ICON[t] || ""}</svg>`;
 const depShort = x => `${x.type === "debt" ? "dette" : x.type === "trade" ? (x.direction === "exports" ? "exportations" : "importations")
   : x.resource || {arms:"armes", gas:"gaz", oil:"pétrole"}[x.type] || x.type} ${pct(x)}`;
@@ -199,7 +199,7 @@ const ARROW = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" strok
 
 // ---------- Sélection : jetons « US » (acteur) ou « d:ukraine » (conflit), gardés dans l'URL ----------
 // Ressource (« r:oil ») : ajoute les pays liés aux acteurs choisis par une dépendance de ce type, et seulement ces dépendances-là
-const RES_FR = {arms: "Armes", gas: "Gaz", oil: "Pétrole", minerals: "Minerais", food: "Denrées", debt: "Dette", trade: "Commerce", chips: "Puces"};
+const RES_FR = {arms: "Armes", gas: "Gaz", oil: "Pétrole", minerals: "Minerais", food: "Denrées", debt: "Dette", trade: "Commerce", chips: "Puces", electricity: "Électricité"};
 const RES = Object.fromEntries(Object.keys(RES_FR).filter(t => D.dependencies.some(x => x.type === t)).map(t => ["r:" + t, t]));
 let SEL = (new URLSearchParams(location.search).get("e") || "").split(",").filter(t => D.actors[t] || DOS[t] || RES[t]);
 let SENS = {dep: "dep", four: "four", tout: "tout"}[new URLSearchParams(location.search).get("s")] || null;
