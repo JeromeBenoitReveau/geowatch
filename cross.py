@@ -271,11 +271,13 @@ function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ..
   // traits affichés : un par fait, ou un par groupe de faits de même nature entre les deux mêmes ronds
   RELS = []; const idx = {};
   F.forEach(f => f.links.forEach(l => { const u = DISP(l[0]), v = DISP(l[1]); if(u === v) return;
-    const k = [f.group, f.color, f.dash || "", f.dep || "", ...(f.arrow ? [u, v] : [u, v].sort())].join("|") + (grouped ? "" : "|" + f.id);
-    if(idx[k] == null){ idx[k] = RELS.length; RELS.push({id: RELS.length, fids: [], l: [u, v], color: f.color, width: 0, dash: f.dash, round: f.round, arrow: f.arrow, dep: f.dep, value: f.value, tip: f.tip}); }
-    const r = RELS[idx[k]]; if(!r.fids.includes(f.id)) r.fids.push(f.id); r.width = Math.max(r.width, f.width); }));
-  RELS.forEach(r => { if(r.fids.length < 2) return; r.tip = r.fids.length + " faits de même nature";
-    r.value = r.dep ? r.value.replace(/ [\d,]+ %$/, "") + " ×" + r.fids.length : "×" + r.fids.length; });
+    const k = [f.group, f.color, f.dash || "", f.dep || "", ...(f.arrow ? [u, v] : [u, v].sort())].join("|") + (grouped || f.dep === "minerals" ? "" : "|" + f.id);   // les minerais d'une même paire ne font qu'un trait, même sans regroupement
+    if(idx[k] == null){ idx[k] = RELS.length; RELS.push({id: RELS.length, fids: [], l: [u, v], color: f.color, width: 0, dash: f.dash, round: f.round, arrow: f.arrow, dep: f.dep, value: f.value, tip: f.tip, vals: []}); }
+    const r = RELS[idx[k]]; if(!r.fids.includes(f.id)){ r.fids.push(f.id); if(f.value) r.vals.push(f.value); } r.width = Math.max(r.width, f.width); }));
+  RELS.forEach(r => { if(r.fids.length < 2) return; r.tip = r.vals.length ? r.vals.join(", ") : r.fids.length + " faits de même nature";
+    const pc = v => parseFloat(((v.match(/([\d,]+) %$/) || [])[1] || "0").replace(",", "."));
+    if(r.dep === "minerals") r.lines = r.vals.slice().sort((x, y) => pc(y) - pc(x));   // une ligne par minerai, avec sa part (demande de Jérôme : ne pas perdre le chiffre)
+    r.value = r.dep === "minerals" ? "minerais ×" + r.fids.length : r.dep ? r.value.replace(/ [\d,]+ %$/, "") + " ×" + r.fids.length : "×" + r.fids.length; });
   if(MAP) ({P, land} = mapLayout(all, R)); else {
   const rx = NARROW ? 125 : n === 2 ? 230 : 285, ry = n === 2 ? 0 : NARROW ? 180 : Math.min(165, H / 2 - 72), a0 = n % 2 === 0 ? -90 - 180 / n : -90;
   all.forEach((id, i) => { const a = (a0 + 360 * i / n) * Math.PI / 180; P[id] = [CX + rx * Math.cos(a), CY + ry * Math.sin(a)]; }); }
@@ -293,16 +295,16 @@ function draw(ids, extra, F){ const MAP = VIEW === "map" && WORLD && [...ids, ..
       const [fa, fb] = l[0] === u ? [end(x1, y1, u), end(x2, y2, v)] : [end(x2, y2, v), end(x1, y1, u)];
       const path = `M${fa[0].toFixed(1)} ${fa[1].toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${fb[0].toFixed(1)} ${fb[1].toFixed(1)}`;
       s += `<g class="rel" data-r="${f.id}"><path d="${path}" fill="none" stroke="${f.color}" stroke-width="${f.width.toFixed(1)}"${f.dash ? ` stroke-dasharray="${f.dash}"` : ""}${f.round ? ' stroke-linecap="round"' : ""}${f.arrow ? ` marker-end="url(#mk${f.id})"` : ""}/>
-        ${f.value ? (() => { const w = f.value.length * 6.3 + (f.dep ? 30 : 18);
+        ${f.value ? (() => { const L = f.lines || [f.value], w = Math.max(...L.map(t => t.length)) * 6.3 + (f.dep ? 30 : 18), h = 4 + 16 * L.length;
           // la pastille est posée SUR son trait, vers le pays qui dépend (côté flèche), à la première place libre de toute autre pastille et de tout rond
           const on = t => [(1 - t) ** 2 * fa[0] + 2 * (1 - t) * t * mx + t * t * fb[0], (1 - t) ** 2 * fa[1] + 2 * (1 - t) * t * my + t * t * fb[1]];
-          const box = t => { const [cx, cy] = on(t); return {x: cx - w / 2 - 3, y: cy - 13, w: w + 6, h: 26, cx, cy}; };
+          const box = t => { const [cx, cy] = on(t); return {x: cx - w / 2 - 3, y: cy - h / 2 - 3, w: w + 6, h: h + 6, cx, cy}; };
           const free = b => !placed.some(p => b.x < p.x + p.w && b.x + b.w > p.x && b.y < p.y + p.h && b.y + b.h > p.y);
           const b = (f.dep ? [.66, .56, .76, .46, .36, .86, .26] : [.5, .4, .6, .3, .7]).map(box).find(free) || box(f.dep ? .66 : .5);
           placed.push(b); const lx = b.cx, ly = b.cy;
-          return `<g transform="translate(${(lx - w / 2).toFixed(1)} ${(ly - 10).toFixed(1)})"><title>${esc(f.tip)}</title><rect class="pill" width="${w.toFixed(1)}" height="20" rx="10"/>
+          return `<g transform="translate(${(lx - w / 2).toFixed(1)} ${(ly - h / 2).toFixed(1)})"><title>${esc(f.tip)}</title><rect class="pill" width="${w.toFixed(1)}" height="${h}" rx="10"/>
             ${f.dep ? `<svg x="8" y="4.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${DEP}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${DEP_ICON[f.dep] || ""}</svg>` : ""}
-            <text class="val" x="${f.dep ? 23 : 9}" y="14.2">${esc(f.value)}</text></g>`; })() : ""}
+            ${L.map((t, i) => `<text class="val" x="${f.dep ? 23 : 9}" y="${14.2 + 16 * i}">${esc(t)}</text>`).join("")}</g>`; })() : ""}
         <path class="hit" d="${path}"/></g>`; }); });
   all.forEach(id => { const [x, y] = P[id], up = y < CY - 1, name = (D.actors[id] || {}).name || id;
     if(CAMPS[id]){ const c = CAMPS[id], m = c.members, show = m.slice(0, m.length > 4 ? 3 : 4), q = 15, cell = (i, k) => { const a = (-90 + 360 * i / k) * Math.PI / 180, d = k === 1 ? 0 : k === 2 ? 15 : 18; return [d * Math.cos(a), d * Math.sin(a)]; };
